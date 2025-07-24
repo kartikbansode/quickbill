@@ -12,18 +12,24 @@ scanner_active = False
 def launch_main_window():
     window = tk.Tk()
     window.title("QuickBill - Billing System")
-    window.geometry("1000x700")
+    window.geometry("1100x750")
     window.configure(bg="#f4f6f9")
 
-    # ----- Title Section -----
+    # --- Clock Updater ---
+    def update_clock():
+        now = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        time_label.config(text=now)
+        window.after(1000, update_clock)
+
+    # --- Title Section ---
     title_frame = tk.Frame(window, bg="#f4f6f9")
     title_frame.pack(pady=10, fill=tk.X)
-    tk.Label(title_frame, text="🧾 QuickBill Billing Software", font=("Arial", 20, "bold"), fg="#2c3e50", bg="#f4f6f9").pack()
-    time_label = tk.Label(title_frame, text=datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"), fg="gray", bg="#f4f6f9")
+    tk.Label(title_frame, text="🧾 QuickBill Billing Software", font=("Arial", 22, "bold"), fg="#2c3e50", bg="#f4f6f9").pack()
+    time_label = tk.Label(title_frame, fg="gray", bg="#f4f6f9", font=("Arial", 10))
     time_label.pack()
+    update_clock()
 
-
-    # ----- Item Section -----
+    # --- Item Section ---
     item_section = tk.LabelFrame(window, text="📦 Item List", bg="white", fg="#2c3e50", font=("Arial", 12, "bold"))
     item_section.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
@@ -34,16 +40,13 @@ def launch_main_window():
         tree.column(col, anchor="center", width=150)
     tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(10, 0), pady=10)
 
-    # Scrollbar
     vsb = ttk.Scrollbar(item_section, orient="vertical", command=tree.yview)
     tree.configure(yscroll=vsb.set)
     vsb.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 10), pady=10)
 
-    # ----- Buttons beside item list -----
+    # --- Buttons beside Item List ---
     control_container = tk.Frame(item_section, bg="white")
     control_container.pack(side=tk.RIGHT, padx=10, pady=10, fill=tk.Y)
-
-    item_controls = {}
 
     def refresh_table():
         tree.delete(*tree.get_children())
@@ -57,14 +60,20 @@ def launch_main_window():
             widget.destroy()
         for i, item in enumerate(cart):
             row = tk.Frame(control_container, bg="white")
-            row.pack(fill=tk.X, pady=5)
+            row.pack(fill=tk.X, pady=6)
 
-            tk.Label(row, text=item['name'], width=15, anchor="w", bg="white").pack(side=tk.LEFT)
+            tk.Label(row, text=item['name'], width=18, anchor="w", font=("Arial", 10, "bold"), bg="white").pack(side=tk.LEFT)
 
-            tk.Button(row, text="+", width=2, bg="#d4efdf", command=lambda idx=i: update_item_qty(idx, +1)).pack(side=tk.LEFT, padx=2)
-            tk.Label(row, text=f"{item['qty']}", width=3, bg="white").pack(side=tk.LEFT)
-            tk.Button(row, text="-", width=2, bg="#f9e79f", command=lambda idx=i: update_item_qty(idx, -1)).pack(side=tk.LEFT, padx=2)
-            tk.Button(row, text="🗑️", width=2, bg="#f5b7b1", command=lambda idx=i: delete_item(idx)).pack(side=tk.LEFT, padx=2)
+            tk.Button(row, text="+", width=3, height=1, font=("Arial", 10), bg="#58d68d", fg="white",
+                      command=lambda idx=i: update_item_qty(idx, +1)).pack(side=tk.LEFT, padx=2)
+
+            tk.Label(row, text=f"{item['qty']}", width=3, font=("Arial", 10), bg="white").pack(side=tk.LEFT)
+
+            tk.Button(row, text="-", width=3, height=1, font=("Arial", 10), bg="#f4d03f", fg="black",
+                      command=lambda idx=i: update_item_qty(idx, -1)).pack(side=tk.LEFT, padx=2)
+
+            tk.Button(row, text="🗑", width=3, height=1, font=("Arial", 10), bg="#ec7063", fg="white",
+                      command=lambda idx=i: delete_item(idx)).pack(side=tk.LEFT, padx=2)
 
     def update_item_qty(index, delta):
         current = cart[index]['qty']
@@ -79,7 +88,7 @@ def launch_main_window():
         remove_from_cart(index)
         refresh_table()
 
-    # ----- Totals Section -----
+    # --- Totals Section ---
     totals_frame = tk.LabelFrame(window, text="💵 Totals", bg="white", fg="#2c3e50", font=("Arial", 12, "bold"))
     totals_frame.pack(fill=tk.X, padx=10, pady=10)
 
@@ -102,7 +111,7 @@ def launch_main_window():
         tk.Label(subframe, text=label, font=("Arial", 10, "bold"), bg="white").pack()
         tk.Label(subframe, textvariable=var, font=("Arial", 11), bg="white", fg="black").pack()
 
-    # ----- Scanner Status -----
+    # --- Scanner Status ---
     scanner_status = tk.StringVar(value="📷 Scanner not started")
     tk.Label(window, textvariable=scanner_status, fg="green", font=("Arial", 10), bg="#f4f6f9").pack(pady=5)
 
@@ -117,16 +126,16 @@ def launch_main_window():
         else:
             scanner_status.set(f"❌ Not found: {barcode}")
 
-    # ----- Controls Section -----
+    # --- Controls Section ---
     control_frame = tk.LabelFrame(window, text="🎛️ Controls", bg="white", fg="#2c3e50", font=("Arial", 12, "bold"))
     control_frame.pack(padx=10, pady=10, fill=tk.X)
 
-    tk.Button(control_frame, text="▶ Start Scan", bg="#aed6f1", command=lambda: start_scan()).pack(side=tk.LEFT, padx=10, pady=10)
-    tk.Button(control_frame, text="■ Stop Scan", bg="#f5b7b1", command=lambda: stop_scan()).pack(side=tk.LEFT, padx=10)
-    tk.Button(control_frame, text="🧾 Generate Bill", bg="#d5f5e3", command=lambda: generate_bill()).pack(side=tk.LEFT, padx=10)
-    tk.Button(control_frame, text="🧹 Clear Cart", bg="#f9e79f", command=lambda: clear_cart_all()).pack(side=tk.LEFT, padx=10)
-    tk.Button(control_frame, text="❓ Help", command=lambda: show_help()).pack(side=tk.LEFT, padx=10)
-    tk.Button(control_frame, text="ℹ About", command=lambda: show_about()).pack(side=tk.LEFT, padx=10)
+    tk.Button(control_frame, text="▶ Start Scan", bg="#aed6f1", command=lambda: start_scan(), width=14).pack(side=tk.LEFT, padx=10, pady=10)
+    tk.Button(control_frame, text="■ Stop Scan", bg="#f5b7b1", command=lambda: stop_scan(), width=14).pack(side=tk.LEFT, padx=10)
+    tk.Button(control_frame, text="🧾 Generate Bill", bg="#d5f5e3", command=lambda: generate_bill(), width=16).pack(side=tk.LEFT, padx=10)
+    tk.Button(control_frame, text="🧹 Clear Cart", bg="#f9e79f", command=lambda: clear_cart_all(), width=14).pack(side=tk.LEFT, padx=10)
+    tk.Button(control_frame, text="❓ Help", command=lambda: show_help(), width=10).pack(side=tk.LEFT, padx=10)
+    tk.Button(control_frame, text="ℹ About", command=lambda: show_about(), width=10).pack(side=tk.LEFT, padx=10)
 
     def start_scan():
         global scanner_active
