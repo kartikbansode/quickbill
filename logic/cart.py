@@ -1,5 +1,3 @@
-# logic/cart.py
-
 cart = []
 
 def add_to_cart(name, price):
@@ -12,4 +10,14 @@ def add_to_cart(name, price):
 
 def remove_from_cart(index):
     if 0 <= index < len(cart):
-        cart.pop(index)
+        del cart[index]
+
+def calculate_totals():
+    subtotal = sum(item['total'] for item in cart)
+    tax = subtotal * 0.18  # 18% tax
+    discount = subtotal * 0.05  # 5% discount
+    total = subtotal + tax - discount
+    return subtotal, tax, discount, total
+
+def clear_cart():
+    cart.clear()
