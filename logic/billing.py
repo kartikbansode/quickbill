@@ -1,12 +1,8 @@
-# logic/billing.py
-
-from logic.cart import cart  # ✅ IMPORT shared cart
+from logic.cart import cart
 
 def calculate_totals():
-    subtotal = 0.0
-    for item in cart:
-        subtotal += item['price'] * item['qty']
-    tax = subtotal * 0.18  # Example: 18% GST
-    discount = 0.0         # You can apply logic later
+    subtotal = sum(item['price'] * item['qty'] for item in cart)
+    tax = round(subtotal * 0.10, 2)  # 10% tax
+    discount = round(subtotal * 0.05, 2)  # 5% discount
     total = subtotal + tax - discount
     return subtotal, tax, discount, total
