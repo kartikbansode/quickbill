@@ -45,3 +45,19 @@ def get_product_by_barcode(barcode):
     row = cur.fetchone()
     conn.close()
     return row
+
+import csv
+import os
+
+PRODUCTS_FILE = os.path.join("data", "products.csv")
+
+def get_product_by_barcode(barcode):
+    try:
+        with open(PRODUCTS_FILE, mode='r', newline='', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row["barcode"] == barcode:
+                    return row["barcode"], row["name"], float(row["price"])
+    except FileNotFoundError:
+        print(f"⚠️ File not found: {PRODUCTS_FILE}")
+    return None

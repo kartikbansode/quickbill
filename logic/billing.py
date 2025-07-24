@@ -30,4 +30,4 @@ def calculate_totals(tax_percent=18, discount=0):
     subtotal = sum(item['total'] for item in cart)
     tax = subtotal * (tax_percent / 100)
     total = subtotal + tax - discount
-    return sub
+    return subtotal, tax, discount, total  # ✅ Return correct variables

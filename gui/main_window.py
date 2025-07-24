@@ -1,101 +1,103 @@
-# gui/main_window.py
 import tkinter as tk
 from tkinter import ttk, messagebox
-from logic.billing import add_to_cart, remove_from_cart, update_qty, calculate_totals, cart
+from logic.cart import cart, add_to_cart, remove_from_cart
+from logic.billing import calculate_totals
+from logic.barcode_scanner import scan_barcode_background
+from logic.database import get_product_by_barcode
+from logic.pdf_generator import generate_pdf_bill
+import threading
 
 def launch_main_window():
-    root = tk.Tk()
-    root.title("QuickBill")
-    root.geometry("900x600")
+    window = tk.Tk()
+    window.title("QuickBill - Billing System")
+    window.geometry("800x600")
 
-    # Header
-    tk.Label(root, text="QuickBill - Billing System", font=("Arial", 20)).pack(pady=10)
-
-    # Cart table
-    columns = ("Name", "Qty", "Price", "Total")
-    tree = ttk.Treeview(root, columns=columns, show="headings", height=10)
-    for col in columns:
+    # Table
+    tree = ttk.Treeview(window, columns=("Item", "Price", "Qty", "Total"), show="headings")
+    for col in ("Item", "Price", "Qty", "Total"):
         tree.heading(col, text=col)
-        tree.column(col, width=150)
-    tree.pack(pady=10)
+        tree.column(col, anchor="center")
+    tree.pack(pady=10, fill=tk.BOTH, expand=True)
 
-    # Totals display
-    totals_label = tk.Label(root, text="", font=("Arial", 12))
-    totals_label.pack(pady=10)
+    # Totals
+    subtotal_var = tk.StringVar()
+    tax_var = tk.StringVar()
+    discount_var = tk.StringVar()
+    total_var = tk.StringVar()
 
+    tk.Label(window, text="Subtotal:").pack()
+    tk.Label(window, textvariable=subtotal_var).pack()
+
+    tk.Label(window, text="Tax:").pack()
+    tk.Label(window, textvariable=tax_var).pack()
+
+    tk.Label(window, text="Discount:").pack()
+    tk.Label(window, textvariable=discount_var).pack()
+
+    tk.Label(window, text="Total:").pack()
+    tk.Label(window, textvariable=total_var).pack()
+
+    # Scanner status
+    scanner_status = tk.StringVar()
+    scanner_status.set("📷 Scanner not started")
+    tk.Label(window, textvariable=scanner_status, fg="green", font=("Arial", 10)).pack(pady=5)
+
+    # Button actions
     def refresh_table():
-        for row in tree.get_children():
-            tree.delete(row)
+        tree.delete(*tree.get_children())
         for item in cart:
-            tree.insert("", tk.END, values=(item['name'], item['qty'], item['price'], item['total']))
+            tree.insert('', tk.END, values=(item['name'], item['price'], item['qty'], item['total']))
+
         subtotal, tax, disc, total = calculate_totals()
-        totals_label.config(text=f"Subtotal: ₹{subtotal:.2f} | Tax: ₹{tax:.2f} | Discount: ₹{disc:.2f} | Total: ₹{total:.2f}")
+        subtotal_var.set(f"₹ {subtotal:.2f}")
+        tax_var.set(f"₹ {tax:.2f}")
+        discount_var.set(f"₹ {disc:.2f}")
+        total_var.set(f"₹ {total:.2f}")
 
-    # Add item manually
-    def add_item_prompt():
-        win = tk.Toplevel(root)
-        win.title("Add Item")
-        tk.Label(win, text="Item Name:").grid(row=0, column=0)
-        tk.Label(win, text="Price:").grid(row=1, column=0)
-        name_entry = tk.Entry(win)
-        price_entry = tk.Entry(win)
-        name_entry.grid(row=0, column=1)
-        price_entry.grid(row=1, column=1)
+    def delete_selected():
+        selected = tree.selection()
+        if selected:
+            index = tree.index(selected[0])
+            remove_from_cart(index)
+            refresh_table()
 
-        def add_and_close():
-            try:
-                name = name_entry.get()
-                price = float(price_entry.get())
-                add_to_cart(name, price)
-                refresh_table()
-                win.destroy()
-            except:
-                messagebox.showerror("Invalid", "Price must be a number")
+    def scan_barcode_and_add():
+        scanner_status.set("📡 Starting scanner...")
 
-        tk.Button(win, text="Add", command=add_and_close).grid(row=2, columnspan=2)
+        def scan_thread():
+            stream_url = "http://192.168.1.4:8080/video"  # ✅ Replace with your real phone stream
+            barcode = scan_barcode_background(stream_url)
 
-    # Change quantity
-    def update_quantity():
-        selected = tree.focus()
-        if not selected:
-            return
-        item = tree.item(selected)['values']
-        name = item[0]
-        win = tk.Toplevel(root)
-        win.title("Update Quantity")
-        tk.Label(win, text=f"New Quantity for {name}:").pack()
-        qty_entry = tk.Entry(win)
-        qty_entry.pack()
-
-        def update_and_close():
-            try:
-                qty = int(qty_entry.get())
-                if qty <= 0:
-                    remove_from_cart(name)
+            if barcode:
+                product = get_product_by_barcode(barcode)
+                if product:
+                    name, price = product[1], product[2]
+                    add_to_cart(name, price)
+                    refresh_table()
+                    scanner_status.set(f"✅ Scanned: {barcode}")
                 else:
-                    update_qty(name, qty)
-                refresh_table()
-                win.destroy()
-            except:
-                messagebox.showerror("Invalid", "Enter valid number")
+                    scanner_status.set(f"❌ Not found: {barcode}")
+            else:
+                scanner_status.set("⚠️ Scan timeout or failed")
 
-        tk.Button(win, text="Update", command=update_and_close).pack()
+        threading.Thread(target=scan_thread, daemon=True).start()
 
-    # Buttons
-    btn_frame = tk.Frame(root)
-    btn_frame.pack(pady=10)
-    tk.Button(btn_frame, text="➕ Add Item", command=add_item_prompt).grid(row=0, column=0, padx=10)
-    tk.Button(btn_frame, text="✏️ Change Qty", command=update_quantity).grid(row=0, column=1, padx=10)
-    tk.Button(btn_frame, text="🗑️ Remove Item", command=lambda: remove_from_cart_prompt()).grid(row=0, column=2, padx=10)
-
-    # Remove item
-    def remove_from_cart_prompt():
-        selected = tree.focus()
-        if not selected:
+    def generate_bill():
+        if not cart:
+            messagebox.showwarning("Empty Cart", "No items to generate bill.")
             return
-        item = tree.item(selected)['values']
-        remove_from_cart(item[0])
+        generate_pdf_bill(cart)
+        messagebox.showinfo("Bill Generated", "Bill has been generated and saved.")
+        cart.clear()
         refresh_table()
 
+    # Buttons
+    button_frame = tk.Frame(window)
+    button_frame.pack(pady=10)
+
+    tk.Button(button_frame, text="Scan Barcode", command=scan_barcode_and_add).pack(side=tk.LEFT, padx=10)
+    tk.Button(button_frame, text="Remove Selected", command=delete_selected).pack(side=tk.LEFT, padx=10)
+    tk.Button(button_frame, text="Generate Bill", command=generate_bill).pack(side=tk.LEFT, padx=10)
+
     refresh_table()
-    root.mainloop()
+    window.mainloop()
