@@ -11,7 +11,7 @@ scanner_active = False
 
 def launch_main_window():
     window = tk.Tk()
-    window.title("QuickBill - Billing System")
+    window.title("QuickBill System")
     window.geometry("1100x750")
     window.configure(bg="#f4f6f9")
 
@@ -24,7 +24,7 @@ def launch_main_window():
     # --- Title Section ---
     title_frame = tk.Frame(window, bg="#f4f6f9")
     title_frame.pack(pady=10, fill=tk.X)
-    tk.Label(title_frame, text="🧾 QuickBill Billing Software", font=("Arial", 22, "bold"), fg="#2c3e50", bg="#f4f6f9").pack()
+    tk.Label(title_frame, text="🧾 QuickBill System", font=("Arial", 22, "bold"), fg="#2c3e50", bg="#f4f6f9").pack()
     time_label = tk.Label(title_frame, fg="gray", bg="#f4f6f9", font=("Arial", 10))
     time_label.pack()
     update_clock()
@@ -139,7 +139,7 @@ def launch_main_window():
 
     def start_scan():
         global scanner_active
-        scanner_status.set("📡 Scanner active... Show barcode")
+        scanner_status.set("📡 Scanner active... Scan barcode")
         scanner_active = True
         scan_barcode_background("http://192.168.1.4:8080/video", on_barcode_detected)
 
@@ -164,7 +164,7 @@ def launch_main_window():
             refresh_table()
 
     def show_about():
-        messagebox.showinfo("About", "QuickBill v1.0\nModern Python Billing App\nBy @YourName")
+        messagebox.showinfo("About", "QuickBill v1.0\nModern Python Billing App\nBy https://github.com/kartikbansode/")
 
     def show_help():
         messagebox.showinfo("Help", "- Use barcode scanner to scan items.\n- Use +/– to adjust quantity.\n- Click 🗑️ to delete item.\n- Click Generate Bill to save.")
