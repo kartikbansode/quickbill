@@ -39,12 +39,7 @@ QuickBill is a desktop-based inventory and invoicing system developed in Python.
    ```bash
    cd quickbill
 
-3. Install the required dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-
-4. Run the application:
+3. Run the application:
    ```bash
    python app.py
 
