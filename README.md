@@ -1,6 +1,6 @@
 # QuickBill 
 
->**Version:** 1.0.0
+>**Latest Version:** 1.0.0
 >
 >**Release Date:** September 23, 2025  
 
