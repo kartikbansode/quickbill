@@ -1,8 +1,12 @@
 from logic.cart import cart
 
-def calculate_totals():
-    subtotal = sum(item['price'] * item['qty'] for item in cart)
-    tax = round(subtotal * 0.10, 2)  # 10% tax
-    discount = round(subtotal * 0.05, 2)  # 5% discount
+def calculate_totals(items=None, tax_percent=10, discount_percent=5):
+    source = cart if items is None else items
+    subtotal = sum(
+        float(item.get("price", item.get("selling_price", 0))) * int(item.get("qty", 0))
+        for item in source
+    )
+    tax = round(subtotal * (tax_percent / 100), 2)
+    discount = round(subtotal * (discount_percent / 100), 2)
     total = subtotal + tax - discount
     return subtotal, tax, discount, total

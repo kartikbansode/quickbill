@@ -1,0 +1,26 @@
+{
+    "company": {
+        "name": "QuickBill Systems",
+        "owner": "Admin",
+        "address": "",
+        "phone": "",
+        "email": "",
+        "gst": "",
+        "logo": "assets/images/logo.ico"
+    },
+
+    "billing": {
+        "currency": "₹",
+        "invoice_prefix": "QB",
+        "tax_percent": 10,
+        "discount_percent": 5,
+        "round_off": true
+    },
+
+    "scanner": {
+        "type": "mobile_camera",
+        "camera_url": "http://192.168.0.133:8080/video",
+        "duplicate_delay": 1,
+        "beep": true
+    }
+}

@@ -1,0 +1,320 @@
+import tkinter as tk
+from logic.database import get_all_products
+from tkinter import ttk
+from tkinter import messagebox
+from logic.database import (
+    add_product,
+    edit_product,
+    get_all_products,
+)
+
+
+class AddProductDialog:
+
+    def __init__(self, parent, refresh_callback=None, product=None):
+
+        self.refresh_callback = refresh_callback
+
+        self.product = product
+
+        self.window = tk.Toplevel(parent)
+
+        if product:
+
+            self.window.title("Edit Product")
+
+        else:
+
+            self.window.title("Add Product")
+
+        self.window.geometry("800x700")
+
+        self.window.resizable(False, False)
+
+        self.entries = {}
+
+        self.build_ui()
+
+        if product:
+
+            self.load_product()
+
+        else:
+
+            self.generate_barcode()
+
+    def load_product(self):
+
+        self.entries["Barcode"].config(state="normal")
+
+        for key, widget in self.entries.items():
+
+            value = ""
+
+            if key == "Barcode":
+                value = self.product.get("barcode", "")
+
+            elif key == "Product Name":
+                value = self.product.get("name", "")
+
+            elif key == "Brand":
+                value = self.product.get("brand", "")
+
+            elif key == "Category":
+                value = self.product.get("category", "")
+
+            elif key == "Purchase Price":
+                value = self.product.get("purchase_price", "")
+
+            elif key == "Selling Price":
+                value = self.product.get("selling_price", "")
+
+            elif key == "MRP":
+                value = self.product.get("mrp", "")
+
+            elif key == "GST":
+                value = self.product.get("gst", "")
+
+            elif key == "Opening Stock":
+                value = self.product.get("stock", "")
+
+            elif key == "Minimum Stock":
+                value = self.product.get("min_stock", "")
+
+            elif key == "Supplier":
+                value = self.product.get("supplier", "")
+
+            elif key == "Unit":
+                value = self.product.get("unit", "")
+
+            elif key == "Weight":
+                value = self.product.get("weight", "")
+
+            elif key == "Description":
+                value = self.product.get("description", "")
+
+            widget.delete(0, tk.END)
+
+            widget.insert(0, str(value))
+
+        self.entries["Barcode"].config(state="readonly")
+
+    def generate_barcode(self):
+
+        products = get_all_products()
+
+        highest = 1000000000
+
+        for product in products:
+
+            try:
+
+                number = int(product["barcode"])
+
+                if number > highest:
+
+                    highest = number
+
+            except:
+
+                pass
+
+        new_barcode = str(highest + 1)
+
+        barcode_entry = self.entries["Barcode"]
+
+        barcode_entry.delete(0, tk.END)
+
+        barcode_entry.insert(0, new_barcode)
+
+        barcode_entry.config(state="readonly")
+
+    def build_ui(self):
+
+        title = tk.Label(
+            self.window,
+            text="Add New Product",
+            font=("Segoe UI", 16, "bold"),
+        )
+
+        title.pack(pady=15)
+
+        form = tk.Frame(self.window)
+
+        form.pack(fill="both", expand=True, padx=25)
+
+        left_fields = [
+            "Barcode",
+            "Product Name",
+            "Brand",
+            "Category",
+            "Purchase Price",
+            "Selling Price",
+            "MRP",
+        ]
+
+        right_fields = [
+            "GST",
+            "Opening Stock",
+            "Minimum Stock",
+            "Supplier",
+            "Unit",
+            "Weight",
+            "Description",
+        ]
+
+        # ================= LEFT COLUMN =================
+
+        for row, field in enumerate(left_fields):
+
+            tk.Label(
+                form, text=field, width=18, anchor="w", font=("Segoe UI", 10)
+            ).grid(row=row, column=0, padx=10, pady=6, sticky="w")
+
+            if field == "Category":
+
+                entry = ttk.Combobox(
+                    form,
+                    width=30,
+                    state="readonly",
+                    values=[
+                        "Snacks",
+                        "Beverages",
+                        "Dairy",
+                        "Bakery",
+                        "Groceries",
+                        "Household",
+                        "Stationery",
+                        "Others",
+                    ],
+                )
+
+                entry.current(0)
+
+            else:
+
+                entry = tk.Entry(form, width=33)
+
+            entry.grid(row=row, column=1, pady=6)
+
+            self.entries[field] = entry
+
+        # ================= RIGHT COLUMN =================
+
+        for row, field in enumerate(right_fields):
+
+            tk.Label(
+                form, text=field, width=18, anchor="w", font=("Segoe UI", 10)
+            ).grid(row=row, column=2, padx=(30, 10), pady=6, sticky="w")
+
+            if field == "GST":
+
+                entry = ttk.Combobox(
+                    form,
+                    width=30,
+                    state="readonly",
+                    values=["0", "5", "12", "18", "28"],
+                )
+
+                entry.current(3)
+
+            elif field == "Unit":
+
+                entry = ttk.Combobox(
+                    form,
+                    width=30,
+                    state="readonly",
+                    values=["Piece", "Packet", "Bottle", "Kg", "Gram", "Litre"],
+                )
+
+                entry.current(0)
+
+            else:
+
+                entry = tk.Entry(form, width=33)
+
+            entry.grid(row=row, column=3, pady=6)
+
+            self.entries[field] = entry
+
+        tk.Button(
+            self.window,
+            text="Save Product",
+            width=18,
+            bg="#28a745",
+            fg="white",
+            font=("Segoe UI", 10, "bold"),
+            command=self.save_product,
+        ).pack(pady=20)
+
+    def save_product(self):
+
+        barcode = self.entries["Barcode"].get()
+
+        name = self.entries["Product Name"].get().strip()
+
+        if name == "":
+
+            messagebox.showerror("Error", "Product Name is required.")
+
+            return
+
+        try:
+
+            purchase_price = float(self.entries["Purchase Price"].get())
+
+            selling_price = float(self.entries["Selling Price"].get())
+
+            mrp = float(self.entries["MRP"].get())
+
+        except:
+
+            messagebox.showerror("Error", "Invalid price.")
+
+            return
+
+        product = {
+            "barcode": barcode,
+            "sku": f"SKU{len(get_all_products())+1:04d}",
+            "name": name,
+            "brand": self.entries["Brand"].get(),
+            "category": self.entries["Category"].get(),
+            "purchase_price": purchase_price,
+            "selling_price": selling_price,
+            "mrp": mrp,
+            "gst": int(self.entries["GST"].get()),
+            "stock": int(self.entries["Opening Stock"].get() or 0),
+            "min_stock": int(self.entries["Minimum Stock"].get() or 0),
+            "supplier": self.entries["Supplier"].get(),
+            "unit": self.entries["Unit"].get(),
+            "weight": self.entries["Weight"].get(),
+            "expiry": "",
+            "batch": "",
+            "hsn": "",
+            "description": self.entries["Description"].get(),
+        }
+
+        if self.product:
+
+            ok, msg = edit_product(barcode, product)
+
+            success_message = "Product Updated Successfully."
+
+        else:
+
+            ok, msg = add_product(barcode, product)
+
+            success_message = "Product Added Successfully."
+
+        if ok:
+
+            self.window.destroy()
+
+            if self.refresh_callback:
+                self.refresh_callback()
+
+            messagebox.showinfo("Success", success_message)
+
+        else:
+
+            messagebox.showerror("Error", msg)

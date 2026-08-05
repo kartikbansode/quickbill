@@ -1,0 +1,34 @@
+[
+    {
+        "bill_no": "20260805165953",
+        "date": "05-08-2026 16:59:53",
+        "items": [
+            {
+                "name": "Lay's Classic Chips",
+                "qty": 3,
+                "price": 20,
+                "total": 60
+            }
+        ],
+        "subtotal": 60.0,
+        "tax": 6.0,
+        "discount": 3.0,
+        "total": 63.0
+    },
+    {
+        "bill_no": "20260805171130",
+        "date": "05-08-2026 17:11:30",
+        "items": [
+            {
+                "name": "Lay's Classic Chips",
+                "qty": 3,
+                "price": 20,
+                "total": 60
+            }
+        ],
+        "subtotal": 60.0,
+        "tax": 6.0,
+        "discount": 3.0,
+        "total": 63.0
+    }
+]

@@ -1,18 +1,78 @@
 cart = []
 
-def add_to_cart(name, price):
+
+def _get_item_rate(product):
+    return product.get("selling_price", product.get("price", 0))
+
+
+def add_to_cart(product):
+
+    barcode = product["barcode"]
+
     for item in cart:
-        if item['name'] == name:
-            item['qty'] += 1
-            item['total'] = item['qty'] * item['price']
+
+        if item["barcode"] == barcode:
+
+            item["qty"] += 1
+            rate = _get_item_rate(item)
+            item["price"] = rate
+            item["selling_price"] = rate
+            item["total"] = item["qty"] * rate
             return
-    cart.append({'name': name, 'price': price, 'qty': 1, 'total': price})
+
+    rate = _get_item_rate(product)
+
+    cart.append({
+
+        "barcode": product["barcode"],
+
+        "sku": product["sku"],
+
+        "name": product["name"],
+
+        "brand": product["brand"],
+
+        "category": product["category"],
+
+        "purchase_price": product["purchase_price"],
+
+        "price": rate,
+
+        "selling_price": rate,
+
+        "mrp": product["mrp"],
+
+        "gst": product["gst"],
+
+        "stock": product["stock"],
+
+        "supplier": product["supplier"],
+
+        "unit": product["unit"],
+
+        "weight": product["weight"],
+
+        "qty": 1,
+
+        "total": rate
+
+    })
+
 
 def remove_from_cart(index):
+
     if 0 <= index < len(cart):
+
         cart.pop(index)
 
-def update_quantity(index, new_qty):
+
+def update_quantity(index, qty):
+
     if 0 <= index < len(cart):
-        cart[index]['qty'] = new_qty
-        cart[index]['total'] = new_qty * cart[index]['price']
+
+        cart[index]["qty"] = qty
+
+        rate = _get_item_rate(cart[index])
+        cart[index]["price"] = rate
+        cart[index]["selling_price"] = rate
+        cart[index]["total"] = qty * rate
