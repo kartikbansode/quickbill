@@ -1,14 +1,12 @@
 import tkinter as tk
 
 
-class TotalsPanel(tk.LabelFrame):
+class TotalsPanel(tk.Frame):
 
     def __init__(self, parent, calculate_totals_callback):
         super().__init__(
             parent,
-            text="Bill Summary",
             bg="white",
-            font=("Segoe UI", 10, "bold"),
             width=260,
         )
 
@@ -23,11 +21,9 @@ class TotalsPanel(tk.LabelFrame):
 
     def _build_rows(self):
         labels = [
-            ("Bill No.", self.bill_no_var),
             ("Subtotal", self.subtotal_var),
             ("GST", self.tax_var),
             ("Discount", self.discount_var),
-            ("Grand Total", self.total_var),
         ]
 
         for text, var in labels:
@@ -47,6 +43,33 @@ class TotalsPanel(tk.LabelFrame):
                 fg="#1d3557",
                 font=("Segoe UI", 11, "bold"),
             ).pack(side="right")
+
+            # Divider
+        tk.Frame(
+            self,
+            bg="#d0d0d0",
+            height=2,
+        ).pack(fill="x", padx=8, pady=8)
+
+        # Grand Total
+        grand_frame = tk.Frame(self, bg="#e8f5e9")
+        grand_frame.pack(fill="x", padx=8, pady=5)
+
+        tk.Label(
+            grand_frame,
+            text="GRAND TOTAL",
+            bg="#e8f5e9",
+            fg="#006400",
+            font=("Segoe UI", 11, "bold"),
+        ).pack(anchor="w", padx=8, pady=(5,0))
+
+        tk.Label(
+            grand_frame,
+            textvariable=self.total_var,
+            bg="#e8f5e9",
+            fg="#008000",
+            font=("Segoe UI", 20, "bold"),
+        ).pack(anchor="e", padx=8, pady=(0,5))
 
     def set_bill_number(self, bill_no):
 

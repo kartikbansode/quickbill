@@ -32,8 +32,13 @@ except Exception as e:
     raise
 
 
-def generate_pdf_bill(cart):
-    bill_no = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+def generate_pdf_bill(
+    cart,
+    bill_no,
+    payment_mode,
+    received_amount,
+    cashier="Admin",
+):
     bill_date = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
     # Ensure bills directory exists
@@ -181,6 +186,11 @@ def generate_pdf_bill(cart):
     bill = {
         "bill_no": bill_no,
         "date": bill_date,
+        "payment_mode": payment_mode,
+        "received_amount": received_amount,
+        "balance": received_amount - total,
+        "cashier": cashier,
+        "status": "PAID",
         "items": [
             {
                 "name": item["name"],

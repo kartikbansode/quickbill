@@ -38,10 +38,12 @@ class BillingView(tk.Frame):
             font=("Segoe UI", 10, "bold"),
         )
 
-        table_frame.pack(fill="both", expand=True, pady=5)
+        table_frame.pack(fill="both", expand=True, pady=(2, 8))
 
         self.cart_table = CartTable(table_frame)
+
         self.cart_table.pack(fill="both", expand=True)
+
         self.cart_table.set_actions(
             self.callbacks.get("increase_qty"),
             self.callbacks.get("decrease_qty"),
@@ -50,7 +52,7 @@ class BillingView(tk.Frame):
 
         bottom_panel = tk.Frame(billing_container, bg="#e9ecef")
 
-        bottom_panel.pack(fill="x", pady=5)
+        bottom_panel.pack(fill="x", pady=(2, 0))
 
         left_panel = tk.LabelFrame(
             bottom_panel,
@@ -147,8 +149,5 @@ class BillingView(tk.Frame):
     def display_product(self, product):
         self.scanner_panel.display_product(product)
 
-    def start_scan(self):
-        self.scanner_panel.start_scan()
-
-    def stop_scan(self):
-        self.scanner_panel.stop_scan()
+    def toggle_scan(self):
+        self.scanner_panel.toggle_scan()

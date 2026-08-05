@@ -13,7 +13,7 @@ class CartTable(tk.Frame):
 
         columns = ("S.No", "Barcode", "Product", "Qty", "Rate", "Amount")
 
-        self.tree = ttk.Treeview(self, columns=columns, show="headings", height=14)
+        self.tree = ttk.Treeview(self, columns=columns, show="headings", height=13)
         self.tree.heading("S.No", text="S.No")
         self.tree.heading("Barcode", text="Barcode")
         self.tree.heading("Product", text="Product")
@@ -57,11 +57,22 @@ class CartTable(tk.Frame):
         self.tree.configure(yscrollcommand=scrollbar.set)
 
         self.tree.pack(side="left", fill="both", expand=True)
+        self.empty_label = tk.Label(
+            self,
+            text="🛒\n\nCurrent Bill is Empty\n\nScan a barcode\nor\nType barcode manually and press Add",
+            bg="white",
+            fg="#808080",
+            font=("Segoe UI", 12),
+            justify="center",
+        )
         self.tree.tag_configure("even", background="#FFFFFF")
 
         self.tree.tag_configure("odd", background="#F5F5F5")
 
         scrollbar.pack(side="right", fill="y")
+        # Show empty message on startup
+        self.tree.pack_forget()
+        self.empty_label.pack(expand=True, fill="both")
 
     def clear(self):
         self.tree.delete(*self.tree.get_children())
@@ -76,6 +87,18 @@ class CartTable(tk.Frame):
     def refresh_table(self, items):
 
         self.clear()
+
+        if not items:
+
+            self.tree.pack_forget()
+
+            self.empty_label.pack(expand=True, fill="both")
+
+            return
+
+        self.empty_label.pack_forget()
+
+        self.tree.pack(side="left", fill="both", expand=True)
 
         for index, item in enumerate(items):
 

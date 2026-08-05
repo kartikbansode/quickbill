@@ -17,16 +17,27 @@ class ScannerPanel(tk.LabelFrame):
         row1 = tk.Frame(self, bg="white")
         row1.pack(fill="x", padx=10, pady=5)
 
-        tk.Label(row1, text="Barcode", bg="white", font=("Segoe UI", 10, "bold")).pack(
-            side="left"
+        tk.Label(
+            row1,
+            text="Barcode :",
+            bg="white",
+            font=("Segoe UI", 10, "bold"),
+        ).pack(side="left")
+
+        self.barcode_entry = tk.Entry(
+            row1,
+            font=("Consolas", 12),
+            width=45,
         )
 
-        self.barcode_entry = tk.Entry(row1, width=30, font=("Consolas", 14))
-
-        self.barcode_entry.pack(side="left", padx=10)
+        self.barcode_entry.pack(side="left", padx=(8, 3))
 
         self.add_button = tk.Button(
-            row1, text="Add", width=10, bg="#1f7ae0", fg="white"
+            row1,
+            text="Add",
+            width=10,
+            bg="#1f7ae0",
+            fg="white",
         )
 
         self.add_button.pack(side="left")
@@ -46,12 +57,12 @@ class ScannerPanel(tk.LabelFrame):
             command=self.toggle_scan,
         )
 
-        self.scan_button.pack(side="left")
+        self.scan_button.pack(anchor="w", pady=(2, 0))
 
         # ---------- Product Details ----------
 
         row2 = tk.Frame(self, bg="white")
-        row2.pack(fill="x", padx=10, pady=8)
+        row2.pack(fill="x", padx=10, pady=2)
 
         self.product = tk.StringVar(value="-")
         self.barcode = tk.StringVar(value="-")
@@ -76,7 +87,7 @@ class ScannerPanel(tk.LabelFrame):
         for title, var in data:
 
             box = tk.Frame(row2, bg="white")
-            box.pack(side="left", expand=True)
+            box.pack(side="left", padx=15)
 
             tk.Label(
                 box, text=title, bg="white", fg="gray", font=("Segoe UI", 9)
@@ -87,8 +98,8 @@ class ScannerPanel(tk.LabelFrame):
                 textvariable=var,
                 bg="white",
                 fg="#1d3557",
-                font=("Segoe UI", 11, "bold"),
-            ).pack()
+                font=("Segoe UI", 10, "bold"),
+            ).pack(pady=(0, 2))
 
     def get_barcode(self):
         return self.barcode_entry.get().strip()
@@ -102,14 +113,6 @@ class ScannerPanel(tk.LabelFrame):
     def set_scan_callbacks(self, start_callback=None, stop_callback=None):
         self._start_scan_callback = start_callback
         self._stop_scan_callback = stop_callback
-
-    def start_scan(self):
-        if self._start_scan_callback:
-            self._start_scan_callback()
-
-    def stop_scan(self):
-        if self._stop_scan_callback:
-            self._stop_scan_callback()
 
     def update_status(self, text):
         self.status.set(text)
@@ -136,21 +139,23 @@ class ScannerPanel(tk.LabelFrame):
 
         if self.scan_button["text"] == "▶ Start Scan":
 
-            self.start_scan()
-
             self.scan_button.config(
                 text="■ Stop Scan",
                 bg="#dc3545",
             )
 
-        else:
+            if self._start_scan_callback:
+                self._start_scan_callback()
 
-            self.stop_scan()
+        else:
 
             self.scan_button.config(
                 text="▶ Start Scan",
                 bg="#007bff",
             )
+
+            if self._stop_scan_callback:
+                self._stop_scan_callback()
 
     def set_status(self, text):
         self.update_status(text)

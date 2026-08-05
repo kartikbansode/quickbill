@@ -19,8 +19,16 @@ from gui.header import Header
 from gui.statusbar import StatusBar
 from gui.billing.billing_view import BillingView
 from gui.dialogs.add_product_dialog import AddProductDialog
-from logic.database import edit_product
-from logic.database import delete_product
+from gui.payment.payment_dialog import PaymentDialog
+from logic.hold_bill import hold_bill
+from gui.hold_bill.hold_bill_window import HoldBillWindow
+from gui.find_bill.find_bill_view import FindBillView
+from logic.bill_history import (
+    get_all_bills,
+    search_bill_history,
+)
+from logic.database import generate_bill_number
+from gui.find_bill.bill_details_dialog import BillDetailsDialog
 
 scanner_active = False
 webcam_url = "http://192.168.0.133:8080/video"  # Default webcam URL
@@ -29,7 +37,10 @@ BILLS_HISTORY_FILE = "bills_history.json"
 
 def launch_main_window():
     window = tk.Tk()
+    window.minsize(1280, 720)
+    window.state("zoomed")
     window.title("QuickBill System")
+    find_bill_view = None
     try:
         window.iconbitmap("assets/images/logo.ico")  # Set icon
     except:
@@ -42,7 +53,6 @@ def launch_main_window():
     screen_height = window.winfo_screenheight()
     x = (screen_width - window_width) // 2
     y = (screen_height - window_height) // 2
-    window.geometry(f"{window_width}x{window_height}+{x}+{y}")
     window.configure(bg="#e9ecef")
     window.resizable(True, True)  # Enable resizing and maximize button
 
@@ -150,19 +160,124 @@ def launch_main_window():
         if scanner_active:
             stop_scanner()
             scanner_active = False
-            billing_view.update_scanner_status("Scanner Stopped")
 
-    def generate_bill():
+    try:
+        billing_view.scanner_panel.scan_button.config(
+            text="▶ Start Scanner",
+            bg="#28a745",
+        )
+    except:
+        pass
+
+    def open_payment_dialog():
+
         if not cart:
-            messagebox.showwarning("Empty Cart", "No items to generate bill.")
+            messagebox.showwarning("Empty Bill", "Please add at least one product.")
             return
-        try:
-            generate_pdf_bill(cart)
-            messagebox.showinfo("Bill Generated", "Bill has been generated and saved.")
-            cart.clear()
-            refresh_table()
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to generate bill: {e}")
+
+        subtotal, tax, discount, total = calculate_totals()
+
+        PaymentDialog(
+            window,
+            total,
+            complete_sale,
+        )
+
+    def complete_sale(payment_mode, received_amount):
+
+        nonlocal bill_number
+
+        completed_bill = bill_number
+
+        # --------------------------------
+        # Generate PDF & Save Bill
+        # --------------------------------
+
+        generate_pdf_bill(
+            cart,
+            completed_bill,
+            payment_mode,
+            received_amount,
+        )
+
+        # --------------------------------
+        # Reduce Product Stock
+        # --------------------------------
+
+        for item in cart:
+
+            product = get_product_by_barcode(item["barcode"])
+
+            if product:
+
+                product["stock"] -= item["qty"]
+
+                edit_product(product["barcode"], product)
+
+        # --------------------------------
+        # Refresh Product Table
+        # --------------------------------
+
+        refresh_product_table()
+
+        # --------------------------------
+        # Clear Current Cart
+        # --------------------------------
+
+        cart.clear()
+
+        refresh_table()
+
+        # --------------------------------
+        # Success Message
+        # --------------------------------
+
+        messagebox.showinfo(
+            "Sale Completed", f"Invoice {completed_bill} generated successfully."
+        )
+
+        # --------------------------------
+        # Generate Next Bill Number
+        # --------------------------------
+
+        bill_number = generate_bill_number()
+
+        billing_view.set_bill_number(bill_number)
+
+        status_bar.set_bill_number(bill_number)
+
+    def search_bill(keyword):
+
+        find_bill_view.clear_table()
+
+        bills = search_bill_history(keyword)
+
+        bills.reverse()
+
+        for bill in bills:
+
+            find_bill_view.add_bill(
+                bill["bill_no"],
+                bill["date"],
+                bill.get("payment_mode", "-"),
+                len(bill["items"]),
+                f"₹ {bill['total']:.2f}",
+            )
+
+    def open_bill_details(bill_no):
+
+        bills = get_all_bills()
+
+        for bill in bills:
+
+            if bill["bill_no"] == bill_no:
+
+                BillDetailsDialog(
+                    window,
+                    bill,
+                )
+
+                return
 
     def on_barcode_detected(barcode):
 
@@ -190,10 +305,57 @@ def launch_main_window():
 
             status_bar.set_status("Barcode Not Found")
 
+    def hold_current_bill():
+
+        nonlocal bill_number
+
+        # -----------------------------------
+        # Resume Existing Hold
+        # -----------------------------------
+
+        if not cart:
+
+            HoldBillWindow(
+                window,
+                resume_hold_bill,
+            )
+
+            return
+
+        # -----------------------------------
+        # Hold Current Cart
+        # -----------------------------------
+
+        hold_no = hold_bill(cart.copy())
+
+        messagebox.showinfo("Hold Bill", f"Current bill saved.\n\n{hold_no}")
+
+        cart.clear()
+
+        refresh_table()
+
+    def resume_hold_bill(bill):
+
+        nonlocal bill_number
+
+        cart.clear()
+
+        cart.extend(bill["cart"])
+
+        refresh_table()
+
+        bill_number = generate_bill_number()
+
+        billing_view.set_bill_number(bill_number)
+
+        status_bar.set_bill_number(bill_number)
+
+        messagebox.showinfo("Hold Bill", f"{bill['hold_no']} resumed successfully.")
+
     billing_view = BillingView(
         content_container,
         {
-            "generate_bill": generate_bill,
+            "generate_bill": open_payment_dialog,
             "clear_cart": clear_cart_all,
             "hold_bill": lambda: None,
             "start_scan": start_scan,
@@ -206,9 +368,8 @@ def launch_main_window():
         },
     )
 
-    import datetime
-
-    bill_number = "QB-" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    bill_number = generate_bill_number()
+    status_bar.set_bill_number(bill_number)
 
     billing_view.set_bill_number(bill_number)
 
@@ -296,8 +457,6 @@ def launch_main_window():
             product_frame, refresh_callback=refresh_product_table, product=product
         )
 
-    
-
     def open_add_product_window():
 
         AddProductDialog(product_frame, refresh_callback=refresh_product_table)
@@ -332,8 +491,6 @@ def launch_main_window():
         else:
 
             messagebox.showerror("Error", msg)
-
-    
 
     # ==========================================================
     # PRODUCT TABLE
@@ -496,214 +653,97 @@ def launch_main_window():
                     f"{product.get('gst',0)} %",
                 ),
             )
-    product_tree.bind(
-        "<Double-1>",
-        lambda event: edit_selected_product()
-    )
 
-    # --- Find Bill View ---
-    find_bill_frame = tk.Frame(content_container, bg="#e9ecef")
+    product_tree.bind("<Double-1>", lambda event: edit_selected_product())
 
-    # Back to Billing Button
-    find_back_button_frame = tk.Frame(find_bill_frame, bg="#e9ecef")
-    find_back_button_frame.pack(fill=tk.X, padx=10, pady=5)
-    tk.Button(
-        find_back_button_frame,
-        text="← Back to Billing",
-        font=("Helvetica", 10, "bold"),
-        bg="#6c757d",
-        fg="white",
-        command=lambda: show_billing_view(),
-    ).pack(side=tk.LEFT)
-
-    # Find Bill Section
-    find_bill_section = tk.LabelFrame(
-        find_bill_frame,
-        text="🔍 Find Bill",
-        bg="white",
-        fg="#2c3e50",
-        font=("Helvetica", 12, "bold"),
-        relief="flat",
-    )
-    find_bill_section.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
-
-    # Scanner and Manual Entry Controls
-    scanner_control_frame = tk.Frame(find_bill_section, bg="white")
-    scanner_control_frame.pack(fill=tk.X, padx=5, pady=5)
-
-    bill_scanner_status = tk.StringVar(value="📷 Bill scanner not started")
-    bill_scanner_label = tk.Label(
-        scanner_control_frame,
-        textvariable=bill_scanner_status,
-        fg="#28a745",
-        font=("Helvetica", 10, "bold"),
-        bg="white",
-    )
-    bill_scanner_label.pack(pady=5)
-
-    tk.Button(
-        scanner_control_frame,
-        text="▶ Start Bill Scan",
-        bg="#007bff",
-        command=lambda: start_bill_scan(),
-        width=12,
-    ).pack(side=tk.LEFT, padx=5)
-    tk.Button(
-        scanner_control_frame,
-        text="■ Stop Bill Scan",
-        bg="#dc3545",
-        command=lambda: stop_bill_scan(),
-        width=12,
-    ).pack(side=tk.LEFT, padx=5)
-
-    # Manual Bill Number Entry
-    manual_bill_frame = tk.Frame(find_bill_section, bg="white")
-    manual_bill_frame.pack(fill=tk.X, padx=10, pady=5)
-    tk.Label(
-        manual_bill_frame,
-        text="Bill Number:",
-        font=("Helvetica", 10, "bold"),
-        bg="white",
-    ).pack(side=tk.LEFT, padx=5)
-    bill_number_var = tk.StringVar()
-    bill_number_entry = tk.Entry(
-        manual_bill_frame,
-        textvariable=bill_number_var,
-        font=("Helvetica", 10),
-        width=20,
-    )
-    bill_number_entry.pack(side=tk.LEFT, padx=5)
-
-    def search_manual_bill():
-        barcode = bill_number_var.get().strip()
-        if barcode:
-            on_bill_barcode_detected(barcode)
-
-    tk.Button(
-        manual_bill_frame,
-        text="Search",
-        bg="#28a745",
-        fg="white",
-        command=search_manual_bill,
-        width=8,
-    ).pack(side=tk.LEFT, padx=5)
-
-    # Bill Details Table
-    bill_details_frame = tk.Frame(find_bill_section, bg="white")
-    bill_details_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
-
-    bill_columns = ("Item", "Quantity", "Price", "Total")
-    bill_details_tree = ttk.Treeview(
-        bill_details_frame, columns=bill_columns, show="headings", height=12
-    )
-    bill_details_tree.column("Item", width=300, anchor="w")
-    bill_details_tree.column("Quantity", width=100, anchor="center")
-    bill_details_tree.column("Price", width=100, anchor="center")
-    bill_details_tree.column("Total", width=100, anchor="center")
-    for col in bill_columns:
-        bill_details_tree.heading(col, text=col)
-    bill_details_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
-    bill_vsb = ttk.Scrollbar(
-        bill_details_frame, orient="vertical", command=bill_details_tree.yview
-    )
-    bill_details_tree.configure(yscrollcommand=bill_vsb.set)
-    bill_vsb.pack(side=tk.RIGHT, fill=tk.Y)
+    # =====================================================
+    # Find Bill Functions
+    # =====================================================
 
     def start_bill_scan():
+
         global scanner_active
+
         if not scanner_active:
+
             scanner_active = True
+
             status_bar.scanner_connected()
+
             status_bar.set_status("Scanning Bill")
-            scan_barcode_background(webcam_url, on_bill_barcode_detected)
+
+            scan_barcode_background(
+                webcam_url,
+                on_bill_barcode_detected,
+            )
 
     def stop_bill_scan():
+
         global scanner_active
+
         if scanner_active:
+
             stop_scanner()
+
             scanner_active = False
+
             status_bar.scanner_disconnected()
+
             status_bar.set_status("Ready")
 
     def on_bill_barcode_detected(barcode):
+
         global scanner_active
-        bill_number_var.set(barcode)
-        bill_details_tree.delete(*bill_details_tree.get_children())
-        bill_data = find_bill_details(barcode)
-        if bill_data:
-            items, subtotal, tax, discount, total = bill_data
-            for item in items:
-                bill_details_tree.insert(
-                    "",
-                    "end",
-                    values=(
-                        item["name"],
-                        item["qty"],
-                        f"₹ {item['price']:.2f}",
-                        f"₹ {item['total']:.2f}",
-                    ),
-                )
-            bill_details_tree.insert(
-                "", "end", values=("", "", "", ""), tags=("spacer",)
-            )
-            bill_details_tree.insert(
-                "",
-                "end",
-                values=("Subtotal", "", "", f"₹ {subtotal:.2f}"),
-                tags=("bold",),
-            )
-            bill_details_tree.insert(
-                "", "end", values=("Tax (18%)", "", "", f"₹ {tax:.2f}"), tags=("bold",)
-            )
-            bill_details_tree.insert(
-                "",
-                "end",
-                values=("Discount (5%)", "", "", f"₹ {discount:.2f}"),
-                tags=("bold",),
-            )
-            bill_details_tree.insert(
-                "", "end", values=("Total", "", "", f"₹ {total:.2f}"), tags=("bold",)
-            )
-            bill_scanner_status.set(f"✅ Bill found: {barcode}")
-        else:
-            bill_details_tree.insert("", "end", values=("No bill found", "", "", ""))
-            bill_scanner_status.set(f"❌ Bill not found: {barcode}")
-        stop_scanner()
-        scanner_active = False
-        bill_scanner_status.set("🛑 Bill scanner stopped")
 
-    bill_details_tree.tag_configure("bold", font=("Helvetica", 9, "bold"))
-    bill_details_tree.tag_configure("spacer", background="#e9ecef")
+        find_bill_view.bill_search_var.set(barcode)
 
-    def find_bill_details(bill_no):
-        try:
-            if not os.path.exists(BILLS_HISTORY_FILE):
-                return None
-            with open(BILLS_HISTORY_FILE, "r", encoding="utf-8") as f:
-                bills = json.load(f)
-            for bill in bills:
-                if bill["bill_no"] == bill_no:
-                    items = bill["items"]
-                    subtotal = bill["subtotal"]
-                    tax = bill["tax"]
-                    discount = bill["discount"]
-                    total = bill["total"]
-                    return items, subtotal, tax, discount, total
-            return None
-        except Exception as e:
-            print(f"[ERROR] Failed to read bill history: {e}")
-            return None
+        search_bill(barcode)
+
+        stop_bill_scan()
+
+    def load_bill_history():
+
+        find_bill_view.clear_table()
+
+        bills = get_all_bills()
+
+        bills.reverse()
+
+        for bill in bills:
+
+            find_bill_view.add_bill(
+                bill["bill_no"],
+                bill["date"],
+                bill.get("payment_mode", "-"),
+                len(bill["items"]),
+                f"₹ {bill['total']:.2f}",
+            )
+
+    def search_bill(keyword):
+
+        find_bill_view.clear_table()
+
+        bills = search_bill_history(keyword)
+
+        bills.reverse()
+
+        for bill in bills:
+
+            find_bill_view.add_bill(
+                bill["bill_no"],
+                bill["date"],
+                bill.get("payment_mode", "-"),
+                len(bill["items"]),
+                f"₹ {bill['total']:.2f}",
+            )
 
     toolbar = Toolbar(
         window,
         {
-            "new_bill": (
-                clear_cart_all if "clear_cart_all" in locals() else lambda: None
-            ),
+            "new_bill": clear_cart_all,
             "save_bill": lambda: None,
             "print_bill": lambda: None,
-            "hold_bill": lambda: None,
+            "hold_bill": hold_current_bill,
             "find_bill": lambda: show_find_bill_view(),
             "products": lambda: show_settings_view(),
             "settings": lambda: show_settings_view(),
@@ -715,28 +755,39 @@ def launch_main_window():
 
     toolbar.pack(fill="x")
 
-    # --- View Switching Functions ---
+    # =====================================================
+    # View Switching Functions
+    # =====================================================
+
     def show_billing_view():
+
         settings_frame.pack_forget()
-        find_bill_frame.pack_forget()
-        billing_view.pack(fill=tk.BOTH, expand=True)
+
+        find_bill_view.pack_forget()
+
+        billing_view.pack(fill="both", expand=True)
+
         window.title("QuickBill System - Billing")
+
         if scanner_active:
+
             billing_view.update_scanner_status("Scanner Active")
+
         else:
+
             billing_view.update_scanner_status("Ready")
 
     def show_settings_view():
 
         global scanner_active
 
-        refresh_product_table()  # <-- ADD THIS FIRST
+        refresh_product_table()
 
         billing_view.pack_forget()
 
-        find_bill_frame.pack_forget()
+        find_bill_view.pack_forget()
 
-        settings_frame.pack(fill=tk.BOTH, expand=True)
+        settings_frame.pack(fill="both", expand=True)
 
         window.title("QuickBill System - Products")
 
@@ -747,36 +798,41 @@ def launch_main_window():
             scanner_active = False
 
     def show_find_bill_view():
+
         global scanner_active
+
         billing_view.pack_forget()
+
         settings_frame.pack_forget()
-        find_bill_frame.pack(fill=tk.BOTH, expand=True)
+
+        find_bill_view.bill_search_var.set("")
+
+        load_bill_history()
+
+        find_bill_view.pack(fill="both", expand=True)
+
         window.title("QuickBill System - Find Bill")
+
         if scanner_active:
+
             stop_scanner()
+
             scanner_active = False
-        bill_scanner_status.set("📷 Bill scanner not started")
-        bill_number_var.set("")
-        bill_details_tree.delete(*bill_details_tree.get_children())
 
-    def show_about():
-        messagebox.showinfo(
-            "About",
-            "QuickBill v1.0\nModern Python Billing App\nBy https://github.com/kartikbansode/",
-        )
+    find_bill_view = FindBillView(
+        content_container,
+        {
+            "back": show_billing_view,
+            "search": search_bill,
+            "refresh": load_bill_history,
+            "view": open_bill_details,
+        },
+    )
 
-    def show_help():
-        messagebox.showinfo(
-            "Help",
-            "- Use barcode scanner or manual entry to add items.\n- Use +/– to adjust quantity.\n- Click 🗑 to delete item.\n- Use Generate Bill to save.\n- Use Settings > Settings to configure.\n- Use Bills > Find Bill with scanner or manual entry to view past bills.",
-        )
-
-    # ---------------- Toolbar ----------------
-
-    def dummy():
-        pass
-
-    # Initialize with billing view
+    # =====================================================
+    # Initialize
+    # =====================================================
 
     show_billing_view()
+
     window.mainloop()

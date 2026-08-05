@@ -29,7 +29,8 @@ initial_product_data = {
 # Global product data (loaded from file or initialized)
 product_data = {}
 
-# Path to the JSON file for persistent storage
+
+BILL_COUNTER_FILE = "bill_counter.json"
 PRODUCTS_FILE = "products.json"
 
 
@@ -164,3 +165,44 @@ def search_products(keyword):
             results.append(product)
 
     return results
+
+
+import datetime
+
+
+def generate_bill_number():
+    """
+    Generates bill numbers like:
+    QB-20260805-000001
+    """
+
+    today = datetime.datetime.now().strftime("%Y%m%d")
+
+    data = {
+        "date": today,
+        "counter": 0,
+    }
+
+    if os.path.exists(BILL_COUNTER_FILE):
+
+        try:
+
+            with open(BILL_COUNTER_FILE, "r") as f:
+                data = json.load(f)
+
+        except Exception:
+            pass
+
+    if data["date"] != today:
+
+        data["date"] = today
+        data["counter"] = 1
+
+    else:
+
+        data["counter"] += 1
+
+    with open(BILL_COUNTER_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
+    return f"QB-{today}-{data['counter']:06d}"

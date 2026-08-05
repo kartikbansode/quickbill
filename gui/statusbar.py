@@ -1,82 +1,73 @@
 import tkinter as tk
+from datetime import datetime
 
 
 class StatusBar(tk.Frame):
 
     def __init__(self, parent):
-        super().__init__(parent, bg="#2d3436", height=28)
+        super().__init__(parent, bg="#1f2937", height=30)
 
         self.pack_propagate(False)
 
         self.status = tk.StringVar(value="Ready")
-
-        self.scanner = tk.StringVar(value="Disconnected")
-
+        self.scanner = tk.StringVar(value="Connected")
         self.operator = tk.StringVar(value="Admin")
+        self.bill_no = tk.StringVar(value="QB-000001")
+        self.datetime = tk.StringVar()
+        self.version = tk.StringVar(value="QuickBill Pro v1.0")
 
-        self.version = tk.StringVar(value="v1.0")
+        self._add_label("Status")
+        self._add_value(self.status)
 
+        self._separator()
+
+        self._add_label("Scanner")
+        self._add_value(self.scanner, "#22c55e")
+
+        self._separator()
+
+        self._add_label("Operator")
+        self._add_value(self.operator)
+
+        self._separator()
+
+        self._add_label("Bill")
+        self._add_value(self.bill_no)
+
+        self._separator()
+
+   
+
+
+    def _add_label(self, text):
         tk.Label(
             self,
-            textvariable=self.status,
-            bg="#2d3436",
-            fg="white",
-            font=("Segoe UI", 9)
-        ).pack(side="left", padx=10)
-
-        tk.Label(
-            self,
-            text="|",
-            bg="#2d3436",
-            fg="white"
-        ).pack(side="left")
-
-        tk.Label(
-            self,
-            text="Scanner:",
-            bg="#2d3436",
-            fg="white",
-            font=("Segoe UI", 9)
+            text=f"{text}:",
+            bg="#1f2937",
+            fg="#9ca3af",
+            font=("Segoe UI", 9),
         ).pack(side="left", padx=(10, 2))
 
+    def _add_value(self, var, color="white"):
         tk.Label(
             self,
-            textvariable=self.scanner,
-            bg="#2d3436",
-            fg="#00e676",
-            font=("Segoe UI", 9, "bold")
+            textvariable=var,
+            bg="#1f2937",
+            fg=color,
+            font=("Segoe UI", 9, "bold"),
         ).pack(side="left")
 
+    def _separator(self):
         tk.Label(
             self,
             text="|",
-            bg="#2d3436",
-            fg="white"
-        ).pack(side="left", padx=10)
+            bg="#1f2937",
+            fg="#4b5563",
+        ).pack(side="left", padx=8)
 
-        tk.Label(
-            self,
-            text="Operator:",
-            bg="#2d3436",
-            fg="white",
-            font=("Segoe UI", 9)
-        ).pack(side="left")
 
-        tk.Label(
-            self,
-            textvariable=self.operator,
-            bg="#2d3436",
-            fg="white",
-            font=("Segoe UI", 9, "bold")
-        ).pack(side="left", padx=(5, 10))
-
-        tk.Label(
-            self,
-            textvariable=self.version,
-            bg="#2d3436",
-            fg="#dfe6e9",
-            font=("Segoe UI", 9)
-        ).pack(side="right", padx=10)
+    def set_bill_number(self, bill):
+        self.bill_no.set(bill)
 
     def set_status(self, text):
         self.status.set(text)

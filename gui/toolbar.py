@@ -4,7 +4,7 @@ import tkinter as tk
 class Toolbar(tk.Frame):
 
     def __init__(self, parent, callbacks):
-        super().__init__(parent, bg="#f2f2f2", height=45)
+        super().__init__(parent, bg="#e5e7eb", height=55)
 
         self.pack(fill="x")
 
@@ -25,16 +25,30 @@ class Toolbar(tk.Frame):
 
         for text, command in buttons:
 
-            tk.Button(
+            btn = tk.Button(
                 self,
                 text=text,
                 command=command,
-                bg="white",
-                fg="#222222",
-                relief="ridge",
-                bd=1,
-                padx=10,
-                pady=6,
+                bg="#ffffff",
+                fg="#1f2937",
+                activebackground="#2563eb",
+                activeforeground="white",
+                relief="flat",
+                bd=0,
+                width=12,
+                height=2,
                 font=("Segoe UI", 9, "bold"),
-                cursor="hand2"
-            ).pack(side="left", padx=2, pady=4)
+                cursor="hand2",
+            )
+
+            btn.pack(side="left", padx=4, pady=5)
+
+            btn.bind(
+                "<Enter>",
+                lambda e, b=btn: b.config(bg="#2563eb", fg="white")
+            )
+
+            btn.bind(
+                "<Leave>",
+                lambda e, b=btn: b.config(bg="#ffffff", fg="#1f2937")
+            )
