@@ -1,53 +1,100 @@
-# QuickBill 
+# QuickBill
 
->**Latest Version:** 1.0.0
->
->**Release Date:** September 23, 2025  
+> **Latest Version:** 2.0.0  
+> **Release Date:** August 2026
 
-QuickBill is a desktop-based inventory and invoicing system developed in Python. It provides a comprehensive billing solution for small businesses and shop owners to manage their inventory and generate invoices efficiently.
+QuickBill is a modern desktop billing and inventory management application built with Python. It is designed for retail shops and small businesses, providing fast billing, barcode scanning, inventory management, barcode label generation, and professional PDF invoice creation through a simple and user-friendly interface.
 
-
+---
 
 ## Features
 
-- **Inventory Management**: Add, update, and delete products in your inventory.
-- **User-Friendly Interface**: Intuitive design for easy navigation and operation.
-- **Secure Data Handling**: Ensures safe and reliable data storage and retrieval.
-- **Scan products with Barcode**: Add Products to the bill via barcode scanner.
-- **Generate Bill**: Download or Print the generated bill.
+- Product Management (Add, Edit, Delete & Search)
+- Barcode Scanner Support (USB/IP Camera)
+- Fast Billing System
+- Professional PDF Invoice Generation
+- Barcode Label PDF Generator
+- Hold & Resume Bills
+- Bill History with Search & Reprint
+- Automatic Bill Number Generation
+- Inventory & Stock Management
+- Customizable Application Settings
+- Professional Windows Installer & Uninstaller
+- Portable JSON-based Local Database
+
+---
 
 ## Screenshots
 
 ### Customer Billing Window
-<img width="1365" height="716" alt="Screenshot 2025-09-23 232902" src="https://github.com/user-attachments/assets/e516abbe-af58-43af-81ec-5619e5de255d" />
 
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/a7da29cc-d3e1-47d2-a949-7c3a4842206b" />
 
-### Invoice Sample
-<img width="425" height="547" alt="Screenshot 2025-09-23 232953" src="https://github.com/user-attachments/assets/69474c25-0fcc-40e6-a64c-e1917b5fbe1b" />
+### Product Management
+
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/12a94658-4a30-4b03-986a-eeb3cc6795fb" />
+
+### Invoice
+
+<img width="938" height="910" alt="image" src="https://github.com/user-attachments/assets/db2be3bc-06c2-4981-9d5d-c7041c6f2076" />
+
+---
+
+## Requirements
+
+- Python 3.11+
+- Windows 10 / Windows 11
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
 ## Installation
 
-1. Clone the repository:
+Clone the repository:
 
-   ```bash
-   git clone https://github.com/kartikbansode/quickbill.git
+```bash
+git clone https://github.com/kartikbansode/quickbill.git
+```
 
-2. Navigate to the project directory:
+Go to the project directory:
 
-   ```bash
-   cd quickbill
+```bash
+cd quickbill
+```
 
-3. Run the application:
-   ```bash
-   python app.py
+Run the application:
+
+```bash
+python app.py
+```
+
+---
+
+## Building the Executable
+
+```bash
+pyinstaller QuickBill.spec
+```
+
+The executable will be generated inside the `dist` folder.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
 
 ---
 
 ## Contact
-- Linkedin: www.linkedin.com/in/kartikbansode
-- Github: https://github.com/kartikbansode
 
+**LinkedIn**  
+https://www.linkedin.com/in/kartikbansode
 
-
+**GitHub**  
+https://github.com/kartikbansode
