@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from gui.dialogs.barcode_print_dialog import BarcodePrintDialog
 
 from logic.database import (
     get_all_products,
@@ -52,9 +53,6 @@ class ProductMaster(tk.Frame):
         )
 
         self.create_toolbar()
-
-        self.create_searchbar()
-
         self.create_table()
 
     # =====================================================
@@ -63,33 +61,136 @@ class ProductMaster(tk.Frame):
 
     def create_toolbar(self):
 
-        self.toolbar_frame = tk.Frame(self.product_frame, bg="white")
+        self.toolbar_frame = tk.Frame(
+            self.product_frame,
+            bg="white",
+        )
 
-        self.toolbar_frame.pack(fill=tk.X, padx=5, pady=5)
+        self.toolbar_frame.pack(
+            fill=tk.X,
+            padx=5,
+            pady=5,
+        )
 
-        tk.Button(
+        button_style = {
+            "font": ("Segoe UI", 10, "bold"),
+            "height": 2,
+            "relief": "flat",
+            "bd": 0,
+            "cursor": "hand2",
+            "activeforeground": "white",
+        }
+
+        buttons = [
+            {
+                "text": "Add Product",
+                "bg": "#16a34a",
+                "hover": "#15803d",
+                "width": 16,
+                "command": self.add_product,
+            },
+            {
+                "text": "Edit",
+                "bg": "#f59e0b",
+                "hover": "#d97706",
+                "width": 12,
+                "command": self.edit_product,
+            },
+            {
+                "text": "Delete",
+                "bg": "#dc2626",
+                "hover": "#b91c1c",
+                "width": 12,
+                "command": self.delete_product,
+            },
+            {
+                "text": "Print Barcodes",
+                "bg": "#2563eb",
+                "hover": "#1d4ed8",
+                "width": 18,
+                "command": self.print_barcodes,
+            },
+        ]
+
+        for item in buttons:
+
+            btn = tk.Button(
+                self.toolbar_frame,
+                text=item["text"],
+                bg=item["bg"],
+                fg="white",
+                width=item["width"],
+                command=item["command"],
+                **button_style,
+            )
+
+            btn.pack(side=tk.LEFT, padx=(0, 8))
+
+            btn.bind(
+                "<Enter>",
+                lambda e, b=btn, c=item["hover"]: b.config(bg=c),
+            )
+
+            btn.bind(
+                "<Leave>",
+                lambda e, b=btn, c=item["bg"]: b.config(bg=c),
+            )
+
+        # Spacer
+        tk.Frame(
             self.toolbar_frame,
-            text="+ Add Product",
-            bg="#28a745",
-            fg="white",
-            width=15,
+            bg="white",
+        ).pack(side=tk.LEFT, expand=True)
+
+        tk.Label(
+            self.toolbar_frame,
+            text="Search :",
+            bg="white",
             font=("Segoe UI", 10, "bold"),
-            command=self.add_product,
+        ).pack(side=tk.LEFT, padx=(0, 5))
+
+        self.search_var = tk.StringVar()
+
+        search_entry = tk.Entry(
+            self.toolbar_frame,
+            textvariable=self.search_var,
+            width=30,
+            font=("Segoe UI", 10),
+        )
+
+        search_entry.pack(side=tk.LEFT, padx=(0, 10))
+
+        search_entry.focus_set()
+
+        self.total_label = tk.StringVar(value="Products : 0")
+
+        tk.Label(
+            self.toolbar_frame,
+            textvariable=self.total_label,
+            bg="white",
+            fg="#6b7280",
+            font=("Segoe UI", 10, "bold"),
         ).pack(side=tk.LEFT)
 
-        tk.Button(
-            self.toolbar_frame,
-            text="Edit",
-            width=10,
-            command=self.edit_product,
-        ).pack(side=tk.LEFT, padx=5)
+        self.search_var.trace_add(
+            "write",
+            lambda *args: self.refresh_table(),
+        )
 
-        tk.Button(
-            self.toolbar_frame,
-            text="Delete",
-            width=10,
-            command=self.delete_product,
-        ).pack(side=tk.LEFT)
+    def print_barcodes(self):
+
+        selected = self.product_tree.selection()
+
+        barcode = None
+
+        if selected:
+
+            barcode = str(self.product_tree.item(selected[0])["values"][0])
+
+        BarcodePrintDialog(
+            self,
+            selected_barcode=barcode,
+        )
 
     # =====================================================
     # Search

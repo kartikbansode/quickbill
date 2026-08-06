@@ -53,9 +53,10 @@ def launch_main_window():
 
     find_bill_view = None
     try:
-        window.iconbitmap("assets/images/logo.png")  # Set icon
-    except:
-        print("Icon file not found, using default icon.")
+        logo = tk.PhotoImage(file="assets/images/logo.png")
+        window.iconphoto(True, logo)
+    except Exception as e:
+        print("Unable to load icon:", e)
 
     # Set window size and center it
     window_width = 1000
@@ -174,7 +175,7 @@ def launch_main_window():
 
     try:
         billing_view.scanner_panel.scan_button.config(
-            text="▶ Start Scanner",
+            text="Start Scanner",
             bg="#28a745",
         )
     except:
