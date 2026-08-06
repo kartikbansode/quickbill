@@ -19,9 +19,9 @@ import json
 from logic.billing import calculate_totals
 from logic.resource_path import resource_path
 
-from logic.file_paths import app_path
+from logic.file_paths import data_path
 
-BILL_FOLDER = app_path("bills")
+BILL_FOLDER = data_path("bills")
 
 os.makedirs(BILL_FOLDER, exist_ok=True)
 
@@ -221,7 +221,7 @@ def generate_pdf_bill(
         "total": total,
     }
 
-    bills_history_file = app_path("bills_history.json")
+    bills_history_file = data_path("bills_history.json")
     bills = []
 
     try:

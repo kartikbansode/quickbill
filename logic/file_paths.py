@@ -2,7 +2,7 @@ import os
 import sys
 
 
-def app_path(*paths):
+def data_path(*paths):
     if getattr(sys, "frozen", False):
         base = os.path.dirname(sys.executable)
     else:

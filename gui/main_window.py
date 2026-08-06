@@ -31,13 +31,13 @@ from logic.bill_history import (
 from logic.database import generate_bill_number
 from gui.find_bill.bill_details_dialog import BillDetailsDialog
 from logic.resource_path import resource_path
-from logic.file_paths import app_path
+from logic.file_paths import data_path
 
 scanner_active = False
 webcam_url = "http://192.168.0.203:8080/video"  # Default webcam URL
 
 
-BILLS_HISTORY_FILE = app_path("bills_history.json")
+BILLS_HISTORY_FILE = data_path("bills_history.json")
 
 
 def launch_main_window():

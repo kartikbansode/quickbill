@@ -1,7 +1,7 @@
 # logic/database.py
 import json
 import os
-from logic.file_paths import app_path
+from logic.file_paths import data_path
 
 # Initial product data (used if products.json doesn't exist)
 initial_product_data = {
@@ -30,8 +30,8 @@ initial_product_data = {
 # Global product data (loaded from file or initialized)
 product_data = {}
 
-BILL_COUNTER_FILE = app_path("bill_counter.json")
-PRODUCTS_FILE = app_path("products.json")
+BILL_COUNTER_FILE = data_path("bill_counter.json")
+PRODUCTS_FILE = data_path("products.json")
 
 
 def load_products():

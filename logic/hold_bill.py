@@ -2,9 +2,9 @@ import json
 import os
 import datetime
 
-from logic.file_paths import app_path
+from logic.file_paths import data_path
 
-HOLD_FILE = app_path("held_bills.json")
+HOLD_FILE = data_path("held_bills.json")
 
 
 def load_held_bills():

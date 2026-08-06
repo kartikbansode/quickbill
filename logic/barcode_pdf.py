@@ -3,9 +3,9 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from logic.resource_path import resource_path
 
-from logic.file_paths import app_path
+from logic.file_paths import data_path
 
-BARCODE_FOLDER = app_path("barcodes")
+BARCODE_FOLDER = data_path("barcodes")
 
 
 pdfmetrics.registerFont(
