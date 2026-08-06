@@ -36,10 +36,18 @@ BILLS_HISTORY_FILE = "bills_history.json"
 
 
 def launch_main_window():
+
     window = tk.Tk()
-    window.minsize(1280, 720)
-    window.state("zoomed")
+
+    window.attributes("-fullscreen", True)
+
     window.title("QuickBill System")
+
+    window.bind(
+        "<Escape>",
+        lambda e: window.attributes("-fullscreen", False),
+    )
+
     find_bill_view = None
     try:
         window.iconbitmap("assets/images/logo.ico")  # Set icon
