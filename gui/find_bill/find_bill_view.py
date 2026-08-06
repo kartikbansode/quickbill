@@ -52,12 +52,16 @@ class FindBillView(tk.Frame):
             font=("Segoe UI", 10),
         ).grid(row=0, column=0, padx=10, pady=10)
 
-        tk.Entry(
+        search_entry = tk.Entry(
             search_frame,
             textvariable=self.bill_search_var,
             width=35,
             font=("Segoe UI", 10),
-        ).grid(row=0, column=1, padx=5)
+        )
+
+        search_entry.grid(row=0, column=1, padx=5)
+
+        search_entry.focus_set()
 
         tk.Button(
             search_frame,
@@ -147,6 +151,7 @@ class FindBillView(tk.Frame):
             width=14,
             bg="#2563eb",
             fg="white",
+            command=self.open_selected_bill,
         ).pack(side="left")
 
         tk.Button(
@@ -155,6 +160,7 @@ class FindBillView(tk.Frame):
             width=14,
             bg="#16a34a",
             fg="white",
+            command=self.reprint_selected_bill,
         ).pack(side="left", padx=5)
 
         tk.Button(
@@ -163,8 +169,8 @@ class FindBillView(tk.Frame):
             width=14,
             bg="#dc2626",
             fg="white",
+            command=self.delete_selected_bill,
         ).pack(side="left", padx=5)
-
         tk.Button(
             button_frame,
             text="Back",
@@ -173,9 +179,43 @@ class FindBillView(tk.Frame):
         ).pack(side="right")
 
         self.bill_tree.bind(
-        "<Double-1>",
-        self.open_selected_bill,
+            "<Double-1>",
+            self.on_double_click,
         )
+
+    def on_double_click(self, event):
+
+        if self.bill_tree.identify_row(event.y):
+
+            self.open_selected_bill()
+
+    def delete_selected_bill(self):
+
+        selected = self.bill_tree.selection()
+
+        if not selected:
+
+            return
+
+        bill_no = self.bill_tree.item(selected[0])["values"][0]
+
+        if "delete" in self.callbacks:
+
+            self.callbacks["delete"](bill_no)
+
+    def reprint_selected_bill(self):
+
+        selected = self.bill_tree.selection()
+
+        if not selected:
+
+            return
+
+        bill_no = self.bill_tree.item(selected[0])["values"][0]
+
+        if "reprint" in self.callbacks:
+
+            self.callbacks["reprint"](bill_no)
 
     def open_selected_bill(self, event=None):
 

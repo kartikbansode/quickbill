@@ -11,7 +11,7 @@ DEFAULT_CONFIG = {
         "phone": "",
         "email": "",
         "gst": "",
-        "logo": "assets/images/logo.ico"
+        "logo": "assets/images/logo.png"
     },
 
     "billing": {
@@ -24,7 +24,7 @@ DEFAULT_CONFIG = {
 
     "scanner": {
         "type": "mobile_camera",
-        "camera_url": "http://192.168.1.7:8080/video",
+        "camera_url": "http://192.168.0.133:8080/video",
         "duplicate_delay": 1,
         "beep": True
     }

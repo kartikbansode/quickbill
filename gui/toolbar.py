@@ -10,15 +10,26 @@ class Toolbar(tk.Frame):
 
         buttons = [
 
+            ("🏠 Billing", callbacks.get("billing")),
+
             ("🆕 New Bill", callbacks.get("new_bill")),
+
             ("💾 Save", callbacks.get("save_bill")),
+
             ("🖨 Print", callbacks.get("print_bill")),
+
             ("📋 Hold", callbacks.get("hold_bill")),
+
             ("🔍 Find Bill", callbacks.get("find_bill")),
+
             ("📦 Products", callbacks.get("products")),
+
             ("👤 Customers", callbacks.get("customers")),
+
             ("📊 Reports", callbacks.get("reports")),
+
             ("⚙ Settings", callbacks.get("settings")),
+
             ("❌ Exit", callbacks.get("exit"))
 
         ]

@@ -10,7 +10,13 @@ class BillDetailsDialog(tk.Toplevel):
 
         self.title(f"Invoice - {bill['bill_no']}")
 
-        self.geometry("700x500")
+        width = 700
+        height = 500
+
+        x = (self.winfo_screenwidth() - width) // 2
+        y = (self.winfo_screenheight() - height) // 2
+
+        self.geometry(f"{width}x{height}+{x}+{y}")
 
         self.resizable(False, False)
 
@@ -19,19 +25,25 @@ class BillDetailsDialog(tk.Toplevel):
         self.build_ui()
         self.transient(parent)
         self.grab_set()
-        self.focus_force()
         self.wait_visibility()
-        self.protocol("WM_DELETE_WINDOW", self.close_dialog)
-        self.resizable(False, False)
+        self.focus_force()
+
+        self.protocol(
+            "WM_DELETE_WINDOW",
+            self.close_dialog,
+        )
+
         self.attributes("-topmost", True)
-        self.after(100, lambda: self.attributes("-topmost", False))
+        self.after(
+            100,
+            lambda: self.attributes("-topmost", False),
+        )
 
     def close_dialog(self):
 
         self.grab_release()
 
         self.destroy()
-        
 
     def build_ui(self):
 

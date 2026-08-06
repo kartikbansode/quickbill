@@ -1,103 +1,346 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from logic.database import add_product, edit_product, delete_product, get_all_products
+from logic.database import (
+    get_all_products,
+    search_products,
+    get_product_by_barcode,
+    delete_product,
+)
+
+from gui.dialogs.add_product_dialog import AddProductDialog
 
 
 class ProductMaster(tk.Frame):
 
     def __init__(self, parent):
 
-        super().__init__(parent, bg="#f4f6f9")
+        super().__init__(parent, bg="#e9ecef")
 
-        self.create_ui()
+        self.create_widgets()
 
-        self.load_products()
+        self.refresh_table()
 
-    def create_ui(self):
+    # =====================================================
+    # UI
+    # =====================================================
+
+    def create_widgets(self):
 
         title = tk.Label(
-            self, text="Product Master", font=("Segoe UI", 18, "bold"), bg="#f4f6f9"
-        )
-
-        title.pack(anchor="w", padx=15, pady=10)
-
-        self.table = ttk.Treeview(
             self,
-            columns=("Barcode", "SKU", "Name", "Brand", "Category", "Stock", "Price"),
-            show="headings",
-            height=14,
+            text="Products",
+            font=("Segoe UI", 20, "bold"),
+            bg="#e9ecef",
+            fg="#1f2937",
         )
 
-        widths = [130, 90, 220, 120, 120, 80, 80]
+        title.pack(anchor="w", padx=20, pady=(15, 10))
 
-        for c, w in zip(self.table["columns"], widths):
+        self.product_frame = tk.LabelFrame(
+            self,
+            text="Product Management",
+            bg="white",
+            font=("Segoe UI", 11, "bold"),
+        )
 
-            self.table.heading(c, text=c)
+        self.product_frame.pack(
+            fill=tk.BOTH,
+            expand=True,
+            padx=10,
+            pady=10,
+        )
 
-            self.table.column(c, width=w)
+        self.create_toolbar()
 
-        # ---------- Toolbar ----------
+        self.create_searchbar()
 
-        toolbar = tk.Frame(self, bg="#f4f6f9")
-        toolbar.pack(fill="x", padx=15, pady=(0, 8))
+        self.create_table()
+
+    # =====================================================
+    # Toolbar
+    # =====================================================
+
+    def create_toolbar(self):
+
+        self.toolbar_frame = tk.Frame(self.product_frame, bg="white")
+
+        self.toolbar_frame.pack(fill=tk.X, padx=5, pady=5)
 
         tk.Button(
-            toolbar,
+            self.toolbar_frame,
             text="+ Add Product",
             bg="#28a745",
             fg="white",
-            font=("Segoe UI", 10, "bold"),
             width=15,
-            command=self.add_product_window,
-        ).pack(side="left")
+            font=("Segoe UI", 10, "bold"),
+            command=self.add_product,
+        ).pack(side=tk.LEFT)
 
-        tk.Button(toolbar, text="Edit", width=10, command=self.edit_selected).pack(
-            side="left", padx=5
+        tk.Button(
+            self.toolbar_frame,
+            text="Edit",
+            width=10,
+            command=self.edit_product,
+        ).pack(side=tk.LEFT, padx=5)
+
+        tk.Button(
+            self.toolbar_frame,
+            text="Delete",
+            width=10,
+            command=self.delete_product,
+        ).pack(side=tk.LEFT)
+
+    # =====================================================
+    # Search
+    # =====================================================
+
+    def create_searchbar(self):
+
+        frame = tk.Frame(self.product_frame, bg="white")
+
+        frame.pack(fill=tk.X, padx=5, pady=(0, 5))
+
+        tk.Label(
+            frame,
+            text="Search :",
+            bg="white",
+            font=("Segoe UI", 10, "bold"),
+        ).pack(side=tk.LEFT)
+
+        self.search_var = tk.StringVar()
+
+        entry = tk.Entry(
+            frame,
+            textvariable=self.search_var,
+            width=35,
+            font=("Segoe UI", 10),
         )
 
-        tk.Button(toolbar, text="Delete", width=10, command=self.delete_selected).pack(
-            side="left"
+        entry.pack(side=tk.LEFT, padx=8)
+
+        entry.focus()
+
+        self.total_label = tk.StringVar()
+
+        tk.Label(
+            frame,
+            textvariable=self.total_label,
+            bg="white",
+            fg="gray",
+        ).pack(side=tk.RIGHT)
+
+        self.search_var.trace_add(
+            "write",
+            lambda *args: self.refresh_table(),
         )
 
-        table_frame = tk.Frame(self, bg="#f4f6f9")
-        table_frame.pack(fill="both", expand=True, padx=15, pady=10)
+    # =====================================================
+    # Product Table
+    # =====================================================
 
-        self.table.pack(in_=table_frame, side="left", fill="both", expand=True)
+    def create_table(self):
 
-        scrollbar = ttk.Scrollbar(
-            table_frame, orient="vertical", command=self.table.yview
+        columns = (
+            "Barcode",
+            "SKU",
+            "Product Name",
+            "Brand",
+            "Category",
+            "Stock",
+            "Price",
+            "GST",
         )
 
-        scrollbar.pack(side="right", fill="y")
+        self.product_tree = ttk.Treeview(
+            self.product_frame,
+            columns=columns,
+            show="headings",
+            height=20,
+        )
 
-        self.table.configure(yscrollcommand=scrollbar.set)
+        widths = {
+            "Barcode": 100,
+            "SKU": 70,
+            "Product Name": 180,
+            "Brand": 100,
+            "Category": 100,
+            "Stock": 60,
+            "Price": 80,
+            "GST": 60,
+        }
 
-    def add_product_window(self):
-        pass
+        for col in columns:
+            self.product_tree.heading(col, text=col)
+            self.product_tree.column(
+                col,
+                width=widths[col],
+                anchor="center",
+            )
 
-    def edit_selected(self):
-        messagebox.showinfo("Coming Soon", "Edit Product")
+        self.product_tree.column("Product Name", anchor="w")
 
-    def delete_selected(self):
-        messagebox.showinfo("Coming Soon", "Delete Product")
+        scroll_y = ttk.Scrollbar(
+            self.product_frame,
+            orient="vertical",
+            command=self.product_tree.yview,
+        )
 
-    def load_products(self):
+        scroll_x = ttk.Scrollbar(
+            self.product_frame,
+            orient="horizontal",
+            command=self.product_tree.xview,
+        )
 
-        self.table.delete(*self.table.get_children())
+        self.product_tree.configure(
+            yscrollcommand=scroll_y.set,
+            xscrollcommand=scroll_x.set,
+        )
 
-        for p in get_all_products():
+        self.product_tree.pack(
+            fill=tk.BOTH,
+            expand=True,
+            padx=5,
+            pady=(0, 0),
+        )
 
-            self.table.insert(
+        scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+
+        scroll_x.pack(fill=tk.X)
+
+        self.product_tree.bind(
+            "<Double-1>",
+            self.on_double_click,
+        )
+
+    def on_double_click(self, event):
+        if self.product_tree.identify_row(event.y):
+            self.edit_product()
+
+    # =====================================================
+    # Toolbar Actions
+    # =====================================================
+
+    def add_product(self):
+        AddProductDialog(
+            self,
+            refresh_callback=self.refresh_table,
+        )
+
+    def edit_product(self):
+
+        selected = self.product_tree.selection()
+
+        if not selected:
+
+            messagebox.showwarning(
+                "Edit Product",
+                "Please select a product.",
+            )
+
+            return
+
+        values = self.product_tree.item(selected[0])["values"]
+
+        barcode = str(values[0])
+
+        product = get_product_by_barcode(barcode)
+
+        if not product:
+
+            messagebox.showerror(
+                "Error",
+                "Product not found.",
+            )
+
+            return
+
+        AddProductDialog(
+            self,
+            product=product,
+            refresh_callback=self.refresh_table,
+        )
+
+    def delete_product(self):
+
+        selected = self.product_tree.selection()
+
+        if not selected:
+
+            messagebox.showwarning(
+                "Delete Product",
+                "Please select a product.",
+            )
+
+            return
+
+        values = self.product_tree.item(selected[0])["values"]
+
+        barcode = str(values[0])
+
+        name = values[2]
+
+        if not messagebox.askyesno(
+            "Delete Product",
+            f"Delete '{name}' ?",
+        ):
+            return
+
+        ok, msg = delete_product(barcode)
+
+        if ok:
+            self.refresh_table()
+            self.product_tree.selection_remove(self.product_tree.selection())
+            messagebox.showinfo(
+                "Success",
+                "Product deleted successfully.",
+            )
+
+        else:
+
+            messagebox.showerror(
+                "Error",
+                msg,
+            )
+
+    # =====================================================
+    # Load Products
+    # =====================================================
+
+    def refresh_table(self):
+
+        self.product_tree.delete(*self.product_tree.get_children())
+
+        keyword = self.search_var.get().strip()
+
+        if keyword:
+
+            products = search_products(keyword)
+
+        else:
+
+            products = get_all_products()
+
+        self.total_label.set(f"Products : {len(products)}")
+
+        for product in products:
+
+            self.product_tree.insert(
                 "",
-                "end",
+                tk.END,
                 values=(
-                    p["barcode"],
-                    p["sku"],
-                    p["name"],
-                    p["brand"],
-                    p["category"],
-                    p["stock"],
-                    p["selling_price"],
+                    product.get("barcode", ""),
+                    product.get("sku", ""),
+                    product.get("name", ""),
+                    product.get("brand", ""),
+                    product.get("category", ""),
+                    product.get("stock", 0),
+                    f"₹ {float(product.get('selling_price',0)):.2f}",
+                    f"{product.get('gst',0)} %",
                 ),
             )
+
+        children = self.product_tree.get_children()
+
+        if children:
+            self.product_tree.selection_set(children[0])

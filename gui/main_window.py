@@ -18,7 +18,8 @@ from gui.toolbar import Toolbar
 from gui.header import Header
 from gui.statusbar import StatusBar
 from gui.billing.billing_view import BillingView
-from gui.dialogs.add_product_dialog import AddProductDialog
+from gui.product_master import ProductMaster
+from gui.settings_view import SettingsView
 from gui.payment.payment_dialog import PaymentDialog
 from logic.hold_bill import hold_bill
 from gui.hold_bill.hold_bill_window import HoldBillWindow
@@ -29,9 +30,11 @@ from logic.bill_history import (
 )
 from logic.database import generate_bill_number
 from gui.find_bill.bill_details_dialog import BillDetailsDialog
+import os
+import json
 
 scanner_active = False
-webcam_url = "http://192.168.0.133:8080/video"  # Default webcam URL
+webcam_url = "http://192.168.0.203:8080/video"  # Default webcam URL
 BILLS_HISTORY_FILE = "bills_history.json"
 
 
@@ -50,7 +53,7 @@ def launch_main_window():
 
     find_bill_view = None
     try:
-        window.iconbitmap("assets/images/logo.ico")  # Set icon
+        window.iconbitmap("assets/images/logo.png")  # Set icon
     except:
         print("Icon file not found, using default icon.")
 
@@ -226,7 +229,7 @@ def launch_main_window():
         # Refresh Product Table
         # --------------------------------
 
-        refresh_product_table()
+        product_view.refresh_table()
 
         # --------------------------------
         # Clear Current Cart
@@ -286,6 +289,61 @@ def launch_main_window():
                 )
 
                 return
+
+    def reprint_bill(bill_no):
+
+        bills = get_all_bills()
+
+        for bill in bills:
+
+            if bill["bill_no"] == bill_no:
+
+                generate_pdf_bill(
+                    bill["items"],
+                    bill["bill_no"],
+                    bill.get("payment_mode", "Cash"),
+                    bill.get("received_amount", bill["total"]),
+                )
+
+                messagebox.showinfo(
+                    "Reprint", f"Invoice {bill_no} has been regenerated."
+                )
+
+                return
+
+        messagebox.showerror("Error", "Bill not found.")
+
+    def delete_bill(bill_no):
+
+        if not messagebox.askyesno(
+            "Delete Bill", f"Are you sure you want to delete\n{bill_no}?"
+        ):
+            return
+
+        try:
+
+            with open(BILLS_HISTORY_FILE, "r", encoding="utf-8") as file:
+                bills = json.load(file)
+
+            new_bills = [bill for bill in bills if bill["bill_no"] != bill_no]
+
+            with open(BILLS_HISTORY_FILE, "w", encoding="utf-8") as file:
+                json.dump(
+                    new_bills,
+                    file,
+                    indent=4,
+                )
+
+            load_bill_history()
+
+            messagebox.showinfo("Success", "Bill deleted successfully.")
+
+        except Exception as e:
+
+            messagebox.showerror(
+                "Error",
+                str(e),
+            )
 
     def on_barcode_detected(barcode):
 
@@ -383,286 +441,29 @@ def launch_main_window():
 
     billing_view.pack(fill="both", expand=True)
 
-    # --- Settings View ---
-    settings_frame = tk.Frame(content_container, bg="#e9ecef")
+    # =====================================================
+    # Product Master
+    # =====================================================
 
-    # Back to Billing Button
-    back_button_frame = tk.Frame(settings_frame, bg="#e9ecef")
-    back_button_frame.pack(fill=tk.X, padx=10, pady=5)
-    tk.Button(
-        back_button_frame,
-        text="← Back to Billing",
-        font=("Helvetica", 10, "bold"),
-        bg="#6c757d",
-        fg="white",
-        command=lambda: show_billing_view(),
-    ).pack(side=tk.LEFT)
+    product_view = ProductMaster(content_container)
 
-    # Webcam URL Section
-    url_frame = tk.LabelFrame(
-        settings_frame,
-        text="Webcam URL",
-        font=("Helvetica", 11, "bold"),
-        bg="white",
-        fg="#2c3e50",
-    )
-    url_frame.pack(padx=10, pady=5, fill=tk.X)
+    # =====================================================
+    # Settings
+    # =====================================================
 
-    tk.Label(url_frame, text="URL:", font=("Helvetica", 10), bg="white").pack(
-        side=tk.LEFT, padx=5
-    )
-    url_entry = tk.Entry(url_frame, width=40, font=("Helvetica", 10))
-    url_entry.insert(0, webcam_url)
-    url_entry.pack(side=tk.LEFT, padx=5, pady=5)
-
-    def save_url():
+    def save_webcam_url(url):
         global webcam_url
-        new_url = url_entry.get().strip()
-        if new_url:
-            webcam_url = new_url
-            if scanner_active:
-                stop_scanner()
-                billing_view.update_scanner_status(
-                    "📡 Scanner restarting with new URL..."
-                )
-                scan_barcode_background(webcam_url, on_barcode_detected)
-            messagebox.showinfo("Success", "Webcam URL updated successfully.")
-        else:
-            messagebox.showwarning("Invalid URL", "Please enter a valid webcam URL.")
 
-    tk.Button(
-        url_frame,
-        text="Save",
-        font=("Helvetica", 10, "bold"),
-        bg="#28a745",
-        fg="white",
-        command=save_url,
-    ).pack(side=tk.LEFT, padx=5)
+        webcam_url = url
 
-    def edit_selected_product():
+        if scanner_active:
+            stop_scanner()
 
-        selected = product_tree.selection()
-
-        if not selected:
-
-            messagebox.showwarning("Edit Product", "Please select a product.")
-
-            return
-
-        values = product_tree.item(selected[0])["values"]
-
-        barcode = str(values[0])
-
-        product = get_product_by_barcode(barcode)
-
-        if not product:
-
-            messagebox.showerror("Error", "Product not found.")
-
-            return
-
-        AddProductDialog(
-            product_frame, refresh_callback=refresh_product_table, product=product
-        )
-
-    def open_add_product_window():
-
-        AddProductDialog(product_frame, refresh_callback=refresh_product_table)
-
-    def delete_selected_product():
-
-        selected = product_tree.selection()
-
-        if not selected:
-
-            messagebox.showwarning("Delete Product", "Please select a product.")
-
-            return
-
-        values = product_tree.item(selected[0])["values"]
-
-        barcode = str(values[0])
-
-        name = values[2]
-
-        if not messagebox.askyesno("Delete Product", f"Delete '{name}' ?"):
-            return
-
-        ok, msg = delete_product(barcode)
-
-        if ok:
-
-            refresh_product_table()
-
-            messagebox.showinfo("Success", "Product deleted successfully.")
-
-        else:
-
-            messagebox.showerror("Error", msg)
-
-    # ==========================================================
-    # PRODUCT TABLE
-    # ==========================================================
-
-    product_frame = tk.LabelFrame(
-        settings_frame,
-        text="Product Master",
-        font=("Segoe UI", 11, "bold"),
-        bg="white",
-        fg="#2c3e50",
+    settings_view = SettingsView(
+        content_container,
+        webcam_url=webcam_url,
+        save_callback=save_webcam_url,
     )
-    product_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(8, 10))
-
-    # ==========================================================
-    # PRODUCT TOOLBAR
-    # ==========================================================
-
-    toolbar = tk.Frame(product_frame, bg="white")
-    toolbar.pack(fill=tk.X, padx=5, pady=5)
-
-    tk.Button(
-        toolbar,
-        text="+ Add Product",
-        bg="#28a745",
-        fg="white",
-        font=("Segoe UI", 10, "bold"),
-        width=15,
-        command=lambda: open_add_product_window(),
-    ).pack(side=tk.LEFT)
-
-    tk.Button(
-        toolbar,
-        text="Edit",
-        width=10,
-        command=edit_selected_product,
-    ).pack(side=tk.LEFT, padx=5)
-
-    tk.Button(
-        toolbar,
-        text="Delete",
-        width=10,
-        command=delete_selected_product,
-    ).pack(side=tk.LEFT)
-
-    # =========================
-    # Search Bar
-    # =========================
-
-    search_frame = tk.Frame(product_frame, bg="white")
-    search_frame.pack(fill=tk.X, padx=5, pady=(0, 5))
-
-    tk.Label(
-        search_frame,
-        text="Search :",
-        bg="white",
-        font=("Segoe UI", 10, "bold"),
-    ).pack(side=tk.LEFT)
-
-    search_var = tk.StringVar()
-
-    search_entry = tk.Entry(
-        search_frame,
-        textvariable=search_var,
-        width=35,
-        font=("Segoe UI", 10),
-    )
-
-    search_entry.pack(side=tk.LEFT, padx=8)
-
-    product_count = tk.StringVar(value="Total Products : 0")
-
-    tk.Label(
-        search_frame,
-        textvariable=product_count,
-        bg="white",
-        fg="gray",
-        font=("Segoe UI", 9, "bold"),
-    ).pack(side=tk.RIGHT)
-
-    search_var.trace_add("write", lambda *args: refresh_product_table())
-
-    product_columns = (
-        "Barcode",
-        "SKU",
-        "Product Name",
-        "Brand",
-        "Category",
-        "Stock",
-        "Price",
-        "GST",
-    )
-
-    product_tree = ttk.Treeview(
-        product_frame, columns=product_columns, show="headings", height=18
-    )
-
-    column_widths = {
-        "Barcode": 100,
-        "SKU": 70,
-        "Product Name": 180,
-        "Brand": 90,
-        "Category": 90,
-        "Stock": 60,
-        "Price": 70,
-        "GST": 50,
-    }
-
-    for col in product_columns:
-        product_tree.heading(col, text=col)
-        product_tree.column(col, width=column_widths[col], anchor="center")
-
-    product_tree.column("Product Name", anchor="w")
-
-    scroll_y = ttk.Scrollbar(
-        product_frame, orient="vertical", command=product_tree.yview
-    )
-
-    scroll_x = ttk.Scrollbar(
-        product_frame, orient="horizontal", command=product_tree.xview
-    )
-
-    product_tree.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
-
-    product_tree.pack(fill=tk.BOTH, expand=True, padx=5, pady=(0, 0))
-
-    scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
-    scroll_x.pack(fill=tk.X)
-
-    def refresh_product_table():
-
-        product_tree.delete(*product_tree.get_children())
-
-        keyword = search_var.get().strip()
-
-        if keyword:
-
-            products = search_products(keyword)
-
-        else:
-
-            products = get_all_products()
-
-        # <-- ADD THESE TWO LINES HERE
-        product_count.set(f"Total Products : {len(products)}")
-
-        for product in products:
-
-            product_tree.insert(
-                "",
-                tk.END,
-                values=(
-                    product.get("barcode", ""),
-                    product.get("sku", ""),
-                    product.get("name", ""),
-                    product.get("brand", ""),
-                    product.get("category", ""),
-                    product.get("stock", 0),
-                    f"₹ {float(product.get('selling_price',0)):.2f}",
-                    f"{product.get('gst',0)} %",
-                ),
-            )
-
-    product_tree.bind("<Double-1>", lambda event: edit_selected_product())
 
     # =====================================================
     # Find Bill Functions
@@ -745,31 +546,15 @@ def launch_main_window():
                 f"₹ {bill['total']:.2f}",
             )
 
-    toolbar = Toolbar(
-        window,
-        {
-            "new_bill": clear_cart_all,
-            "save_bill": lambda: None,
-            "print_bill": lambda: None,
-            "hold_bill": hold_current_bill,
-            "find_bill": lambda: show_find_bill_view(),
-            "products": lambda: show_settings_view(),
-            "settings": lambda: show_settings_view(),
-            "customers": lambda: None,
-            "reports": lambda: None,
-            "exit": window.destroy,
-        },
-    )
-
-    toolbar.pack(fill="x")
-
     # =====================================================
     # View Switching Functions
     # =====================================================
 
     def show_billing_view():
 
-        settings_frame.pack_forget()
+        product_view.pack_forget()
+
+        settings_view.pack_forget()
 
         find_bill_view.pack_forget()
 
@@ -785,19 +570,41 @@ def launch_main_window():
 
             billing_view.update_scanner_status("Ready")
 
+    def show_products_view():
+
+        global scanner_active
+
+        billing_view.pack_forget()
+
+        settings_view.pack_forget()
+
+        find_bill_view.pack_forget()
+
+        product_view.refresh_table()
+
+        product_view.pack(fill="both", expand=True)
+
+        window.title("QuickBill System - Product Master")
+
+        if scanner_active:
+
+            stop_scanner()
+
+            scanner_active = False
+
     def show_settings_view():
 
         global scanner_active
 
-        refresh_product_table()
-
         billing_view.pack_forget()
+
+        product_view.pack_forget()
 
         find_bill_view.pack_forget()
 
-        settings_frame.pack(fill="both", expand=True)
+        settings_view.pack(fill="both", expand=True)
 
-        window.title("QuickBill System - Products")
+        window.title("QuickBill System - Settings")
 
         if scanner_active:
 
@@ -811,7 +618,9 @@ def launch_main_window():
 
         billing_view.pack_forget()
 
-        settings_frame.pack_forget()
+        product_view.pack_forget()
+
+        settings_view.pack_forget()
 
         find_bill_view.bill_search_var.set("")
 
@@ -834,8 +643,29 @@ def launch_main_window():
             "search": search_bill,
             "refresh": load_bill_history,
             "view": open_bill_details,
+            "reprint": reprint_bill,
+            "delete": delete_bill,
         },
     )
+
+    toolbar = Toolbar(
+        window,
+        {
+            "billing": show_billing_view,
+            "new_bill": clear_cart_all,
+            "save_bill": lambda: None,
+            "print_bill": lambda: None,
+            "hold_bill": hold_current_bill,
+            "find_bill": lambda: show_find_bill_view(),
+            "products": show_products_view,
+            "settings": show_settings_view,
+            "customers": lambda: None,
+            "reports": lambda: None,
+            "exit": window.destroy,
+        },
+    )
+
+    toolbar.pack(fill="x")
 
     # =====================================================
     # Initialize

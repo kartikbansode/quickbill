@@ -19,6 +19,10 @@ class AddProductDialog:
 
         self.window = tk.Toplevel(parent)
 
+        self.window.transient(parent)
+        self.window.grab_set()
+        self.window.focus_force()
+
         if product:
 
             self.window.title("Edit Product")
@@ -27,9 +31,20 @@ class AddProductDialog:
 
             self.window.title("Add Product")
 
-        self.window.geometry("800x700")
+        width = 800
+        height = 700
+
+        x = (self.window.winfo_screenwidth() - width) // 2
+        y = (self.window.winfo_screenheight() - height) // 2
+
+        self.window.geometry(f"{width}x{height}+{x}+{y}")
 
         self.window.resizable(False, False)
+
+        self.window.protocol(
+            "WM_DELETE_WINDOW",
+            self.close_dialog,
+        )
 
         self.entries = {}
 
@@ -39,9 +54,17 @@ class AddProductDialog:
 
             self.load_product()
 
+            self.entries["Product Name"].focus_set()
+
         else:
 
             self.generate_barcode()
+
+            self.entries["Product Name"].focus_set()
+
+    def close_dialog(self):
+        self.window.grab_release()
+        self.window.destroy()
 
     def load_product(self):
 
@@ -131,9 +154,11 @@ class AddProductDialog:
 
     def build_ui(self):
 
+        title_text = "Edit Product" if self.product else "Add New Product"
+
         title = tk.Label(
             self.window,
-            text="Add New Product",
+            text=title_text,
             font=("Segoe UI", 16, "bold"),
         )
 
@@ -267,24 +292,37 @@ class AddProductDialog:
 
             mrp = float(self.entries["MRP"].get())
 
-        except:
+            gst = int(self.entries["GST"].get())
 
-            messagebox.showerror("Error", "Invalid price.")
+            stock = int(self.entries["Opening Stock"].get() or 0)
+
+            min_stock = int(self.entries["Minimum Stock"].get() or 0)
+
+        except ValueError:
+
+            messagebox.showerror(
+                "Invalid Input",
+                "Please enter valid numeric values for Price, GST and Stock.",
+            )
 
             return
 
         product = {
             "barcode": barcode,
-            "sku": f"SKU{len(get_all_products())+1:04d}",
+            "sku": (
+                self.product["sku"]
+                if self.product
+                else f"SKU{len(get_all_products())+1:04d}"
+            ),
             "name": name,
             "brand": self.entries["Brand"].get(),
             "category": self.entries["Category"].get(),
             "purchase_price": purchase_price,
             "selling_price": selling_price,
             "mrp": mrp,
-            "gst": int(self.entries["GST"].get()),
-            "stock": int(self.entries["Opening Stock"].get() or 0),
-            "min_stock": int(self.entries["Minimum Stock"].get() or 0),
+            "gst": gst,
+            "stock": stock,
+            "min_stock": min_stock,
             "supplier": self.entries["Supplier"].get(),
             "unit": self.entries["Unit"].get(),
             "weight": self.entries["Weight"].get(),
@@ -308,7 +346,7 @@ class AddProductDialog:
 
         if ok:
 
-            self.window.destroy()
+            self.close_dialog()
 
             if self.refresh_callback:
                 self.refresh_callback()

@@ -1,26 +1,5 @@
 [
     {
-        "bill_no": "QB-20260805-000018",
-        "date": "05-08-2026 22:24:55",
-        "payment_mode": "Cash",
-        "received_amount": 21.0,
-        "balance": 0.0,
-        "cashier": "Admin",
-        "status": "PAID",
-        "items": [
-            {
-                "name": "Lay's Classic Salted Chips (52g)",
-                "qty": 1,
-                "price": 20.0,
-                "total": 20.0
-            }
-        ],
-        "subtotal": 20.0,
-        "tax": 2.0,
-        "discount": 1.0,
-        "total": 21.0
-    },
-    {
         "bill_no": "QB-20260805-000021",
         "date": "05-08-2026 22:26:50",
         "payment_mode": "Card",
@@ -40,5 +19,146 @@
         "tax": 2.0,
         "discount": 1.0,
         "total": 21.0
+    },
+    {
+        "bill_no": "QB-20260806-000036",
+        "date": "06-08-2026 11:56:52",
+        "payment_mode": "UPI",
+        "received_amount": 567.0,
+        "balance": 0.0,
+        "cashier": "Admin",
+        "status": "PAID",
+        "items": [
+            {
+                "name": "Amul Taaza Milk",
+                "qty": 18,
+                "price": 30.0,
+                "total": 540.0
+            }
+        ],
+        "subtotal": 540.0,
+        "tax": 54.0,
+        "discount": 27.0,
+        "total": 567.0
+    },
+    {
+        "bill_no": "QB-20260806-000038",
+        "date": "06-08-2026 12:07:44",
+        "payment_mode": "Cash",
+        "received_amount": 404.25,
+        "balance": 0.0,
+        "cashier": "Admin",
+        "status": "PAID",
+        "items": [
+            {
+                "name": "Amul Taaza Milk",
+                "qty": 7,
+                "price": 30.0,
+                "total": 210.0
+            },
+            {
+                "name": "Colgate Toothpaste",
+                "qty": 1,
+                "price": 55,
+                "total": 55
+            },
+            {
+                "name": "Notebook A4",
+                "qty": 2,
+                "price": 60,
+                "total": 120
+            }
+        ],
+        "subtotal": 385.0,
+        "tax": 38.5,
+        "discount": 19.25,
+        "total": 404.25
+    },
+    {
+        "bill_no": "QB-20260806-000043",
+        "date": "06-08-2026 12:23:31",
+        "payment_mode": "Credit",
+        "received_amount": 1023.75,
+        "balance": 0.0,
+        "cashier": "Admin",
+        "status": "PAID",
+        "items": [
+            {
+                "name": "Colgate Toothpaste",
+                "qty": 9,
+                "price": 55,
+                "total": 495
+            },
+            {
+                "name": "Notebook A4",
+                "qty": 6,
+                "price": 60,
+                "total": 360
+            },
+            {
+                "name": "Amul Taaza Milk",
+                "qty": 4,
+                "price": 30.0,
+                "total": 120.0
+            }
+        ],
+        "subtotal": 975.0,
+        "tax": 97.5,
+        "discount": 48.75,
+        "total": 1023.75
+    },
+    {
+        "bill_no": "QB-20260806-000036",
+        "date": "06-08-2026 14:35:17",
+        "payment_mode": "UPI",
+        "received_amount": 567.0,
+        "balance": 567.0,
+        "cashier": "Admin",
+        "status": "PAID",
+        "items": [
+            {
+                "name": "Amul Taaza Milk",
+                "qty": 18,
+                "price": 30.0,
+                "total": 540.0
+            }
+        ],
+        "subtotal": 0,
+        "tax": 0.0,
+        "discount": 0.0,
+        "total": 0.0
+    },
+    {
+        "bill_no": "QB-20260806-000043",
+        "date": "06-08-2026 14:36:37",
+        "payment_mode": "Credit",
+        "received_amount": 1023.75,
+        "balance": 1023.75,
+        "cashier": "Admin",
+        "status": "PAID",
+        "items": [
+            {
+                "name": "Colgate Toothpaste",
+                "qty": 9,
+                "price": 55,
+                "total": 495
+            },
+            {
+                "name": "Notebook A4",
+                "qty": 6,
+                "price": 60,
+                "total": 360
+            },
+            {
+                "name": "Amul Taaza Milk",
+                "qty": 4,
+                "price": 30.0,
+                "total": 120.0
+            }
+        ],
+        "subtotal": 0,
+        "tax": 0.0,
+        "discount": 0.0,
+        "total": 0.0
     }
 ]
