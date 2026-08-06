@@ -1,0 +1,20 @@
+QuickBill Billing System
+
+Version 1.0.0
+
+Copyright © 2026 QuickBill Technologies
+
+This software is licensed, not sold.
+
+You may install and use this software on your computer.
+
+You may not:
+• Reverse engineer this software.
+• Modify or redistribute this software.
+• Sell or repackage this software.
+• Remove copyright notices.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+Copyright © 2026 QuickBill Technologies.
+All Rights Reserved.
