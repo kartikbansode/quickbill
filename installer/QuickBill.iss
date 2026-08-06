@@ -26,6 +26,9 @@ LicenseFile=..\licenses\LICENSE.txt
 
 WizardStyle=modern
 
+WizardImageFile=wizard.bmp
+WizardSmallImageFile=wizard_small.bmp
+
 Compression=lzma2/max
 SolidCompression=yes
 CompressionThreads=auto
