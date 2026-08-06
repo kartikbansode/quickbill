@@ -53,7 +53,7 @@ def launch_main_window():
 
     find_bill_view = None
     try:
-        logo = tk.PhotoImage(file="assets/images/logo.png")
+        logo = tk.PhotoImage(file="assets/images/logo.ico")
         window.iconphoto(True, logo)
     except Exception as e:
         print("Unable to load icon:", e)
