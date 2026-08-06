@@ -5,18 +5,23 @@ import time
 from logic.config import get
 from logic.resource_path import resource_path
 import pygame
-from logic.resource_path import resource_path
 
-pygame.mixer.init(
-    frequency=44100,
-    size=-16,
-    channels=2,
-    buffer=256,
-)
+SCAN_SOUND = None
 
-SCAN_SOUND = pygame.mixer.Sound(resource_path("assets/sounds/beep.mp3"))
-SCAN_SOUND.set_volume(0.8)
+try:
+    pygame.mixer.init(
+        frequency=44100,
+        size=-16,
+        channels=2,
+        buffer=256,
+    )
 
+    SCAN_SOUND = pygame.mixer.Sound(resource_path("assets/sounds/beep.mp3"))
+
+    SCAN_SOUND.set_volume(0.8)
+
+except Exception as e:
+    print(f"[WARNING] Sound disabled: {e}")
 SCAN_COOLDOWN = 0.25
 
 stop_scanning = False
@@ -27,11 +32,15 @@ last_scan_time = {}
 
 
 def play_beep():
+    if SCAN_SOUND is None:
+        return
+
     try:
         SCAN_SOUND.stop()
         SCAN_SOUND.play()
-    except Exception as e:
-        print(f"Beep error: {e}")
+
+    except Exception:
+        pass
 
 
 def start_barcode_scanner(stream_url, on_detected_callback):

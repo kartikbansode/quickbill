@@ -3,11 +3,16 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from logic.resource_path import resource_path
 
+from logic.file_paths import app_path
+
+BARCODE_FOLDER = app_path("barcodes")
+
+
 pdfmetrics.registerFont(
     TTFont(
-    "DejaVu",
-    resource_path("assets/fonts/DejaVuSans.ttf"),
-)
+        "DejaVu",
+        resource_path("assets/fonts/DejaVuSans.ttf"),
+    )
 )
 
 pdfmetrics.registerFont(
@@ -153,7 +158,7 @@ class BarcodeLabel:
         # Barcode
         # -------------------------
 
-        barcode_obj = code128.Code128(
+        barcode_obj = Code128(
             barcode,
             barWidth=0.65 * mm,
             barHeight=26 * mm,
@@ -243,12 +248,12 @@ def generate_barcode_pdf(
 ):
 
     os.makedirs(
-        "barcodes",
+        BARCODE_FOLDER,
         exist_ok=True,
     )
 
     pdf_path = os.path.join(
-        "barcodes",
+        BARCODE_FOLDER,
         "barcode_labels.pdf",
     )
 

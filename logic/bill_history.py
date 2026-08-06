@@ -1,7 +1,9 @@
 import json
 import os
 
-BILLS_FILE = "bills_history.json"
+from logic.file_paths import app_path
+
+BILLS_FILE = app_path("bills_history.json")
 
 
 def get_all_bills():

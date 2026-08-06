@@ -36,10 +36,6 @@ def main():
     launch_main_window()
 
 
-if getattr(sys, "frozen", False):
-
-    os.chdir(sys._MEIPASS)
-
 
 if __name__ == "__main__":
 

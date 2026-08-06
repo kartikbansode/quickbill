@@ -1,6 +1,7 @@
 # logic/database.py
 import json
 import os
+from logic.file_paths import app_path
 
 # Initial product data (used if products.json doesn't exist)
 initial_product_data = {
@@ -29,32 +30,40 @@ initial_product_data = {
 # Global product data (loaded from file or initialized)
 product_data = {}
 
-
-BILL_COUNTER_FILE = "bill_counter.json"
-PRODUCTS_FILE = "products.json"
+BILL_COUNTER_FILE = app_path("bill_counter.json")
+PRODUCTS_FILE = app_path("products.json")
 
 
 def load_products():
-    """Load products from products.json or use initial data if file doesn't exist."""
     global product_data
-    if os.path.exists(PRODUCTS_FILE):
-        try:
-            with open(PRODUCTS_FILE, "r") as f:
-                product_data = json.load(f)
-                # Convert price to float and ensure tuple format
-                product_data = {str(k): v for k, v in product_data.items()}
-        except (json.JSONDecodeError, KeyError, ValueError) as e:
-            print(f"[ERROR] Corrupted products.json: {e}, using initial data.")
-            product_data = initial_product_data.copy()
-    else:
+
+    if not os.path.exists(PRODUCTS_FILE):
+
         product_data = initial_product_data.copy()
-    save_products()  # Ensure file is created/updated
+
+        save_products()
+
+        return
+
+    try:
+
+        with open(PRODUCTS_FILE, "r", encoding="utf-8") as f:
+
+            product_data = json.load(f)
+
+            product_data = {str(k): v for k, v in product_data.items()}
+
+    except (json.JSONDecodeError, OSError):
+
+        product_data = initial_product_data.copy()
+
+        save_products()
 
 
 def save_products():
     try:
-        with open(PRODUCTS_FILE, "w") as f:
-            json.dump(product_data, f, indent=4)
+        with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
+            json.dump(product_data, f, indent=4, ensure_ascii=False)
     except Exception as e:
         print(f"[ERROR] Failed to save products: {e}")
 
@@ -113,6 +122,7 @@ def edit_product(barcode, product):
     except Exception as e:
 
         return False, str(e)
+
 
 def delete_product(barcode):
     """Delete a product from the database and save to file."""
@@ -187,7 +197,7 @@ def generate_bill_number():
 
         try:
 
-            with open(BILL_COUNTER_FILE, "r") as f:
+            with open(BILL_COUNTER_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
         except Exception:
@@ -202,7 +212,12 @@ def generate_bill_number():
 
         data["counter"] += 1
 
-    with open(BILL_COUNTER_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+    with open(BILL_COUNTER_FILE, "w", encoding="utf-8") as f:
+        json.dump(
+            data,
+            f,
+            indent=4,
+            ensure_ascii=False,
+        )
 
     return f"QB-{today}-{data['counter']:06d}"

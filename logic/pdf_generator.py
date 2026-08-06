@@ -19,6 +19,13 @@ import json
 from logic.billing import calculate_totals
 from logic.resource_path import resource_path
 
+from logic.file_paths import app_path
+
+BILL_FOLDER = app_path("bills")
+
+os.makedirs(BILL_FOLDER, exist_ok=True)
+
+
 # Register DejaVuSans fonts
 try:
     pdfmetrics.registerFont(
@@ -47,11 +54,13 @@ def generate_pdf_bill(
     bill_date = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
     # Ensure bills directory exists
-    if not os.path.exists("bills"):
-        os.makedirs("bills")
+    os.makedirs(
+        BILL_FOLDER,
+        exist_ok=True,
+    )
 
     # Create PDF
-    pdf_file = f"bills/bill_{bill_no}.pdf"
+    pdf_file = os.path.join(BILL_FOLDER, f"bill_{bill_no}.pdf")
     doc = SimpleDocTemplate(
         pdf_file,
         pagesize=letter,
@@ -61,9 +70,6 @@ def generate_pdf_bill(
         bottomMargin=0.5 * inch,
     )
     elements = []
-
-    # Styles
-    styles = getSampleStyleSheet()
     title_style = ParagraphStyle(
         name="Title",
         fontName="DejaVuSans-Bold",
@@ -163,7 +169,11 @@ def generate_pdf_bill(
     elements.append(Spacer(1, 0.2 * inch))
 
     # Barcode
-    barcode = code128.Code128(bill_no, barHeight=0.6 * inch, barWidth=0.02 * inch)
+    barcode = Code128(
+        bill_no,
+        barHeight=0.6 * inch,
+        barWidth=0.02 * inch,
+    )
     elements.append(barcode)
 
     # Footer
@@ -211,7 +221,7 @@ def generate_pdf_bill(
         "total": total,
     }
 
-    bills_history_file = "bills_history.json"
+    bills_history_file = app_path("bills_history.json")
     bills = []
 
     try:
@@ -219,17 +229,18 @@ def generate_pdf_bill(
         if not os.path.exists(bills_history_file):
 
             with open(bills_history_file, "w", encoding="utf-8") as f:
-                json.dump([], f, indent=4)
+                json.dump(
+                    bills,
+                    f,
+                    indent=4,
+                    ensure_ascii=False,
+                )
 
         with open(bills_history_file, "r", encoding="utf-8") as f:
             try:
                 bills = json.load(f)
             except (json.JSONDecodeError, ValueError):
                 bills = []
-
-        with open(bills_history_file, "w", encoding="utf-8") as f:
-
-            json.dump(bills, f, indent=4)
 
     except Exception as e:
         print(f"[ERROR] Unable to access bills history: {e}")
@@ -239,7 +250,12 @@ def generate_pdf_bill(
 
     try:
         with open(bills_history_file, "w", encoding="utf-8") as f:
-            json.dump(bills, f, indent=4)
+            json.dump(
+                bills,
+                f,
+                indent=4,
+                ensure_ascii=False,
+            )
     except Exception as e:
         print(f"[ERROR] Failed to write to {bills_history_file}: {e}")
         raise

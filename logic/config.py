@@ -3,7 +3,9 @@ import os
 
 from logic.resource_path import resource_path
 
-CONFIG_FILE = "config.json"
+from logic.file_paths import app_path
+
+CONFIG_FILE = app_path("config.json")
 
 DEFAULT_CONFIG = {
     "company": {
