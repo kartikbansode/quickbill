@@ -3,6 +3,8 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import time
 
+from logic.resource_path import resource_path
+
 
 class SplashScreen:
 
@@ -115,7 +117,7 @@ class SplashScreen:
 
         try:
 
-            image = Image.open("assets/images/logo.png")
+            image = Image.open(resource_path("assets/images/logo.png"))
 
             image.thumbnail((58, 58))
 

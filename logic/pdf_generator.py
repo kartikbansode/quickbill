@@ -10,22 +10,27 @@ from reportlab.platypus import (
 )
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.graphics.barcode import code128
+from reportlab.graphics.barcode.code128 import Code128
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import datetime
 import os
 import json
 from logic.billing import calculate_totals
+from logic.resource_path import resource_path
 
 # Register DejaVuSans fonts
 try:
-    pdfmetrics.registerFont(TTFont("DejaVuSans", "assets/fonts/DejaVuSans.ttf"))
     pdfmetrics.registerFont(
-        TTFont("DejaVuSans-Bold", "assets/fonts/DejaVuSans-Bold.ttf")
+        TTFont("DejaVuSans", resource_path("assets/fonts/DejaVuSans.ttf"))
     )
     pdfmetrics.registerFont(
-        TTFont("DejaVuSans-Oblique", "assets/fonts/DejaVuSans-Oblique.ttf")
+        TTFont("DejaVuSans-Bold", resource_path("assets/fonts/DejaVuSans-Bold.ttf"))
+    )
+    pdfmetrics.registerFont(
+        TTFont(
+            "DejaVuSans-Oblique", resource_path("assets/fonts/DejaVuSans-Oblique.ttf")
+        )
     )
 except Exception as e:
     print(f"[ERROR] Failed to load DejaVuSans fonts: {e}")

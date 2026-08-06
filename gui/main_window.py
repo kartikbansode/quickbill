@@ -32,10 +32,11 @@ from logic.database import generate_bill_number
 from gui.find_bill.bill_details_dialog import BillDetailsDialog
 import os
 import json
+from logic.resource_path import resource_path
 
 scanner_active = False
 webcam_url = "http://192.168.0.203:8080/video"  # Default webcam URL
-BILLS_HISTORY_FILE = "bills_history.json"
+BILLS_HISTORY_FILE = resource_path("bills_history.json")
 
 
 def launch_main_window():
@@ -53,7 +54,7 @@ def launch_main_window():
 
     find_bill_view = None
     try:
-        logo = tk.PhotoImage(file="assets/images/logo.ico")
+        logo = tk.PhotoImage(file=resource_path("assets/images/logo.png"))
         window.iconphoto(True, logo)
     except Exception as e:
         print("Unable to load icon:", e)

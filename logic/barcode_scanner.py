@@ -3,7 +3,9 @@ from pyzbar import pyzbar
 import threading
 import time
 from logic.config import get
+from logic.resource_path import resource_path
 import pygame
+from logic.resource_path import resource_path
 
 pygame.mixer.init(
     frequency=44100,
@@ -12,7 +14,7 @@ pygame.mixer.init(
     buffer=256,
 )
 
-SCAN_SOUND = pygame.mixer.Sound("assets/sounds/beep.mp3")
+SCAN_SOUND = pygame.mixer.Sound(resource_path("assets/sounds/beep.mp3"))
 SCAN_SOUND.set_volume(0.8)
 
 SCAN_COOLDOWN = 0.25

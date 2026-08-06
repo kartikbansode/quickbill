@@ -1,18 +1,19 @@
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from logic.resource_path import resource_path
 
 pdfmetrics.registerFont(
     TTFont(
-        "DejaVu",
-        "assets/fonts/DejaVuSans.ttf",
-    )
+    "DejaVu",
+    resource_path("assets/fonts/DejaVuSans.ttf"),
+)
 )
 
 pdfmetrics.registerFont(
     TTFont(
         "DejaVu-Bold",
-        "assets/fonts/DejaVuSans-Bold.ttf",
+        resource_path("assets/fonts/DejaVuSans-Bold.ttf"),
     )
 )
 
@@ -81,7 +82,7 @@ class BarcodeLayout:
         return page, x, y
 
 
-from reportlab.graphics.barcode import code128
+from reportlab.graphics.barcode.code128 import Code128
 from reportlab.pdfgen import canvas
 
 import os

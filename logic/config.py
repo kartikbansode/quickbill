@@ -1,6 +1,8 @@
 import json
 import os
 
+from logic.resource_path import resource_path
+
 CONFIG_FILE = "config.json"
 
 DEFAULT_CONFIG = {
@@ -11,7 +13,7 @@ DEFAULT_CONFIG = {
         "phone": "",
         "email": "",
         "gst": "",
-        "logo": "assets/images/logo.png"
+        "logo": resource_path("assets/images/logo.png")
     },
 
     "billing": {
