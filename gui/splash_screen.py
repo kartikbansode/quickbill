@@ -288,7 +288,7 @@ class SplashScreen:
 
         tk.Label(
             bottom,
-            text="Build 1.0.0",
+            text="Build 2.1.0",
             bg="white",
             fg="#64748B",
             font=("Segoe UI", 9),
