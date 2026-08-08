@@ -133,7 +133,6 @@ def launch_main_window():
     content_container = tk.Frame(window, bg="#e9ecef")
     content_container.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-
     def broadcast_current_bill():
         """
         Send the complete current billing state to the optional
@@ -274,59 +273,53 @@ def launch_main_window():
         refresh_table()
 
     def start_scan():
+
         global scanner_active
-        global webcam_url
 
+        # Scanner is already running.
         if scanner_active:
-            return
-
-        try:
-            webcam_url = get(
-                "scanner",
-                "camera_url",
-            ).strip()
-        except Exception:
-            pass
-
-        if not webcam_url:
-            messagebox.showwarning(
-                "Scanner Not Configured",
-                "Please configure the barcode scanner camera URL in Settings.",
-            )
             return
 
         scanner_active = True
 
-        billing_view.update_scanner_status(
-            "Scanner Active"
-        )
+        billing_view.update_scanner_status("Scanner Active")
 
         status_bar.scanner_connected()
-
-        status_bar.set_status(
-            "Scanning Product"
-        )
+        status_bar.set_status("Scanning Product")
 
         scan_barcode_background(
             webcam_url,
             on_barcode_detected,
         )
 
-    def stop_scan():
-        global scanner_active
-        if scanner_active:
-            stop_scanner()
-            scanner_active = False
+        billing_view.scanner_panel.scan_button.config(
+            text="Stop Scanner",
+            command=stop_scan,
+        )
 
-    try:
+    def stop_scan():
+
+        global scanner_active
+
+        if not scanner_active:
+            return
+
+        stop_scanner()
+
+        scanner_active = False
+
+        billing_view.update_scanner_status("Scanner Stopped")
+
+        status_bar.scanner_disconnected()
+
+        status_bar.set_status("Scanner Stopped")
+
         billing_view.scanner_panel.scan_button.config(
             text="Start Scanner",
-            bg="#28a745",
+            command=start_scan,
         )
-    except:
-        pass
 
-        # =====================================================
+    # =====================================================
     # Customer Display - Payment Events
     # =====================================================
 
@@ -786,20 +779,25 @@ def launch_main_window():
     # =====================================================
 
     def save_webcam_url(url):
+
         global webcam_url
+        global scanner_active
 
         url = url.strip()
 
         if not url:
+
             messagebox.showwarning(
                 "Invalid Scanner URL",
                 "Please enter a valid camera stream URL.",
             )
+
             return
 
         webcam_url = url
 
         try:
+
             set(
                 "scanner",
                 "camera_url",
@@ -813,20 +811,33 @@ def launch_main_window():
             )
 
         except Exception as exc:
+
             messagebox.showerror(
                 "Settings Error",
                 f"Unable to save scanner settings.\n\n{exc}",
             )
+
             return
 
+        # Restart is intentionally NOT automatic.
+        #
+        # If the scanner is currently running, stop it because
+        # the old camera URL is no longer valid.
         if scanner_active:
+
             stop_scanner()
+
+            scanner_active = False
+
+            billing_view.update_scanner_status("Scanner Stopped")
+
+            status_bar.scanner_disconnected()
 
         messagebox.showinfo(
             "Scanner Settings",
-            "Barcode scanner settings saved successfully.",
+            "Scanner settings saved successfully.\n\n"
+            "Press Start Scanner to connect using the new camera.",
         )
-
 
     # =====================================================
     # Settings View
@@ -925,89 +936,98 @@ def launch_main_window():
 
     def show_billing_view():
 
-        product_view.pack_forget()
+        if product_view is not None:
+            product_view.pack_forget()
 
-        settings_view.pack_forget()
+        if settings_view is not None:
+            settings_view.pack_forget()
 
-        find_bill_view.pack_forget()
+        if find_bill_view is not None:
+            find_bill_view.pack_forget()
 
-        billing_view.pack(fill="both", expand=True)
+        if billing_view is not None:
+            billing_view.pack(
+                fill="both",
+                expand=True,
+            )
 
         window.title("QuickBill System - Billing")
 
-        if scanner_active:
+        if billing_view is not None:
 
-            billing_view.update_scanner_status("Scanner Active")
+            if scanner_active:
 
-        else:
+                billing_view.update_scanner_status("Scanner Active")
 
-            billing_view.update_scanner_status("Ready")
+            else:
+
+                billing_view.update_scanner_status("Ready")
 
     def show_products_view():
 
-        global scanner_active
+        if billing_view is not None:
+            billing_view.pack_forget()
 
-        billing_view.pack_forget()
+        if settings_view is not None:
+            settings_view.pack_forget()
 
-        settings_view.pack_forget()
+        if find_bill_view is not None:
+            find_bill_view.pack_forget()
 
-        find_bill_view.pack_forget()
+        if product_view is not None:
 
-        product_view.refresh_table()
+            product_view.refresh_table()
 
-        product_view.pack(fill="both", expand=True)
+            product_view.pack(
+                fill="both",
+                expand=True,
+            )
 
         window.title("QuickBill System - Product Master")
 
-        if scanner_active:
-
-            stop_scanner()
-
-            scanner_active = False
-
     def show_settings_view():
 
-        global scanner_active
+        if billing_view is not None:
+            billing_view.pack_forget()
 
-        billing_view.pack_forget()
+        if product_view is not None:
+            product_view.pack_forget()
 
-        product_view.pack_forget()
+        if find_bill_view is not None:
+            find_bill_view.pack_forget()
 
-        find_bill_view.pack_forget()
+        if settings_view is not None:
 
-        settings_view.pack(fill="both", expand=True)
+            settings_view.pack(
+                fill="both",
+                expand=True,
+            )
 
         window.title("QuickBill System - Settings")
 
-        if scanner_active:
-
-            stop_scanner()
-
-            scanner_active = False
-
     def show_find_bill_view():
 
-        global scanner_active
+        if billing_view is not None:
+            billing_view.pack_forget()
 
-        billing_view.pack_forget()
+        if product_view is not None:
+            product_view.pack_forget()
 
-        product_view.pack_forget()
+        if settings_view is not None:
+            settings_view.pack_forget()
 
-        settings_view.pack_forget()
+        if find_bill_view is not None:
 
-        find_bill_view.bill_search_var.set("")
+            find_bill_view.bill_search_var.set("")
 
-        load_bill_history()
+            load_bill_history()
 
-        find_bill_view.pack(fill="both", expand=True)
+            find_bill_view.pack(
+                fill="both",
+                expand=True,
+            )
 
         window.title("QuickBill System - Find Bill")
-
-        if scanner_active:
-
-            stop_scanner()
-
-            scanner_active = False
 
     find_bill_view = FindBillView(
         content_container,
