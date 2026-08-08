@@ -34,9 +34,14 @@ from logic.customer_display_server import customer_display
 from logic.pdf_generator import generate_pdf_bill
 from logic.resource_path import resource_path
 from logic.app_state import app_state
+from logic.config import get, set
 
 scanner_active = False
-webcam_url = "http://192.168.0.203:8080/video"  # Default webcam URL
+
+try:
+    webcam_url = get("scanner", "camera_url")
+except Exception:
+    webcam_url = "http://192.168.0.203:8080/video"
 
 
 BILLS_HISTORY_FILE = data_path("bills_history.json")
@@ -72,6 +77,9 @@ def launch_main_window():
     )
 
     find_bill_view = None
+    settings_view = None
+    product_view = None
+    billing_view = None
     try:
         logo = tk.PhotoImage(file=resource_path("assets/images/logo.png"))
         window.iconphoto(True, logo)
@@ -125,8 +133,6 @@ def launch_main_window():
     content_container = tk.Frame(window, bg="#e9ecef")
     content_container.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-    # --- Billing View ---
-    billing_view = None
 
     def broadcast_current_bill():
         """
@@ -269,12 +275,42 @@ def launch_main_window():
 
     def start_scan():
         global scanner_active
-        if not scanner_active:
-            scanner_active = True
-            billing_view.update_scanner_status("Scanner Active")
-            status_bar.scanner_connected()
-            status_bar.set_status("Scanning Product")
-            scan_barcode_background(webcam_url, on_barcode_detected)
+        global webcam_url
+
+        if scanner_active:
+            return
+
+        try:
+            webcam_url = get(
+                "scanner",
+                "camera_url",
+            ).strip()
+        except Exception:
+            pass
+
+        if not webcam_url:
+            messagebox.showwarning(
+                "Scanner Not Configured",
+                "Please configure the barcode scanner camera URL in Settings.",
+            )
+            return
+
+        scanner_active = True
+
+        billing_view.update_scanner_status(
+            "Scanner Active"
+        )
+
+        status_bar.scanner_connected()
+
+        status_bar.set_status(
+            "Scanning Product"
+        )
+
+        scan_barcode_background(
+            webcam_url,
+            on_barcode_detected,
+        )
 
     def stop_scan():
         global scanner_active
@@ -752,10 +788,49 @@ def launch_main_window():
     def save_webcam_url(url):
         global webcam_url
 
+        url = url.strip()
+
+        if not url:
+            messagebox.showwarning(
+                "Invalid Scanner URL",
+                "Please enter a valid camera stream URL.",
+            )
+            return
+
         webcam_url = url
+
+        try:
+            set(
+                "scanner",
+                "camera_url",
+                webcam_url,
+            )
+
+            set(
+                "scanner",
+                "type",
+                "mobile_camera",
+            )
+
+        except Exception as exc:
+            messagebox.showerror(
+                "Settings Error",
+                f"Unable to save scanner settings.\n\n{exc}",
+            )
+            return
 
         if scanner_active:
             stop_scanner()
+
+        messagebox.showinfo(
+            "Scanner Settings",
+            "Barcode scanner settings saved successfully.",
+        )
+
+
+    # =====================================================
+    # Settings View
+    # =====================================================
 
     settings_view = SettingsView(
         content_container,
