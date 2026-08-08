@@ -1,13 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
-from gui.find_bill.bill_details_dialog import BillDetailsDialog
 
 
 class FindBillView(tk.Frame):
 
     def __init__(self, parent, callbacks):
 
-        super().__init__(parent, bg="#e9ecef")
+        super().__init__(
+            parent,
+            bg="#e9ecef",
+        )
 
         self.callbacks = callbacks
 
@@ -15,14 +17,26 @@ class FindBillView(tk.Frame):
 
         self.build_ui()
 
+    # =====================================================
+    # UI
+    # =====================================================
+
     def build_ui(self):
 
-        # ==========================
+        # =================================================
         # Header
-        # ==========================
+        # =================================================
 
-        header = tk.Frame(self, bg="#e9ecef")
-        header.pack(fill="x", padx=10, pady=10)
+        header = tk.Frame(
+            self,
+            bg="#e9ecef",
+        )
+
+        header.pack(
+            fill="x",
+            padx=10,
+            pady=10,
+        )
 
         tk.Label(
             header,
@@ -30,11 +44,13 @@ class FindBillView(tk.Frame):
             bg="#e9ecef",
             fg="#1f2937",
             font=("Segoe UI", 18, "bold"),
-        ).pack(side="left")
+        ).pack(
+            side="left"
+        )
 
-        # ==========================
+        # =================================================
         # Search Section
-        # ==========================
+        # =================================================
 
         search_frame = tk.LabelFrame(
             self,
@@ -43,14 +59,23 @@ class FindBillView(tk.Frame):
             font=("Segoe UI", 10, "bold"),
         )
 
-        search_frame.pack(fill="x", padx=10, pady=(0, 8))
+        search_frame.pack(
+            fill="x",
+            padx=10,
+            pady=(0, 8),
+        )
 
         tk.Label(
             search_frame,
-            text="Bill No / Customer / Mobile",
+            text="Bill No / Payment / Date",
             bg="white",
             font=("Segoe UI", 10),
-        ).grid(row=0, column=0, padx=10, pady=10)
+        ).grid(
+            row=0,
+            column=0,
+            padx=10,
+            pady=10,
+        )
 
         search_entry = tk.Entry(
             search_frame,
@@ -59,7 +84,11 @@ class FindBillView(tk.Frame):
             font=("Segoe UI", 10),
         )
 
-        search_entry.grid(row=0, column=1, padx=5)
+        search_entry.grid(
+            row=0,
+            column=1,
+            padx=5,
+        )
 
         search_entry.focus_set()
 
@@ -70,7 +99,11 @@ class FindBillView(tk.Frame):
             fg="white",
             width=12,
             command=self.search_bill,
-        ).grid(row=0, column=2, padx=5)
+        ).grid(
+            row=0,
+            column=2,
+            padx=5,
+        )
 
         tk.Button(
             search_frame,
@@ -79,15 +112,26 @@ class FindBillView(tk.Frame):
             fg="white",
             width=12,
             command=self.refresh_table,
-        ).grid(row=0, column=3, padx=5)
+        ).grid(
+            row=0,
+            column=3,
+            padx=5,
+        )
 
-        # ==========================
+        # =================================================
         # Bill Table
-        # ==========================
+        # =================================================
 
-        table_frame = tk.Frame(self, bg="white")
+        table_frame = tk.Frame(
+            self,
+            bg="white",
+        )
 
-        table_frame.pack(fill="both", expand=True, padx=10)
+        table_frame.pack(
+            fill="both",
+            expand=True,
+            padx=10,
+        )
 
         columns = (
             "Bill No",
@@ -104,17 +148,32 @@ class FindBillView(tk.Frame):
             height=16,
         )
 
-        widths = [180, 180, 120, 80, 120]
+        widths = {
+            "Bill No": 180,
+            "Date": 180,
+            "Payment": 120,
+            "Items": 80,
+            "Total": 120,
+        }
 
-        for col, width in zip(columns, widths):
+        for col in columns:
 
-            self.bill_tree.heading(col, text=col)
+            self.bill_tree.heading(
+                col,
+                text=col,
+            )
 
             self.bill_tree.column(
                 col,
-                width=width,
+                width=widths[col],
                 anchor="center",
             )
+
+        # Total should remain readable
+        self.bill_tree.column(
+            "Total",
+            anchor="e",
+        )
 
         scroll = ttk.Scrollbar(
             table_frame,
@@ -123,7 +182,7 @@ class FindBillView(tk.Frame):
         )
 
         self.bill_tree.configure(
-            yscrollcommand=scroll.set
+            yscrollcommand=scroll.set,
         )
 
         self.bill_tree.pack(
@@ -137,13 +196,20 @@ class FindBillView(tk.Frame):
             fill="y",
         )
 
-        # ==========================
+        # =================================================
         # Bottom Buttons
-        # ==========================
+        # =================================================
 
-        button_frame = tk.Frame(self, bg="#e9ecef")
+        button_frame = tk.Frame(
+            self,
+            bg="#e9ecef",
+        )
 
-        button_frame.pack(fill="x", padx=10, pady=10)
+        button_frame.pack(
+            fill="x",
+            padx=10,
+            pady=10,
+        )
 
         tk.Button(
             button_frame,
@@ -152,7 +218,9 @@ class FindBillView(tk.Frame):
             bg="#2563eb",
             fg="white",
             command=self.open_selected_bill,
-        ).pack(side="left")
+        ).pack(
+            side="left",
+        )
 
         tk.Button(
             button_frame,
@@ -161,7 +229,10 @@ class FindBillView(tk.Frame):
             bg="#16a34a",
             fg="white",
             command=self.reprint_selected_bill,
-        ).pack(side="left", padx=5)
+        ).pack(
+            side="left",
+            padx=5,
+        )
 
         tk.Button(
             button_frame,
@@ -170,18 +241,28 @@ class FindBillView(tk.Frame):
             bg="#dc2626",
             fg="white",
             command=self.delete_selected_bill,
-        ).pack(side="left", padx=5)
+        ).pack(
+            side="left",
+            padx=5,
+        )
+
         tk.Button(
             button_frame,
             text="Back",
             width=14,
             command=self.callbacks["back"],
-        ).pack(side="right")
+        ).pack(
+            side="right",
+        )
 
         self.bill_tree.bind(
             "<Double-1>",
             self.on_double_click,
         )
+
+    # =====================================================
+    # Double Click
+    # =====================================================
 
     def on_double_click(self, event):
 
@@ -189,45 +270,73 @@ class FindBillView(tk.Frame):
 
             self.open_selected_bill()
 
+    # =====================================================
+    # Delete
+    # =====================================================
+
     def delete_selected_bill(self):
 
         selected = self.bill_tree.selection()
 
         if not selected:
-
             return
 
-        bill_no = self.bill_tree.item(selected[0])["values"][0]
+        bill_no = self.bill_tree.item(
+            selected[0]
+        )["values"][0]
 
         if "delete" in self.callbacks:
 
-            self.callbacks["delete"](bill_no)
+            self.callbacks["delete"](
+                bill_no
+            )
+
+    # =====================================================
+    # Reprint
+    # =====================================================
 
     def reprint_selected_bill(self):
 
         selected = self.bill_tree.selection()
 
         if not selected:
-
             return
 
-        bill_no = self.bill_tree.item(selected[0])["values"][0]
+        bill_no = self.bill_tree.item(
+            selected[0]
+        )["values"][0]
 
         if "reprint" in self.callbacks:
 
-            self.callbacks["reprint"](bill_no)
+            self.callbacks["reprint"](
+                bill_no
+            )
 
-    def open_selected_bill(self, event=None):
+    # =====================================================
+    # View
+    # =====================================================
+
+    def open_selected_bill(
+        self,
+        event=None,
+    ):
 
         selected = self.bill_tree.selection()
 
         if not selected:
-
             return
 
-        bill_no = self.bill_tree.item(selected[0])["values"][0]
+        bill_no = self.bill_tree.item(
+            selected[0]
+        )["values"][0]
 
-        self.callbacks["view"](bill_no)
+        self.callbacks["view"](
+            bill_no
+        )
+
+    # =====================================================
+    # Search
+    # =====================================================
 
     def search_bill(self):
 
@@ -237,15 +346,29 @@ class FindBillView(tk.Frame):
                 self.bill_search_var.get().strip()
             )
 
+    # =====================================================
+    # Refresh
+    # =====================================================
+
     def refresh_table(self):
 
         if "refresh" in self.callbacks:
 
             self.callbacks["refresh"]()
 
+    # =====================================================
+    # Clear
+    # =====================================================
+
     def clear_table(self):
 
-        self.bill_tree.delete(*self.bill_tree.get_children())
+        self.bill_tree.delete(
+            *self.bill_tree.get_children()
+        )
+
+    # =====================================================
+    # Add Bill
+    # =====================================================
 
     def add_bill(
         self,

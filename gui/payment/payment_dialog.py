@@ -159,5 +159,3 @@ class PaymentDialog(tk.Toplevel):
         )
 
         self.destroy()
-
-        self.destroy()

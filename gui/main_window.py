@@ -203,62 +203,91 @@ def launch_main_window():
 
         completed_bill = bill_number
 
-        # --------------------------------
-        # Generate PDF & Save Bill
-        # --------------------------------
+        try:
 
-        generate_pdf_bill(
-            cart,
-            completed_bill,
-            payment_mode,
-            received_amount,
-        )
+            # --------------------------------
+            # Generate A4 + 80mm PDFs
+            # --------------------------------
 
-        # --------------------------------
-        # Reduce Product Stock
-        # --------------------------------
+            result = generate_pdf_bill(
+                cart,
+                completed_bill,
+                payment_mode,
+                received_amount,
+            )
 
-        for item in cart:
+            # --------------------------------
+            # Reduce Product Stock
+            # --------------------------------
 
-            product = get_product_by_barcode(item["barcode"])
+            for item in cart:
 
-            if product:
+                product = get_product_by_barcode(
+                    item["barcode"]
+                )
 
-                product["stock"] -= item["qty"]
+                if product:
 
-                edit_product(product["barcode"], product)
+                    current_stock = int(
+                        product.get("stock", 0)
+                    )
 
-        # --------------------------------
-        # Refresh Product Table
-        # --------------------------------
+                    product["stock"] = max(
+                        0,
+                        current_stock - int(item["qty"])
+                    )
 
-        product_view.refresh_table()
+                    edit_product(
+                        product["barcode"],
+                        product,
+                    )
 
-        # --------------------------------
-        # Clear Current Cart
-        # --------------------------------
+            # --------------------------------
+            # Refresh Product Table
+            # --------------------------------
 
-        cart.clear()
+            product_view.refresh_table()
 
-        refresh_table()
+            # --------------------------------
+            # Clear Current Cart
+            # --------------------------------
 
-        # --------------------------------
-        # Success Message
-        # --------------------------------
+            cart.clear()
 
-        messagebox.showinfo(
-            "Sale Completed", f"Invoice {completed_bill} generated successfully."
-        )
+            refresh_table()
 
-        # --------------------------------
-        # Generate Next Bill Number
-        # --------------------------------
+            # --------------------------------
+            # Success Message
+            # --------------------------------
 
-        bill_number = generate_bill_number()
+            messagebox.showinfo(
+                "Sale Completed",
+                (
+                    f"Invoice {completed_bill} generated successfully.\n\n"
+                    "A4 and 80mm bills have been saved."
+                ),
+            )
 
-        billing_view.set_bill_number(bill_number)
+            # --------------------------------
+            # Generate Next Bill Number
+            # --------------------------------
 
-        status_bar.set_bill_number(bill_number)
+            bill_number = generate_bill_number()
+
+            billing_view.set_bill_number(
+                bill_number
+            )
+
+            status_bar.set_bill_number(
+                bill_number
+            )
+
+        except Exception as e:
+
+            messagebox.showerror(
+                "Sale Error",
+                f"Unable to complete the sale.\n\n{e}",
+            )
 
     def search_bill(keyword):
 
@@ -293,29 +322,76 @@ def launch_main_window():
 
                 return
 
+        messagebox.showerror(
+            "Bill Not Found",
+            f"Invoice {bill_no} was not found.",
+        )
+
     def reprint_bill(bill_no):
 
         bills = get_all_bills()
 
         for bill in bills:
 
-            if bill["bill_no"] == bill_no:
+            if bill["bill_no"] != bill_no:
+                continue
 
-                generate_pdf_bill(
+            try:
+
+                # --------------------------------
+                # Rebuild A4 + 80mm PDFs
+                # WITHOUT creating another
+                # bill-history entry.
+                # --------------------------------
+
+                result = generate_pdf_bill(
                     bill["items"],
                     bill["bill_no"],
-                    bill.get("payment_mode", "Cash"),
-                    bill.get("received_amount", bill["total"]),
+                    bill.get(
+                        "payment_mode",
+                        "Cash",
+                    ),
+                    bill.get(
+                        "received_amount",
+                        bill.get(
+                            "total",
+                            0,
+                        ),
+                    ),
+                    cashier=bill.get(
+                        "cashier",
+                        "Admin",
+                    ),
+                    save_history=False,
                 )
 
+                # --------------------------------
+                # Show success
+                # --------------------------------
+
                 messagebox.showinfo(
-                    "Reprint", f"Invoice {bill_no} has been regenerated."
+                    "Reprint Successful",
+                    (
+                        f"Invoice {bill_no} regenerated successfully.\n\n"
+                        "A4 and 80mm PDFs are ready."
+                    ),
                 )
 
                 return
 
-        messagebox.showerror("Error", "Bill not found.")
+            except Exception as e:
 
+                messagebox.showerror(
+                    "Reprint Error",
+                    f"Unable to regenerate invoice.\n\n{e}",
+                )
+
+                return
+
+        messagebox.showerror(
+            "Bill Not Found",
+            f"Invoice {bill_no} was not found.",
+        )
     def delete_bill(bill_no):
 
         if not messagebox.askyesno(
