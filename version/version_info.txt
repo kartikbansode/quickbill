@@ -14,14 +14,14 @@ VSVersionInfo(
       StringTable(
         '040904B0',
         [
-          StringStruct('CompanyName', 'QuickBill Technologies'),
+          StringStruct('CompanyName', 'Essenc Technologies'),
           StringStruct('FileDescription', 'Professional Barcode Billing Software'),
-          StringStruct('FileVersion', '1.0.0'),
+          StringStruct('FileVersion', '2.1.0'),
           StringStruct('InternalName', 'QuickBill'),
-          StringStruct('LegalCopyright', '© 2026 QuickBill Technologies'),
+          StringStruct('LegalCopyright', '© 2026 Essenc Technologies'),
           StringStruct('OriginalFilename', 'QuickBill.exe'),
           StringStruct('ProductName', 'QuickBill'),
-          StringStruct('ProductVersion', '1.0.0')
+          StringStruct('ProductVersion', '2.1.0')
         ]
       )
     ]),

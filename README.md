@@ -1,6 +1,6 @@
 # QuickBill
 
-> **Latest Version:** 2.0.0  
+> **Latest Version:** 2.1.0  
 > **Release Date:** August 2026
 
 QuickBill is a modern desktop billing and inventory management application built with Python. It is designed for retail shops and small businesses, providing fast billing, barcode scanning, inventory management, barcode label generation, and professional PDF invoice creation through a simple and user-friendly interface.
@@ -9,18 +9,18 @@ QuickBill is a modern desktop billing and inventory management application built
 
 ## Features
 
-- Product Management (Add, Edit, Delete & Search)
-- Barcode Scanner Support (USB/IP Camera)
-- Fast Billing System
-- Professional PDF Invoice Generation
-- Barcode Label PDF Generator
-- Hold & Resume Bills
-- Bill History with Search & Reprint
-- Automatic Bill Number Generation
-- Inventory & Stock Management
-- Customizable Application Settings
-- Professional Windows Installer & Uninstaller
-- Portable JSON-based Local Database
+- Product management: add, edit, delete, search
+- Barcode scanner support with USB / IP camera
+- Fast billing workflow
+- Professional PDF invoice generation
+- Barcode label PDF generation
+- Hold and resume bills
+- Bill history, search, and reprint
+- Automatic bill number generation
+- Inventory and stock management
+- Settings for app and billing configuration
+- Portable JSON-based local database
+- Windows installer and uninstaller
 
 ---
 
