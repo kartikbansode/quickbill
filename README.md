@@ -36,7 +36,13 @@ QuickBill is a modern desktop billing and inventory management application built
 
 ### Invoice
 
-<img width="938" height="910" alt="image" src="https://github.com/user-attachments/assets/db2be3bc-06c2-4981-9d5d-c7041c6f2076" />
+### 80 mm - 
+<img width="347" height="826" alt="image" src="https://github.com/user-attachments/assets/5b73904e-bc3e-4373-9fc0-c13501e12a9d" />
+
+### A4 -
+<img width="671" height="842" alt="image" src="https://github.com/user-attachments/assets/b87f7430-563c-400b-b93d-4c637720cee1" />
+
+
 
 ---
 
