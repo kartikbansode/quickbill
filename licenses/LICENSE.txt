@@ -1,20 +1,44 @@
-QuickBill Billing System
+# QuickBill Billing System
 
-Version 2.1.0
+**Version 2.1.0**
 
-Copyright © 2026 Essenc Technologies
+Copyright © 2026 Essenc Technologies. All Rights Reserved.
 
-This software is licensed, not sold.
+## Proprietary Software License
 
-You may install and use this software on your computer.
+This software, including its source code, executable files, user interface, documentation, graphics, and other associated materials, is proprietary software owned by Essenc Technologies ("Owner").
 
-You may not:
-• Reverse engineer this software.
-• Modify or redistribute this software.
-• Sell or repackage this software.
-• Remove copyright notices.
+The software is licensed to you, not sold.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+Subject to the terms of this license, you are granted a limited, non-exclusive, non-transferable license to install and use the software for your own business or personal purposes.
 
-Copyright © 2026 QuickBill Technologies.
-All Rights Reserved.
+You may not, except where expressly permitted by applicable law:
+
+* Copy, reproduce, or redistribute the software.
+* Modify, adapt, or create derivative works of the software.
+* Reverse engineer, decompile, disassemble, or attempt to derive the source code of the software.
+* Sell, sublicense, lease, rent, or commercially redistribute the software.
+* Repackage or distribute modified or unmodified copies of the software.
+* Remove or alter copyright, trademark, attribution, or other proprietary notices.
+
+All rights not expressly granted under this license are reserved by the Owner.
+
+## Disclaimer of Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
+
+THE OWNER DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE, UNINTERRUPTED, OR SUITABLE FOR EVERY PARTICULAR PURPOSE.
+
+## Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE OWNER SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR LOSS-OF-PROFIT DAMAGES ARISING OUT OF OR RELATED TO THE USE OF, OR INABILITY TO USE, THE SOFTWARE.
+
+## Acceptance
+
+By installing or using QuickBill, you acknowledge that you have read, understood, and agreed to the terms of this license.
+
+## Copyright
+
+Copyright © 2026 Essenc Technologies. All Rights Reserved.
+
+QuickBill is a proprietary software product of Essenc Technologies.
