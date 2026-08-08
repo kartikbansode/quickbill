@@ -1,5 +1,5 @@
 #define MyAppName "QuickBill"
-#define MyAppVersion "2.1.0"
+#define MyAppVersion "2.1.1"
 #define MyAppPublisher "QuickBill Technologies"
 #define MyAppExeName "QuickBill.exe"
 
@@ -18,7 +18,7 @@ DefaultDirName={autopf}\QuickBill
 DefaultGroupName=QuickBill
 
 OutputDir=..\release
-OutputBaseFilename=QuickBill_Setup_v2.1.0
+OutputBaseFilename=QuickBill_Setup_v2.1.1
 
 SetupIconFile=..\assets\images\logo.ico
 
@@ -45,11 +45,11 @@ DisableDirPage=no
 
 UninstallDisplayIcon={app}\QuickBill.exe
 
-VersionInfoVersion=2.1.0.0
+VersionInfoVersion=2.1.1.0
 VersionInfoCompany=QuickBill Technologies
 VersionInfoDescription=QuickBill Billing System
 VersionInfoProductName=QuickBill
-VersionInfoProductVersion=2.1.0
+VersionInfoProductVersion=2.1.1
 VersionInfoCopyright=Copyright © 2026 QuickBill Technologies
 
 SetupLogging=yes

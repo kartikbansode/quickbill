@@ -1,7 +1,7 @@
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(2,1,0,0),
-    prodvers=(2,1,0,0),
+    filevers=(2,1,1,0),
+    prodvers=(2,1,1,0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -16,12 +16,12 @@ VSVersionInfo(
         [
           StringStruct('CompanyName', 'Essenc Technologies'),
           StringStruct('FileDescription', 'Professional Barcode Billing Software'),
-          StringStruct('FileVersion', '2.1.0'),
+          StringStruct('FileVersion', '2.1.1'),
           StringStruct('InternalName', 'QuickBill'),
           StringStruct('LegalCopyright', 'Copyright © 2026 Essenc Technologies. All Rights Reserved.'),
           StringStruct('OriginalFilename', 'QuickBill.exe'),
           StringStruct('ProductName', 'QuickBill'),
-          StringStruct('ProductVersion', '2.1.0')
+          StringStruct('ProductVersion', '2.1.1')
         ]
       )
     ]),
