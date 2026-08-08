@@ -1,10 +1,9 @@
 from gui.splash_screen import SplashScreen
 from logic.database import init_product_db, init_bill_db
+from logic.customer_display_server import customer_display
 from gui.main_window import launch_main_window
 
 import time
-import os
-import sys
 
 
 def main():
@@ -28,6 +27,10 @@ def main():
     splash.update(90, "Initializing Barcode Scanner...")
     time.sleep(0.3)
 
+    splash.update(95, "Starting Customer Display...")
+    customer_display.start()
+    time.sleep(0.3)
+
     splash.update(100, "Launching QuickBill...")
     time.sleep(0.2)
 
@@ -36,7 +39,5 @@ def main():
     launch_main_window()
 
 
-
 if __name__ == "__main__":
-
     main()

@@ -11,7 +11,6 @@ from logic.database import (
     get_all_products,
     search_products,
 )
-from logic.pdf_generator import generate_pdf_bill
 import os
 import json
 from gui.toolbar import Toolbar
@@ -30,8 +29,11 @@ from logic.bill_history import (
 )
 from logic.database import generate_bill_number
 from gui.find_bill.bill_details_dialog import BillDetailsDialog
-from logic.resource_path import resource_path
 from logic.file_paths import data_path
+from logic.customer_display_server import customer_display
+from logic.pdf_generator import generate_pdf_bill
+from logic.resource_path import resource_path
+from logic.app_state import app_state
 
 scanner_active = False
 webcam_url = "http://192.168.0.203:8080/video"  # Default webcam URL
@@ -43,6 +45,22 @@ BILLS_HISTORY_FILE = data_path("bills_history.json")
 def launch_main_window():
 
     window = tk.Tk()
+
+    def close_application():
+        try:
+            customer_display.stop()
+        except Exception:
+            pass
+
+        try:
+            window.destroy()
+        except Exception:
+            pass
+
+    window.protocol(
+        "WM_DELETE_WINDOW",
+        close_application,
+    )
 
     window.attributes("-fullscreen", True)
 
@@ -110,11 +128,100 @@ def launch_main_window():
     # --- Billing View ---
     billing_view = None
 
+    def broadcast_current_bill():
+        """
+        Send the complete current billing state to the optional
+        Android customer display.
+
+        The Android display is never required for billing.
+        Any failure here must not affect QuickBill.
+        """
+
+        try:
+
+            subtotal, tax, discount, total = calculate_totals()
+
+            items = []
+
+            for item in cart:
+
+                rate = float(
+                    item.get(
+                        "selling_price",
+                        item.get("price", 0),
+                    )
+                )
+
+                qty = int(item.get("qty", 0))
+
+                items.append(
+                    {
+                        "barcode": item.get("barcode", ""),
+                        "sku": item.get("sku", ""),
+                        "name": item.get("name", ""),
+                        "brand": item.get("brand", ""),
+                        "category": item.get("category", ""),
+                        "qty": qty,
+                        "rate": rate,
+                        "amount": round(rate * qty, 2),
+                        "gst": item.get("gst", 0),
+                    }
+                )
+
+            message = {
+                "type": "bill_update",
+                "bill_no": bill_number,
+                "customer": {
+                    "name": "Walk-in Customer",
+                    "mobile": "",
+                },
+                "items": items,
+                "subtotal": round(subtotal, 2),
+                "tax": round(tax, 2),
+                "discount": round(discount, 2),
+                "total": round(total, 2),
+                "payment": {
+                    "status": "pending",
+                    "mode": None,
+                },
+            }
+
+            customer_display.broadcast(message)
+
+        except Exception as exc:
+
+            # Customer display is optional.
+            # Never allow it to affect billing.
+            print(f"[CustomerDisplay] Bill broadcast skipped: {exc}")
+
     def refresh_table():
         if billing_view is None:
             return
+
         billing_view.render_cart(cart)
         billing_view.refresh_totals()
+
+        # --------------------------------
+        # Customer Display
+        # --------------------------------
+        try:
+            subtotal, tax, discount, total = calculate_totals()
+
+            customer_display.bill_update(
+                bill_no=bill_number,
+                items=cart,
+                subtotal=subtotal,
+                tax=tax,
+                discount=discount,
+                total=total,
+                customer=app_state.current_customer,
+                cashier=app_state.operator,
+            )
+
+        except Exception as exc:
+            # Customer display is optional.
+            # Never allow it to affect desktop billing.
+            print("[CustomerDisplay] " f"Bill update failed: {exc}")
 
     def update_totals():
         if billing_view is not None:
@@ -183,10 +290,65 @@ def launch_main_window():
     except:
         pass
 
+        # =====================================================
+    # Customer Display - Payment Events
+    # =====================================================
+
+    def customer_display_payment_started(mode, total):
+        """
+        Notify the optional Android customer display that
+        payment has started.
+
+        Failure of the customer display must never affect
+        the desktop billing process.
+        """
+
+        try:
+
+            customer_display.payment_started(
+                bill_number,
+                mode,
+                total,
+            )
+
+            # UPI requires a waiting state after start.
+            if mode == "UPI":
+
+                customer_display.payment_pending(
+                    bill_number,
+                    mode,
+                    total,
+                )
+
+        except Exception as exc:
+
+            print(f"[CustomerDisplay] " f"Payment start notification failed: {exc}")
+
+    def customer_display_payment_cancelled(mode):
+        """
+        Notify Android that the payment dialog was cancelled.
+        """
+
+        try:
+
+            customer_display.payment_cancelled(
+                bill_number,
+                mode,
+            )
+
+        except Exception as exc:
+
+            print(f"[CustomerDisplay] " f"Payment cancel notification failed: {exc}")
+
     def open_payment_dialog():
 
         if not cart:
-            messagebox.showwarning("Empty Bill", "Please add at least one product.")
+
+            messagebox.showwarning(
+                "Empty Bill",
+                "Please add at least one product.",
+            )
+
             return
 
         subtotal, tax, discount, total = calculate_totals()
@@ -195,6 +357,8 @@ def launch_main_window():
             window,
             total,
             complete_sale,
+            on_payment_start=customer_display_payment_started,
+            on_payment_cancel=customer_display_payment_cancelled,
         )
 
     def complete_sale(payment_mode, received_amount):
@@ -204,6 +368,12 @@ def launch_main_window():
         completed_bill = bill_number
 
         try:
+
+            # --------------------------------
+            # Calculate final total
+            # --------------------------------
+
+            subtotal, tax, discount, total = calculate_totals()
 
             # --------------------------------
             # Generate A4 + 80mm PDFs
@@ -222,20 +392,13 @@ def launch_main_window():
 
             for item in cart:
 
-                product = get_product_by_barcode(
-                    item["barcode"]
-                )
+                product = get_product_by_barcode(item["barcode"])
 
                 if product:
 
-                    current_stock = int(
-                        product.get("stock", 0)
-                    )
+                    current_stock = int(product.get("stock", 0))
 
-                    product["stock"] = max(
-                        0,
-                        current_stock - int(item["qty"])
-                    )
+                    product["stock"] = max(0, current_stock - int(item["qty"]))
 
                     edit_product(
                         product["barcode"],
@@ -254,7 +417,57 @@ def launch_main_window():
 
             cart.clear()
 
-            refresh_table()
+            billing_view.render_cart(cart)
+            billing_view.refresh_totals()
+
+            # --------------------------------
+            # Customer Display
+            # Payment Completed
+            # --------------------------------
+
+            try:
+
+                customer_display.payment_completed(
+                    completed_bill,
+                    payment_mode,
+                    total,
+                )
+
+                customer_display.sale_completed(
+                    completed_bill,
+                    payment_mode,
+                    total,
+                )
+
+            except Exception as exc:
+
+                print("[CustomerDisplay] " f"Completion notification failed: {exc}")
+
+            # --------------------------------
+            # Generate Next Bill Number
+            # --------------------------------
+
+            bill_number = generate_bill_number()
+
+            billing_view.set_bill_number(bill_number)
+
+            status_bar.set_bill_number(bill_number)
+
+            # --------------------------------
+            # Customer Display - New Bill
+            # --------------------------------
+
+            try:
+
+                customer_display.new_bill(
+                    bill_number,
+                    customer=app_state.current_customer,
+                    cashier=app_state.operator,
+                )
+
+            except Exception as exc:
+
+                print("[CustomerDisplay] " f"New bill notification failed: {exc}")
 
             # --------------------------------
             # Success Message
@@ -268,21 +481,11 @@ def launch_main_window():
                 ),
             )
 
-            # --------------------------------
-            # Generate Next Bill Number
-            # --------------------------------
-
-            bill_number = generate_bill_number()
-
-            billing_view.set_bill_number(
-                bill_number
-            )
-
-            status_bar.set_bill_number(
-                bill_number
-            )
-
         except Exception as e:
+
+            # --------------------------------
+            # Sale Error
+            # --------------------------------
 
             messagebox.showerror(
                 "Sale Error",
@@ -392,6 +595,7 @@ def launch_main_window():
             "Bill Not Found",
             f"Invoice {bill_no} was not found.",
         )
+
     def delete_bill(bill_no):
 
         if not messagebox.askyesno(
@@ -492,6 +696,23 @@ def launch_main_window():
         billing_view.set_bill_number(bill_number)
 
         status_bar.set_bill_number(bill_number)
+
+        try:
+
+            customer_display.bill_update(
+                bill_no=bill_number,
+                items=cart,
+                subtotal=calculate_totals()[0],
+                tax=calculate_totals()[1],
+                discount=calculate_totals()[2],
+                total=calculate_totals()[3],
+                customer=app_state.current_customer,
+                cashier=app_state.operator,
+            )
+
+        except Exception as exc:
+
+            print("[CustomerDisplay] " f"Hold bill display update failed: {exc}")
 
         messagebox.showinfo("Hold Bill", f"{bill['hold_no']} resumed successfully.")
 
@@ -738,7 +959,7 @@ def launch_main_window():
             "settings": show_settings_view,
             "customers": lambda: None,
             "reports": lambda: None,
-            "exit": window.destroy,
+            "exit": close_application,
         },
     )
 
