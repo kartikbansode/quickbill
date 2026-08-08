@@ -1,10 +1,10 @@
-# QuickBill Billing System
+QuickBill Billing System
 
-**Version 2.1.0**
+Version 2.1.0
 
 Copyright © 2026 Essenc Technologies. All Rights Reserved.
 
-## Proprietary Software License
+Proprietary Software License
 
 This software, including its source code, executable files, user interface, documentation, graphics, and other associated materials, is proprietary software owned by Essenc Technologies ("Owner").
 
@@ -23,21 +23,21 @@ You may not, except where expressly permitted by applicable law:
 
 All rights not expressly granted under this license are reserved by the Owner.
 
-## Disclaimer of Warranty
+Disclaimer of Warranty
 
 THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
 
 THE OWNER DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE, UNINTERRUPTED, OR SUITABLE FOR EVERY PARTICULAR PURPOSE.
 
-## Limitation of Liability
+Limitation of Liability
 
 TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE OWNER SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR LOSS-OF-PROFIT DAMAGES ARISING OUT OF OR RELATED TO THE USE OF, OR INABILITY TO USE, THE SOFTWARE.
 
-## Acceptance
+Acceptance
 
 By installing or using QuickBill, you acknowledge that you have read, understood, and agreed to the terms of this license.
 
-## Copyright
+Copyright
 
 Copyright © 2026 Essenc Technologies. All Rights Reserved.
 
