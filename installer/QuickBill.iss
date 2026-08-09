@@ -1,6 +1,6 @@
 #define MyAppName "QuickBill"
 #define MyAppVersion "2.2.0"
-#define MyAppPublisher "QuickBill Technologies"
+#define MyAppPublisher "Essenc Technologies"
 #define MyAppExeName "QuickBill.exe"
 
 [Setup]
@@ -46,11 +46,11 @@ DisableDirPage=no
 UninstallDisplayIcon={app}\QuickBill.exe
 
 VersionInfoVersion=2.2.0.0
-VersionInfoCompany=QuickBill Technologies
-VersionInfoDescription=QuickBill Billing System
+VersionInfoCompany=Essenc Technologies
+VersionInfoDescription=Professional Barcode Billing Software
 VersionInfoProductName=QuickBill
 VersionInfoProductVersion=2.2.0
-VersionInfoCopyright=Copyright © 2026 QuickBill Technologies
+VersionInfoCopyright=Copyright © 2026 Essenc Technologies. All Rights Reserved.
 
 SetupLogging=yes
 

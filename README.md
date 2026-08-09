@@ -9,6 +9,20 @@ QuickBill is a modern desktop billing and inventory management application built
 
 ---
 
+## What's Changed in v2.2.0
+
+- Refined and more professional payment dialog
+- Fixed payment workflow bugs and improved transaction locking
+- Added dynamic UPI QR support for faster payment collection
+- Improved customer display synchronization with desktop billing
+- Added automatic reconnect and more stable display connection handling
+- Better handling for cash, UPI, card, and credit payment modes
+- Improved success screen behavior after completed transactions
+- General UI and stability improvements
+- Updated versioning, installer metadata, and release packaging
+
+---
+
 ## Features
 
 - Product management: add, edit, delete, search
@@ -38,13 +52,13 @@ QuickBill is a modern desktop billing and inventory management application built
 
 ### Invoice
 
-### 80 mm - 
+### 80 mm -
+
 <img width="347" height="826" alt="image" src="https://github.com/user-attachments/assets/5b73904e-bc3e-4373-9fc0-c13501e12a9d" />
 
 ### A4 -
+
 <img width="671" height="842" alt="image" src="https://github.com/user-attachments/assets/b87f7430-563c-400b-b93d-4c637720cee1" />
-
-
 
 ---
 
@@ -52,12 +66,6 @@ QuickBill is a modern desktop billing and inventory management application built
 
 - Python 3.11+
 - Windows 10 / Windows 11
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
 
 ---
 
@@ -73,6 +81,12 @@ Go to the project directory:
 
 ```bash
 cd quickbill
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
 ```
 
 Run the application:
