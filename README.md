@@ -62,8 +62,8 @@
 
   <a href="https://github.com/kartikbansode/quickbill/blob/main/LICENSE">
     <img
-      src="https://img.shields.io/badge/License-MIT-green"
-      alt="MIT License"
+      src="https://img.shields.io/badge/LICENCE-green"
+      alt="License"
     />
   </a>
 </p>
@@ -200,7 +200,15 @@ The executable will be generated inside the `dist` folder.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is proprietary software.
+
+Copyright © 2026 Kartik Bansode. All Rights Reserved.
+
+The source code is publicly available for viewing, educational, portfolio, and evaluation purposes only.
+
+No permission is granted to copy, reproduce, modify, redistribute, republish, commercially use, sublicense, sell, or create derivative works from this software or its source code without prior written permission from the copyright holder.
+
+For complete terms and restrictions, see the [LICENSE](https://github.com/kartikbansode/quickbill/blob/main/LICENSE) file.
 
 ---
 
