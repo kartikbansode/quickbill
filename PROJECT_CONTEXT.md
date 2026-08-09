@@ -1,7 +1,7 @@
-# QuickBill - Complete Project Context v2.1.1
+# QuickBill - Complete Project Context v2.2.0
 
 ## 1. Project Information
-**Project Name:** QuickBill | **Version:** v2.1.1 | **Type:** Desktop Billing & Inventory Management Software | **Language:** Python 3.11 | **OS:** Windows | **UI Framework:** Tkinter | **License:** MIT | **Packaging:** PyInstaller | **Installer:** Inno Setup | **Repository:** https://github.com/kartikbansode/quickbill
+**Project Name:** QuickBill | **Version:** v2.2.0 | **Type:** Desktop Billing & Inventory Management Software | **Language:** Python 3.11 | **OS:** Windows | **UI Framework:** Tkinter | **License:** MIT | **Packaging:** PyInstaller | **Installer:** Inno Setup | **Repository:** https://github.com/kartikbansode/quickbill
 
 ## 2. Project Goal
 QuickBill is a complete desktop billing software for small businesses, retail shops, grocery stores and local stores. Objective: Provide lightweight but professional billing system without internet connection or external database. Application stores all data locally. Everything designed to be simple, fast and professional.
@@ -346,7 +346,7 @@ One module = One responsibility. No duplicated code. Readable functions. Easy de
 # PART 5: BUILD, PACKAGING & RELEASE ENGINEERING
 
 ## 111. Deployment Philosophy
-QuickBill distributed as professional Windows application. End user never needs Python, pip, Git, Visual Studio, Command Prompt. User only downloads QuickBill_Setup_v2.1.1.exe and installs like any commercial Windows software
+QuickBill distributed as professional Windows application. End user never needs Python, pip, Git, Visual Studio, Command Prompt. User only downloads QuickBill_Setup_v2.2.0.exe and installs like any commercial Windows software
 
 ## 112. Development Environment
 **OS:** Windows 11 | **Language:** Python 3.11 | **Package Manager:** pip | **IDE:** Visual Studio Code | **Version Control:** Git | **Repository:** GitHub
@@ -442,4 +442,4 @@ QuickBill intended to evolve into complete retail ERP. **Future modules:** Custo
 Every new feature should: Follow existing folder structure, Remain modular, Avoid duplicated code, Use helper functions, Separate UI and logic, Preserve backward compatibility, Maintain offline-first design
 
 ## 143. Project Status
-**Current Version:** v2.1.1 | **Status:** Production Ready | **Application:** Stable | **Installer:** Stable | **Packaging:** Stable | **Runtime Storage:** Stable | **PDF Generation:** Stable | **Barcode System:** Stable | Ready for future feature development
+**Current Version:** v2.2.0 | **Status:** Production Ready | **Application:** Stable | **Installer:** Stable | **Packaging:** Stable | **Runtime Storage:** Stable | **PDF Generation:** Stable | **Barcode System:** Stable | Ready for future feature development
