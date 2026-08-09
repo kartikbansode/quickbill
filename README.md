@@ -1,13 +1,93 @@
-# QuickBill
+<p align="center">
+  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
+    <img width="80" height="80" alt="logo" src="https://github.com/user-attachments/assets/cc80dfee-89d8-4fc7-905d-7dfbaa3b480b" />
+  </a>
+</p>
 
-> **Latest Version:** 2.2.0  
-> **Release Date:** August 2026
+<h1 align="center">
+  QuickBill
+</h1>
 
-<a href="https://github.com/kartikbansode/quickbill/releases/download/v2.2.0/QuickBill_Setup_v2.2.0.exe">Download (Setup v2.2.0)</a>
+<p align="center">
+  <strong>Professional Desktop Billing & Inventory Management System</strong>
+</p>
 
-QuickBill is a modern desktop billing and inventory management application built with Python. It is designed for retail shops and small businesses, providing fast billing, barcode scanning, inventory management, barcode label generation, and professional PDF invoice creation through a simple and user-friendly interface.
+<p align="center">
+  Fast billing · Barcode scanning · Inventory management · Payments · Invoices
+</p>
 
----
+<p align="center">
+  <a href="https://github.com/kartikbansode/quickbill/releases">
+    Releases
+  </a>
+  &bull;
+  <a href="https://github.com/kartikbansode/quickbill/releases/download/v2.2.0/QuickBill_Setup_v2.2.0.exe">
+    Download v2.2.0
+  </a>
+  &bull;
+  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
+    Customer Display App
+  </a>
+  &bull;
+  <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">
+    Barcode Scanner App
+  </a>
+  &bull;
+  <a href="https://github.com/kartikbansode/quickbill">
+    Repository
+  </a>
+</p>
+
+<p align="center">
+  <img
+    src="https://img.shields.io/badge/Version-2.2.0-blue"
+    alt="Version 2.2.0"
+  />
+  <img
+    src="https://img.shields.io/badge/Python-3.11%2B-yellow"
+    alt="Python 3.11+"
+  />
+  <img
+    src="https://img.shields.io/badge/Platform-Windows-blue"
+    alt="Windows"
+  />
+  <img
+    src="https://img.shields.io/badge/License-MIT-green"
+    alt="MIT License"
+  />
+</p>
+
+<p align="center">
+  QuickBill is the core desktop billing application of the QuickBill ecosystem,
+  built for retail shops and small businesses. It combines fast point-of-sale
+  billing, barcode scanning, product and inventory management, payment
+  processing, professional invoice generation, bill history, and local
+  business data management in a single desktop application.
+</p>
+
+
+
+<p align="center">
+  <strong>Part of the QuickBill Ecosystem</strong>
+  <br>
+  QuickBill Desktop is the core billing system and authoritative source
+  for products, inventory, bills, payments and transactions.
+</p>
+
+<p align="center">
+  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
+    Customer Display
+  </a>
+  &nbsp;·&nbsp;
+  Real-time customer-facing billing, payment, QR and transaction display
+  <br>
+  <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">
+    Barcode Scanner
+  </a>
+  &nbsp;·&nbsp;
+  Companion Android barcode scanning application for QuickBill Desktop
+</p>
+
 
 ## What's Changed in v2.2.0
 
