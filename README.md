@@ -39,22 +39,33 @@
 </p>
 
 <p align="center">
-  <img
-    src="https://img.shields.io/badge/Version-2.2.0-blue"
-    alt="Version 2.2.0"
-  />
-  <img
-    src="https://img.shields.io/badge/Python-3.11%2B-yellow"
-    alt="Python 3.11+"
-  />
-  <img
-    src="https://img.shields.io/badge/Platform-Windows-blue"
-    alt="Windows"
-  />
-  <img
-    src="https://img.shields.io/badge/License-MIT-green"
-    alt="MIT License"
-  />
+  <a href="https://github.com/kartikbansode/quickbill/releases">
+    <img
+      src="https://img.shields.io/badge/Version-2.2.0-blue"
+      alt="Version 2.2.0"
+    />
+  </a>
+
+  <a href="https://www.python.org/downloads/">
+    <img
+      src="https://img.shields.io/badge/Python-3.11%2B-yellow"
+      alt="Python 3.11+"
+    />
+  </a>
+
+  <a href="https://www.microsoft.com/en-us/windows">
+    <img
+      src="https://img.shields.io/badge/Platform-Windows-blue"
+      alt="Windows"
+    />
+  </a>
+
+  <a href="https://github.com/kartikbansode/quickbill/blob/main/LICENSE">
+    <img
+      src="https://img.shields.io/badge/License-MIT-green"
+      alt="MIT License"
+    />
+  </a>
 </p>
 
 <p align="center">
