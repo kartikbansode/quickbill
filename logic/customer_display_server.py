@@ -1,4 +1,5 @@
 import json
+import socket
 import threading
 from typing import Optional, Set
 
@@ -10,33 +11,51 @@ except ImportError:
 
 class CustomerDisplayServer:
     """
-    Optional WebSocket server for the QuickBill Android
-    customer display.
+    QuickBill Customer Display server.
 
-    Android is only a customer-display client.
+    Desktop remains the source of truth.
 
-    The desktop QuickBill application remains fully
-    functional if:
-        - Android is disconnected
-        - Android crashes
-        - Wi-Fi/LAN fails
-        - the display server fails
-        - a client sends invalid data
+    WebSocket:
+        8765
 
-    Android never controls or approves a desktop sale.
+    UDP discovery:
+        8766
+
+    Android can discover the PC automatically on the
+    same local network and then connect through WebSocket.
     """
 
     PROTOCOL_VERSION = 2
 
-    def __init__(self, host="0.0.0.0", port=8765):
+    DISCOVERY_PORT = 8766
+
+    DISCOVERY_REQUEST = (
+        "QUICKBILL_DISCOVER_V1"
+    )
+
+    def __init__(
+        self,
+        host="0.0.0.0",
+        port=8765,
+    ):
 
         self.host = host
         self.port = port
 
-        self._thread: Optional[threading.Thread] = None
+        self._thread: Optional[
+            threading.Thread
+        ] = None
+
+        self._discovery_thread: Optional[
+            threading.Thread
+        ] = None
+
         self._server = None
 
+        self._discovery_socket = None
+
         self._clients: Set = set()
+
         self._lock = threading.Lock()
 
         self._running = False
@@ -47,6 +66,8 @@ class CustomerDisplayServer:
         self._status_callback = None
 
         self._stop_requested = False
+
+        self._discovery_stop = threading.Event()
 
     # =========================================================
     # START
@@ -59,13 +80,18 @@ class CustomerDisplayServer:
 
         if serve is None:
 
-            print("[CustomerDisplay] " "websockets.sync.server is unavailable.")
+            print(
+                "[CustomerDisplay] "
+                "websockets.sync.server is unavailable."
+            )
 
             self._set_available(False)
 
             return
 
         self._stop_requested = False
+
+        self._discovery_stop.clear()
 
         self._thread = threading.Thread(
             target=self._run_server,
@@ -75,6 +101,15 @@ class CustomerDisplayServer:
 
         self._thread.start()
 
+        # Start LAN discovery independently.
+        self._discovery_thread = threading.Thread(
+            target=self._run_discovery_server,
+            name="QuickBill-CustomerDisplay-Discovery",
+            daemon=True,
+        )
+
+        self._discovery_thread.start()
+
     # =========================================================
     # STOP
     # =========================================================
@@ -83,6 +118,9 @@ class CustomerDisplayServer:
 
         self._stop_requested = True
 
+        self._discovery_stop.set()
+
+        # Stop WebSocket server.
         server = self._server
 
         if server is not None:
@@ -92,7 +130,23 @@ class CustomerDisplayServer:
 
             except Exception as exc:
 
-                print("[CustomerDisplay] " f"Shutdown warning: {exc}")
+                print(
+                    "[CustomerDisplay] "
+                    f"Shutdown warning: {exc}"
+                )
+
+        # Stop discovery socket.
+        discovery_socket = (
+            self._discovery_socket
+        )
+
+        if discovery_socket is not None:
+
+            try:
+                discovery_socket.close()
+
+            except Exception:
+                pass
 
         thread = self._thread
 
@@ -102,14 +156,35 @@ class CustomerDisplayServer:
             and thread is not threading.current_thread()
         ):
 
-            thread.join(timeout=5)
+            thread.join(
+                timeout=5
+            )
+
+        discovery_thread = (
+            self._discovery_thread
+        )
+
+        if (
+            discovery_thread is not None
+            and discovery_thread.is_alive()
+            and discovery_thread is not threading.current_thread()
+        ):
+
+            discovery_thread.join(
+                timeout=2
+            )
 
         self._running = False
+
         self._server = None
+        self._discovery_socket = None
 
         with self._lock:
 
-            clients = list(self._clients)
+            clients = list(
+                self._clients
+            )
+
             self._clients.clear()
 
         for websocket in clients:
@@ -123,7 +198,7 @@ class CustomerDisplayServer:
         self._set_available(False)
 
     # =========================================================
-    # SERVER THREAD
+    # WEBSOCKET SERVER
     # =========================================================
 
     def _run_server(self):
@@ -137,9 +212,12 @@ class CustomerDisplayServer:
             ) as server:
 
                 self._server = server
+
                 self._running = True
 
-                self._set_available(True)
+                self._set_available(
+                    True
+                )
 
                 print(
                     "[CustomerDisplay] "
@@ -153,35 +231,233 @@ class CustomerDisplayServer:
 
             if not self._stop_requested:
 
-                print("[CustomerDisplay] " f"Server stopped: {exc}")
+                print(
+                    "[CustomerDisplay] "
+                    f"Server stopped: {exc}"
+                )
 
         finally:
 
             self._running = False
+
             self._server = None
 
             with self._lock:
+
                 self._clients.clear()
 
-            self._set_available(False)
+            self._set_available(
+                False
+            )
+
+    # =========================================================
+    # UDP DISCOVERY SERVER
+    # =========================================================
+
+    def _run_discovery_server(self):
+
+        sock = socket.socket(
+            socket.AF_INET,
+            socket.SOCK_DGRAM,
+        )
+
+        self._discovery_socket = sock
+
+        try:
+
+            sock.setsockopt(
+                socket.SOL_SOCKET,
+                socket.SO_REUSEADDR,
+                1,
+            )
+
+            sock.setsockopt(
+                socket.SOL_SOCKET,
+                socket.SO_BROADCAST,
+                1,
+            )
+
+            sock.bind(
+                (
+                    "0.0.0.0",
+                    self.DISCOVERY_PORT,
+                )
+            )
+
+            sock.settimeout(
+                1.0
+            )
+
+            print(
+                "[CustomerDisplay] "
+                f"Discovery server started on UDP "
+                f"{self.DISCOVERY_PORT}"
+            )
+
+            while not self._discovery_stop.is_set():
+
+                try:
+
+                    data, address = (
+                        sock.recvfrom(1024)
+                    )
+
+                except socket.timeout:
+
+                    continue
+
+                except OSError:
+
+                    break
+
+                request = (
+                    data
+                    .decode(
+                        "utf-8",
+                        errors="ignore",
+                    )
+                    .strip()
+                )
+
+                if request != self.DISCOVERY_REQUEST:
+
+                    continue
+
+                android_ip = address[0]
+
+                desktop_ip = (
+                    self._get_ip_for_client(
+                        android_ip
+                    )
+                )
+
+                response = {
+                    "type": (
+                        "quickbill_discovery_response"
+                    ),
+                    "service": (
+                        "QuickBill Customer Display"
+                    ),
+                    "ip": desktop_ip,
+                    "port": self.port,
+                    "version": self.PROTOCOL_VERSION,
+                }
+
+                payload = json.dumps(
+                    response,
+                    separators=(
+                        ",",
+                        ":",
+                    ),
+                ).encode(
+                    "utf-8"
+                )
+
+                try:
+
+                    sock.sendto(
+                        payload,
+                        address,
+                    )
+
+                    print(
+                        "[CustomerDisplay] "
+                        f"Discovery response sent to "
+                        f"{android_ip} -> "
+                        f"{desktop_ip}:{self.port}"
+                    )
+
+                except OSError:
+                    pass
+
+        except Exception as exc:
+
+            if not self._stop_requested:
+
+                print(
+                    "[CustomerDisplay] "
+                    f"Discovery server error: {exc}"
+                )
+
+        finally:
+
+            try:
+                sock.close()
+
+            except Exception:
+                pass
+
+            self._discovery_socket = None
+
+    # =========================================================
+    # FIND CORRECT LAN IP
+    # =========================================================
+
+    @staticmethod
+    def _get_ip_for_client(
+        client_ip,
+    ):
+
+        sock = socket.socket(
+            socket.AF_INET,
+            socket.SOCK_DGRAM,
+        )
+
+        try:
+
+            sock.connect(
+                (
+                    client_ip,
+                    1,
+                )
+            )
+
+            return sock.getsockname()[0]
+
+        except Exception:
+
+            try:
+
+                hostname = socket.gethostname()
+
+                return socket.gethostbyname(
+                    hostname
+                )
+
+            except Exception:
+
+                return "127.0.0.1"
+
+        finally:
+
+            sock.close()
 
     # =========================================================
     # CLIENT HANDLER
     # =========================================================
 
-    def _client_handler(self, websocket):
+    def _client_handler(
+        self,
+        websocket,
+    ):
 
         with self._lock:
-            self._clients.add(websocket)
 
-        print("[CustomerDisplay] " "Android display connected")
+            self._clients.add(
+                websocket
+            )
+
+        print(
+            "[CustomerDisplay] "
+            "Android display connected"
+        )
 
         try:
 
-            # Send the latest state immediately when
-            # Android connects or reconnects.
-
-            last_state = self.get_last_state()
+            # Send latest state immediately.
+            last_state = (
+                self.get_last_state()
+            )
 
             if last_state is not None:
 
@@ -194,7 +470,9 @@ class CustomerDisplayServer:
 
                 try:
 
-                    raw_message = websocket.recv()
+                    raw_message = (
+                        websocket.recv()
+                    )
 
                 except Exception:
 
@@ -213,20 +491,30 @@ class CustomerDisplayServer:
 
             if not self._stop_requested:
 
-                print("[CustomerDisplay] " f"Client error: {exc}")
+                print(
+                    "[CustomerDisplay] "
+                    f"Client error: {exc}"
+                )
 
         finally:
 
             with self._lock:
-                self._clients.discard(websocket)
+
+                self._clients.discard(
+                    websocket
+                )
 
             try:
+
                 websocket.close()
 
             except Exception:
                 pass
 
-            print("[CustomerDisplay] " "Android display disconnected")
+            print(
+                "[CustomerDisplay] "
+                "Android display disconnected"
+            )
 
     # =========================================================
     # CLIENT MESSAGES
@@ -240,17 +528,27 @@ class CustomerDisplayServer:
 
         try:
 
-            message = json.loads(raw_message)
+            message = json.loads(
+                raw_message
+            )
 
-        except (TypeError, ValueError):
+        except (
+            TypeError,
+            ValueError,
+        ):
 
             return
 
-        if not isinstance(message, dict):
+        if not isinstance(
+            message,
+            dict,
+        ):
 
             return
 
-        message_type = message.get("type")
+        message_type = (
+            message.get("type")
+        )
 
         if message_type == "hello":
 
@@ -274,16 +572,43 @@ class CustomerDisplayServer:
             )
 
     # =========================================================
+    # SEND
+    # =========================================================
+
+    def _send(
+        self,
+        websocket,
+        message,
+    ):
+
+        payload = json.dumps(
+            message,
+            ensure_ascii=False,
+            separators=(
+                ",",
+                ":",
+            ),
+        )
+
+        websocket.send(
+            payload
+        )
+
+    # =========================================================
     # BROADCAST
     # =========================================================
 
-    def broadcast(self, message):
+    def broadcast(
+        self,
+        message,
+    ):
 
-        if not isinstance(message, dict):
+        if not isinstance(
+            message,
+            dict,
+        ):
 
             return False
-
-        # Always remember the newest state.
 
         self._last_state = message
 
@@ -293,7 +618,9 @@ class CustomerDisplayServer:
 
         with self._lock:
 
-            clients = list(self._clients)
+            clients = list(
+                self._clients
+            )
 
         if not clients:
 
@@ -312,7 +639,9 @@ class CustomerDisplayServer:
 
             except Exception:
 
-                dead_clients.append(websocket)
+                dead_clients.append(
+                    websocket
+                )
 
         if dead_clients:
 
@@ -320,7 +649,9 @@ class CustomerDisplayServer:
 
                 for websocket in dead_clients:
 
-                    self._clients.discard(websocket)
+                    self._clients.discard(
+                        websocket
+                    )
 
         return True
 
@@ -339,11 +670,6 @@ class CustomerDisplayServer:
         customer=None,
         cashier="Admin",
     ):
-        """
-        Send the current live bill to Android.
-
-        This is the main customer-display event.
-        """
 
         if items is None:
             items = []
@@ -361,12 +687,48 @@ class CustomerDisplayServer:
 
             normalized_items.append(
                 {
-                    "barcode": str(item.get("barcode", "")),
-                    "sku": str(item.get("sku", "")),
-                    "name": str(item.get("name", "")),
-                    "brand": str(item.get("brand", "")),
-                    "category": str(item.get("category", "")),
-                    "qty": int(item.get("qty", 0)),
+                    "barcode": str(
+                        item.get(
+                            "barcode",
+                            "",
+                        )
+                    ),
+
+                    "sku": str(
+                        item.get(
+                            "sku",
+                            "",
+                        )
+                    ),
+
+                    "name": str(
+                        item.get(
+                            "name",
+                            "",
+                        )
+                    ),
+
+                    "brand": str(
+                        item.get(
+                            "brand",
+                            "",
+                        )
+                    ),
+
+                    "category": str(
+                        item.get(
+                            "category",
+                            "",
+                        )
+                    ),
+
+                    "qty": int(
+                        item.get(
+                            "qty",
+                            0,
+                        )
+                    ),
+
                     "rate": float(
                         item.get(
                             "price",
@@ -376,41 +738,75 @@ class CustomerDisplayServer:
                             ),
                         )
                     ),
-                    "amount": float(item.get("total", 0)),
-                    "gst": float(item.get("gst", 0)),
+
+                    "amount": float(
+                        item.get(
+                            "total",
+                            0,
+                        )
+                    ),
+
+                    "gst": float(
+                        item.get(
+                            "gst",
+                            0,
+                        )
+                    ),
                 }
             )
 
-        message = {
-            "type": "bill_update",
-            "bill_no": str(bill_no),
-            "customer": {
-                "name": str(
-                    customer.get(
-                        "name",
-                        "Walk-in Customer",
-                    )
-                ),
-                "mobile": str(
-                    customer.get(
-                        "mobile",
-                        "",
-                    )
-                ),
-            },
-            "cashier": str(cashier),
-            "items": normalized_items,
-            "subtotal": float(subtotal),
-            "tax": float(tax),
-            "discount": float(discount),
-            "total": float(total),
-            "payment": {
-                "status": "pending",
-                "mode": None,
-            },
-        }
+        return self.broadcast(
+            {
+                "type": "bill_update",
 
-        return self.broadcast(message)
+                "bill_no": str(
+                    bill_no
+                ),
+
+                "customer": {
+                    "name": str(
+                        customer.get(
+                            "name",
+                            "Walk-in Customer",
+                        )
+                    ),
+
+                    "mobile": str(
+                        customer.get(
+                            "mobile",
+                            "",
+                        )
+                    ),
+                },
+
+                "cashier": str(
+                    cashier
+                ),
+
+                "items": normalized_items,
+
+                "subtotal": float(
+                    subtotal
+                ),
+
+                "tax": float(
+                    tax
+                ),
+
+                "discount": float(
+                    discount
+                ),
+
+                "total": float(
+                    total
+                ),
+
+                "payment": {
+                    "status": "pending",
+                    "mode": None,
+                },
+            }
+        )
 
     # =========================================================
     # PAYMENT STARTED
@@ -423,41 +819,57 @@ class CustomerDisplayServer:
         total,
         qr=None,
     ):
-        """
-        Notify Android that the payment screen has started.
 
-        QR is optional and should normally only be supplied
-        for UPI payments.
-        """
-
-        mode = str(mode or "").strip()
+        mode = str(
+            mode or ""
+        ).strip()
 
         payment = {
+            "status": "started",
             "mode": mode,
-            "total": float(total),
+            "total": float(
+                total
+            ),
             "qr": {
                 "enabled": False,
-                "upi_id": "",
-                "amount": 0.0,
-                "payload": "",
-                "merchant_name": "QuickBill",
             },
         }
 
         if mode.upper() == "UPI":
 
-            if isinstance(qr, dict):
+            if isinstance(
+                qr,
+                dict,
+            ):
 
                 payment["qr"] = {
-                    "enabled": bool(qr.get("enabled", False)),
-                    "upi_id": str(qr.get("upi_id", "")),
-                    "amount": float(qr.get("amount", 0.0)),
-                    "payload": str(qr.get("payload", "")),
-                    "merchant_name": str(
+                    "enabled": bool(
                         qr.get(
-                            "merchant_name",
-                            "QuickBill",
+                            "enabled",
+                            True,
                         )
+                    ),
+
+                    "upi_id": qr.get(
+                        "upi_id",
+                        "",
+                    ),
+
+                    "amount": float(
+                        qr.get(
+                            "amount",
+                            total,
+                        )
+                    ),
+
+                    "payload": qr.get(
+                        "payload",
+                        "",
+                    ),
+
+                    "merchant_name": qr.get(
+                        "merchant_name",
+                        "QuickBill",
                     ),
                 }
 
@@ -465,13 +877,17 @@ class CustomerDisplayServer:
 
                 payment["qr"] = {
                     "enabled": True,
-                    "amount": float(total),
+                    "amount": float(
+                        total
+                    ),
                 }
 
-        self.broadcast(
+        return self.broadcast(
             {
                 "type": "payment_started",
-                "bill_no": str(bill_no),
+                "bill_no": str(
+                    bill_no
+                ),
                 "payment": payment,
             }
         )
@@ -487,28 +903,32 @@ class CustomerDisplayServer:
         total,
         qr=None,
     ):
-        """
-        Notify Android that payment is waiting.
 
-        This is particularly useful for UPI.
-        """
-
-        mode = str(mode or "").strip()
+        mode = str(
+            mode or ""
+        ).strip()
 
         payment = {
             "status": "pending",
             "mode": mode,
-            "total": float(total),
+            "total": float(
+                total
+            ),
         }
 
         if mode.upper() == "UPI":
 
             payment["qr"] = (
                 qr
-                if isinstance(qr, dict)
+                if isinstance(
+                    qr,
+                    dict,
+                )
                 else {
                     "enabled": True,
-                    "amount": float(total),
+                    "amount": float(
+                        total
+                    ),
                 }
             )
 
@@ -518,10 +938,12 @@ class CustomerDisplayServer:
                 "enabled": False,
             }
 
-        self.broadcast(
+        return self.broadcast(
             {
                 "type": "payment_pending",
-                "bill_no": str(bill_no),
+                "bill_no": str(
+                    bill_no
+                ),
                 "payment": payment,
             }
         )
@@ -536,21 +958,19 @@ class CustomerDisplayServer:
         mode,
         total,
     ):
-        """
-        Notify Android that payment was completed.
 
-        This is generated by the desktop application.
-        Android does not approve payment.
-        """
-
-        self.broadcast(
+        return self.broadcast(
             {
                 "type": "payment_completed",
-                "bill_no": str(bill_no),
+                "bill_no": str(
+                    bill_no
+                ),
                 "payment": {
                     "status": "completed",
                     "mode": mode,
-                    "total": float(total),
+                    "total": float(
+                        total
+                    ),
                 },
             }
         )
@@ -564,14 +984,13 @@ class CustomerDisplayServer:
         bill_no,
         mode=None,
     ):
-        """
-        Notify Android that payment was cancelled.
-        """
 
-        self.broadcast(
+        return self.broadcast(
             {
                 "type": "payment_cancelled",
-                "bill_no": str(bill_no),
+                "bill_no": str(
+                    bill_no
+                ),
                 "payment": {
                     "status": "cancelled",
                     "mode": mode,
@@ -589,19 +1008,19 @@ class CustomerDisplayServer:
         mode,
         total,
     ):
-        """
-        Notify Android that the complete desktop sale
-        has successfully finished.
-        """
 
-        self.broadcast(
+        return self.broadcast(
             {
                 "type": "sale_completed",
-                "bill_no": str(bill_no),
+                "bill_no": str(
+                    bill_no
+                ),
                 "payment": {
                     "status": "completed",
                     "mode": mode,
-                    "total": float(total),
+                    "total": float(
+                        total
+                    ),
                 },
             }
         )
@@ -616,9 +1035,6 @@ class CustomerDisplayServer:
         customer=None,
         cashier="Admin",
     ):
-        """
-        Reset Android to a fresh bill.
-        """
 
         if customer is None:
 
@@ -627,10 +1043,13 @@ class CustomerDisplayServer:
                 "mobile": "",
             }
 
-        self.broadcast(
+        return self.broadcast(
             {
                 "type": "new_bill",
-                "bill_no": str(bill_no),
+                "bill_no": str(
+                    bill_no
+                ),
+
                 "customer": {
                     "name": str(
                         customer.get(
@@ -638,6 +1057,7 @@ class CustomerDisplayServer:
                             "Walk-in Customer",
                         )
                     ),
+
                     "mobile": str(
                         customer.get(
                             "mobile",
@@ -645,36 +1065,24 @@ class CustomerDisplayServer:
                         )
                     ),
                 },
-                "cashier": str(cashier),
+
+                "cashier": str(
+                    cashier
+                ),
+
                 "items": [],
+
                 "subtotal": 0.0,
                 "tax": 0.0,
                 "discount": 0.0,
                 "total": 0.0,
+
                 "payment": {
                     "status": "idle",
                     "mode": None,
                 },
             }
         )
-
-    # =========================================================
-    # SEND
-    # =========================================================
-
-    def _send(
-        self,
-        websocket,
-        message,
-    ):
-
-        payload = json.dumps(
-            message,
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
-
-        websocket.send(payload)
 
     # =========================================================
     # STATUS
@@ -695,7 +1103,9 @@ class CustomerDisplayServer:
 
         with self._lock:
 
-            return len(self._clients)
+            return len(
+                self._clients
+            )
 
     def get_last_state(self):
 
@@ -708,7 +1118,10 @@ class CustomerDisplayServer:
 
         value = bool(value)
 
-        changed = value != self._available
+        changed = (
+            value
+            != self._available
+        )
 
         self._available = value
 
@@ -716,7 +1129,9 @@ class CustomerDisplayServer:
 
             return
 
-        callback = self._status_callback
+        callback = (
+            self._status_callback
+        )
 
         if callback is None:
 
@@ -724,10 +1139,11 @@ class CustomerDisplayServer:
 
         try:
 
-            callback(value)
+            callback(
+                value
+            )
 
         except Exception:
-
             pass
 
 
