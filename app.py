@@ -28,10 +28,13 @@ def main():
     time.sleep(0.3)
 
     splash.update(95, "Starting Customer Display...")
+
     customer_display.start()
+
     time.sleep(0.3)
 
     splash.update(100, "Launching QuickBill...")
+
     time.sleep(0.2)
 
     splash.close()

@@ -80,6 +80,11 @@ def launch_main_window():
     settings_view = None
     product_view = None
     billing_view = None
+
+    # Payment dialog lifecycle guard.
+    # Only one payment transaction may exist at a time.
+    payment_dialog = None
+    payment_in_progress = False
     try:
         logo = tk.PhotoImage(file=resource_path("assets/images/logo.png"))
         window.iconphoto(True, logo)
@@ -323,40 +328,52 @@ def launch_main_window():
     # Customer Display - Payment Events
     # =====================================================
 
-    def customer_display_payment_started(mode, total):
+    def customer_display_payment_started(
+        mode,
+        total,
+        qr=None,
+    ):
         """
-        Notify the optional Android customer display that
-        payment has started.
+        Synchronize the current payment state with the
+        optional Android Customer Display.
 
-        Failure of the customer display must never affect
-        the desktop billing process.
+        Desktop remains the source of truth.
+        Android only displays the received state.
         """
 
         try:
 
+            mode = str(mode).strip()
+
             customer_display.payment_started(
                 bill_number,
                 mode,
-                total,
+                float(total),
+                qr=qr,
             )
 
-            # UPI requires a waiting state after start.
-            if mode == "UPI":
+            if mode.upper() == "UPI":
 
                 customer_display.payment_pending(
                     bill_number,
                     mode,
-                    total,
+                    float(total),
+                    qr=qr,
                 )
 
         except Exception as exc:
 
-            print(f"[CustomerDisplay] " f"Payment start notification failed: {exc}")
+            print("[CustomerDisplay] " f"Payment start notification failed: {exc}")
 
     def customer_display_payment_cancelled(mode):
         """
-        Notify Android that the payment dialog was cancelled.
+        Notify Android that the payment dialog was
+        cancelled and return the customer display
+        to the billing screen.
         """
+
+        nonlocal payment_dialog
+        nonlocal payment_in_progress
 
         try:
 
@@ -367,32 +384,102 @@ def launch_main_window():
 
         except Exception as exc:
 
-            print(f"[CustomerDisplay] " f"Payment cancel notification failed: {exc}")
+            print("[CustomerDisplay] " f"Payment cancel notification failed: {exc}")
+
+        payment_dialog = None
+        payment_in_progress = False
+
+        show_billing_view()
+
+        try:
+
+            window.after(
+                80,
+                billing_view.focus_manual_barcode,
+            )
+
+        except Exception:
+            pass
 
     def open_payment_dialog():
+
+        nonlocal payment_dialog
+        nonlocal payment_in_progress
+
+        if payment_in_progress:
+
+            if payment_dialog is not None:
+
+                try:
+
+                    if payment_dialog.winfo_exists():
+
+                        payment_dialog.lift()
+                        payment_dialog.focus_force()
+
+                        return
+
+                except tk.TclError:
+                    pass
+
+            payment_dialog = None
+            payment_in_progress = False
 
         if not cart:
 
             messagebox.showwarning(
                 "Empty Bill",
                 "Please add at least one product.",
+                parent=window,
             )
 
             return
 
-        subtotal, tax, discount, total = calculate_totals()
+        _subtotal, _tax, _discount, total = calculate_totals()
 
-        PaymentDialog(
-            window,
-            total,
-            complete_sale,
-            on_payment_start=customer_display_payment_started,
-            on_payment_cancel=customer_display_payment_cancelled,
-        )
+        payment_in_progress = True
+
+        try:
+
+            dialog = PaymentDialog(
+                window,
+                total,
+                complete_sale,
+                on_payment_start=customer_display_payment_started,
+                on_payment_cancel=customer_display_payment_cancelled,
+                bill_no=bill_number,
+            )
+
+            payment_dialog = dialog
+
+            def on_dialog_destroy(event):
+
+                nonlocal payment_dialog
+                nonlocal payment_in_progress
+
+                if event.widget is dialog:
+
+                    payment_dialog = None
+
+                    if not dialog._processing:
+                        payment_in_progress = False
+
+            dialog.bind(
+                "<Destroy>",
+                on_dialog_destroy,
+                add="+",
+            )
+
+        except Exception:
+
+            payment_dialog = None
+            payment_in_progress = False
+
+            raise
 
     def complete_sale(payment_mode, received_amount):
 
-        nonlocal bill_number
+        nonlocal bill_number, payment_dialog, payment_in_progress
 
         completed_bill = bill_number
 
@@ -408,7 +495,7 @@ def launch_main_window():
             # Generate A4 + 80mm PDFs
             # --------------------------------
 
-            result = generate_pdf_bill(
+            generate_pdf_bill(
                 cart,
                 completed_bill,
                 payment_mode,
@@ -427,7 +514,10 @@ def launch_main_window():
 
                     current_stock = int(product.get("stock", 0))
 
-                    product["stock"] = max(0, current_stock - int(item["qty"]))
+                    product["stock"] = max(
+                        0,
+                        current_stock - int(item["qty"]),
+                    )
 
                     edit_product(
                         product["barcode"],
@@ -479,7 +569,6 @@ def launch_main_window():
             bill_number = generate_bill_number()
 
             billing_view.set_bill_number(bill_number)
-
             status_bar.set_bill_number(bill_number)
 
             # --------------------------------
@@ -499,6 +588,23 @@ def launch_main_window():
                 print("[CustomerDisplay] " f"New bill notification failed: {exc}")
 
             # --------------------------------
+            # Always return to billing
+            # --------------------------------
+
+            show_billing_view()
+
+            payment_in_progress = False
+            payment_dialog = None
+
+            try:
+                window.after(
+                    80,
+                    billing_view.focus_manual_barcode,
+                )
+            except Exception:
+                pass
+
+            # --------------------------------
             # Success Message
             # --------------------------------
 
@@ -508,7 +614,10 @@ def launch_main_window():
                     f"Invoice {completed_bill} generated successfully.\n\n"
                     "A4 and 80mm bills have been saved."
                 ),
+                parent=window,
             )
+
+            return True
 
         except Exception as e:
 
@@ -516,10 +625,16 @@ def launch_main_window():
             # Sale Error
             # --------------------------------
 
+            payment_in_progress = False
+
             messagebox.showerror(
                 "Sale Error",
                 f"Unable to complete the sale.\n\n{e}",
+                parent=window,
             )
+
+            # Keep the payment dialog open so the cashier can retry.
+            return False
 
     def search_bill(keyword):
 

@@ -59,10 +59,7 @@ class CustomerDisplayServer:
 
         if serve is None:
 
-            print(
-                "[CustomerDisplay] "
-                "websockets.sync.server is unavailable."
-            )
+            print("[CustomerDisplay] " "websockets.sync.server is unavailable.")
 
             self._set_available(False)
 
@@ -95,10 +92,7 @@ class CustomerDisplayServer:
 
             except Exception as exc:
 
-                print(
-                    "[CustomerDisplay] "
-                    f"Shutdown warning: {exc}"
-                )
+                print("[CustomerDisplay] " f"Shutdown warning: {exc}")
 
         thread = self._thread
 
@@ -159,10 +153,7 @@ class CustomerDisplayServer:
 
             if not self._stop_requested:
 
-                print(
-                    "[CustomerDisplay] "
-                    f"Server stopped: {exc}"
-                )
+                print("[CustomerDisplay] " f"Server stopped: {exc}")
 
         finally:
 
@@ -183,10 +174,7 @@ class CustomerDisplayServer:
         with self._lock:
             self._clients.add(websocket)
 
-        print(
-            "[CustomerDisplay] "
-            "Android display connected"
-        )
+        print("[CustomerDisplay] " "Android display connected")
 
         try:
 
@@ -225,10 +213,7 @@ class CustomerDisplayServer:
 
             if not self._stop_requested:
 
-                print(
-                    "[CustomerDisplay] "
-                    f"Client error: {exc}"
-                )
+                print("[CustomerDisplay] " f"Client error: {exc}")
 
         finally:
 
@@ -241,10 +226,7 @@ class CustomerDisplayServer:
             except Exception:
                 pass
 
-            print(
-                "[CustomerDisplay] "
-                "Android display disconnected"
-            )
+            print("[CustomerDisplay] " "Android display disconnected")
 
     # =========================================================
     # CLIENT MESSAGES
@@ -379,24 +361,12 @@ class CustomerDisplayServer:
 
             normalized_items.append(
                 {
-                    "barcode": str(
-                        item.get("barcode", "")
-                    ),
-                    "sku": str(
-                        item.get("sku", "")
-                    ),
-                    "name": str(
-                        item.get("name", "")
-                    ),
-                    "brand": str(
-                        item.get("brand", "")
-                    ),
-                    "category": str(
-                        item.get("category", "")
-                    ),
-                    "qty": int(
-                        item.get("qty", 0)
-                    ),
+                    "barcode": str(item.get("barcode", "")),
+                    "sku": str(item.get("sku", "")),
+                    "name": str(item.get("name", "")),
+                    "brand": str(item.get("brand", "")),
+                    "category": str(item.get("category", "")),
+                    "qty": int(item.get("qty", 0)),
                     "rate": float(
                         item.get(
                             "price",
@@ -406,12 +376,8 @@ class CustomerDisplayServer:
                             ),
                         )
                     ),
-                    "amount": float(
-                        item.get("total", 0)
-                    ),
-                    "gst": float(
-                        item.get("gst", 0)
-                    ),
+                    "amount": float(item.get("total", 0)),
+                    "gst": float(item.get("gst", 0)),
                 }
             )
 
@@ -467,11 +433,14 @@ class CustomerDisplayServer:
         mode = str(mode or "").strip()
 
         payment = {
-            "status": "started",
             "mode": mode,
             "total": float(total),
             "qr": {
                 "enabled": False,
+                "upi_id": "",
+                "amount": 0.0,
+                "payload": "",
+                "merchant_name": "QuickBill",
             },
         }
 
@@ -480,25 +449,15 @@ class CustomerDisplayServer:
             if isinstance(qr, dict):
 
                 payment["qr"] = {
-                    "enabled": bool(
+                    "enabled": bool(qr.get("enabled", False)),
+                    "upi_id": str(qr.get("upi_id", "")),
+                    "amount": float(qr.get("amount", 0.0)),
+                    "payload": str(qr.get("payload", "")),
+                    "merchant_name": str(
                         qr.get(
-                            "enabled",
-                            True,
+                            "merchant_name",
+                            "QuickBill",
                         )
-                    ),
-                    "upi_id": qr.get(
-                        "upi_id",
-                        "",
-                    ),
-                    "amount": float(
-                        qr.get(
-                            "amount",
-                            total,
-                        )
-                    ),
-                    "payload": qr.get(
-                        "payload",
-                        "",
                     ),
                 }
 
