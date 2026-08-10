@@ -1,15 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from gui.dialogs.barcode_print_dialog import BarcodePrintDialog
 
+from gui.dialogs.barcode_print_dialog import BarcodePrintDialog
+from gui.dialogs.add_product_dialog import AddProductDialog
 from logic.database import (
     get_all_products,
     search_products,
     get_product_by_barcode,
     delete_product,
 )
-
-from gui.dialogs.add_product_dialog import AddProductDialog
 
 
 class ProductMaster(tk.Frame):
@@ -19,7 +18,6 @@ class ProductMaster(tk.Frame):
         super().__init__(parent, bg="#e9ecef")
 
         self.create_widgets()
-
         self.refresh_table()
 
     # =====================================================
@@ -49,8 +47,12 @@ class ProductMaster(tk.Frame):
             fill=tk.BOTH,
             expand=True,
             padx=10,
-            pady=10,
+            pady=(0, 10),
         )
+
+        # Let the table area take all remaining available height.
+        self.product_frame.grid_columnconfigure(0, weight=1)
+        self.product_frame.grid_rowconfigure(1, weight=1)
 
         self.create_toolbar()
         self.create_table()
@@ -66,8 +68,10 @@ class ProductMaster(tk.Frame):
             bg="white",
         )
 
-        self.toolbar_frame.pack(
-            fill=tk.X,
+        self.toolbar_frame.grid(
+            row=0,
+            column=0,
+            sticky="ew",
             padx=5,
             pady=5,
         )
@@ -140,7 +144,7 @@ class ProductMaster(tk.Frame):
         tk.Frame(
             self.toolbar_frame,
             bg="white",
-        ).pack(side=tk.LEFT, expand=True)
+        ).pack(side=tk.LEFT, expand=True, fill=tk.X)
 
         tk.Label(
             self.toolbar_frame,
@@ -159,7 +163,6 @@ class ProductMaster(tk.Frame):
         )
 
         search_entry.pack(side=tk.LEFT, padx=(0, 10))
-
         search_entry.focus_set()
 
         self.total_label = tk.StringVar(value="Products : 0")
@@ -180,11 +183,9 @@ class ProductMaster(tk.Frame):
     def print_barcodes(self):
 
         selected = self.product_tree.selection()
-
         barcode = None
 
         if selected:
-
             barcode = str(self.product_tree.item(selected[0])["values"][0])
 
         BarcodePrintDialog(
@@ -219,7 +220,6 @@ class ProductMaster(tk.Frame):
         )
 
         entry.pack(side=tk.LEFT, padx=8)
-
         entry.focus()
 
         self.total_label = tk.StringVar()
@@ -253,11 +253,24 @@ class ProductMaster(tk.Frame):
             "GST",
         )
 
+        # Separate container lets the Treeview shrink and grow
+        # with the available window space.
+        table_frame = tk.Frame(self.product_frame, bg="white")
+        table_frame.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=5,
+            pady=(0, 5),
+        )
+
+        table_frame.grid_columnconfigure(0, weight=1)
+        table_frame.grid_rowconfigure(0, weight=1)
+
         self.product_tree = ttk.Treeview(
-            self.product_frame,
+            table_frame,
             columns=columns,
             show="headings",
-            height=20,
         )
 
         widths = {
@@ -282,13 +295,13 @@ class ProductMaster(tk.Frame):
         self.product_tree.column("Product Name", anchor="w")
 
         scroll_y = ttk.Scrollbar(
-            self.product_frame,
+            table_frame,
             orient="vertical",
             command=self.product_tree.yview,
         )
 
         scroll_x = ttk.Scrollbar(
-            self.product_frame,
+            table_frame,
             orient="horizontal",
             command=self.product_tree.xview,
         )
@@ -298,16 +311,23 @@ class ProductMaster(tk.Frame):
             xscrollcommand=scroll_x.set,
         )
 
-        self.product_tree.pack(
-            fill=tk.BOTH,
-            expand=True,
-            padx=5,
-            pady=(0, 0),
+        self.product_tree.grid(
+            row=0,
+            column=0,
+            sticky="nsew",
         )
 
-        scroll_y.pack(side=tk.RIGHT, fill=tk.Y)
+        scroll_y.grid(
+            row=0,
+            column=1,
+            sticky="ns",
+        )
 
-        scroll_x.pack(fill=tk.X)
+        scroll_x.grid(
+            row=1,
+            column=0,
+            sticky="ew",
+        )
 
         self.product_tree.bind(
             "<Double-1>",
@@ -342,7 +362,6 @@ class ProductMaster(tk.Frame):
             return
 
         values = self.product_tree.item(selected[0])["values"]
-
         barcode = str(values[0])
 
         product = get_product_by_barcode(barcode)
@@ -378,7 +397,6 @@ class ProductMaster(tk.Frame):
         values = self.product_tree.item(selected[0])["values"]
 
         barcode = str(values[0])
-
         name = values[2]
 
         if not messagebox.askyesno(
@@ -392,6 +410,7 @@ class ProductMaster(tk.Frame):
         if ok:
             self.refresh_table()
             self.product_tree.selection_remove(self.product_tree.selection())
+
             messagebox.showinfo(
                 "Success",
                 "Product deleted successfully.",
@@ -415,11 +434,8 @@ class ProductMaster(tk.Frame):
         keyword = self.search_var.get().strip()
 
         if keyword:
-
             products = search_products(keyword)
-
         else:
-
             products = get_all_products()
 
         self.total_label.set(f"Products : {len(products)}")
@@ -436,8 +452,8 @@ class ProductMaster(tk.Frame):
                     product.get("brand", ""),
                     product.get("category", ""),
                     product.get("stock", 0),
-                    f"₹ {float(product.get('selling_price',0)):.2f}",
-                    f"{product.get('gst',0)} %",
+                    f"₹ {float(product.get('selling_price', 0)):.2f}",
+                    f"{product.get('gst', 0)} %",
                 ),
             )
 
