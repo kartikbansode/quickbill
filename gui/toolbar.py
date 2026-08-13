@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from gui.ui_components import ToolTip, TEXT_DARK, PRIMARY
 
 class Toolbar(tk.Frame):
 
@@ -33,8 +33,8 @@ class Toolbar(tk.Frame):
                 text=text,
                 command=command,
                 bg="#ffffff",
-                fg="#1f2937",
-                activebackground="#2563eb",
+                fg=TEXT_DARK,
+                activebackground=PRIMARY,
                 activeforeground="white",
                 relief="flat",
                 bd=0,
@@ -43,6 +43,12 @@ class Toolbar(tk.Frame):
                 cursor="hand2",
             )
             btn.grid(row=0, column=idx, sticky="ew", padx=2, pady=2)
-            btn.bind("<Enter>", lambda e, b=btn: b.config(bg="#2563eb", fg="white"))
-            btn.bind("<Leave>", lambda e, b=btn: b.config(bg="#ffffff", fg="#1f2937"))
+            btn.bind("<Enter>", lambda e, b=btn: b.config(bg=PRIMARY, fg="white"))
+            btn.bind("<Leave>", lambda e, b=btn: b.config(bg="#ffffff", fg=TEXT_DARK))
+            
+            if text == "Hold":
+                ToolTip(btn, "Hold current bill")
+            elif text == "Find Bill":
+                ToolTip(btn, "Search bill history")
+                
             self.btn_widgets.append(btn)

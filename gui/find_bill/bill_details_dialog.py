@@ -4,6 +4,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from logic.file_paths import data_path
+from gui.ui_components import (
+    create_primary_button, 
+    create_success_button, 
+    create_danger_button, 
+    create_secondary_button, 
+    show_info, 
+    show_error
+)
 
 
 class BillDetailsDialog(tk.Toplevel):
@@ -901,61 +909,44 @@ class BillDetailsDialog(tk.Toplevel):
         self.create_button(
             left,
             "Open A4 PDF",
-            "#2563eb",
-            "#1d4ed8",
+            "primary",
             self.open_a4_pdf,
         )
 
         self.create_button(
             left,
             "Open 80mm PDF",
-            "#7c3aed",
-            "#6d28d9",
+            "primary",
             self.open_80mm_pdf,
         )
 
         self.create_button(
             left,
             "Reprint Both",
-            "#16a34a",
-            "#15803d",
+            "success",
             self.reprint,
         )
 
         self.create_button(
             left,
             "Open Bill Folder",
-            "#475569",
-            "#334155",
+            "secondary",
             self.open_bill_folder,
         )
 
         self.create_button(
             left,
             "Copy Bill No",
-            "#64748b",
-            "#475569",
+            "secondary",
             self.copy_bill_number,
         )
 
         # Close
-        close_button = tk.Button(
+        close_button = create_danger_button(
             bar,
             text="Close",
             width=12,
             height=2,
-            bg="#dc2626",
-            fg="white",
-            activebackground="#b91c1c",
-            activeforeground="white",
-            relief="flat",
-            bd=0,
-            cursor="hand2",
-            font=(
-                "Segoe UI",
-                9,
-                "bold",
-            ),
             command=self.close_dialog,
         )
 
@@ -971,48 +962,28 @@ class BillDetailsDialog(tk.Toplevel):
         self,
         parent,
         text,
-        bg,
-        hover,
+        style,
         command,
     ):
-
-        button = tk.Button(
+        factory_map = {
+            "primary": create_primary_button,
+            "success": create_success_button,
+            "danger": create_danger_button,
+            "secondary": create_secondary_button,
+        }
+        factory = factory_map.get(style, create_secondary_button)
+        
+        button = factory(
             parent,
             text=text,
             width=15,
             height=2,
-            bg=bg,
-            fg="white",
-            activebackground=hover,
-            activeforeground="white",
-            relief="flat",
-            bd=0,
-            cursor="hand2",
-            font=(
-                "Segoe UI",
-                9,
-                "bold",
-            ),
             command=command,
         )
 
         button.pack(
             side="left",
             padx=(0, 6),
-        )
-
-        button.bind(
-            "<Enter>",
-            lambda event: button.configure(
-                bg=hover
-            ),
-        )
-
-        button.bind(
-            "<Leave>",
-            lambda event: button.configure(
-                bg=bg
-            ),
         )
 
         return button
@@ -1132,14 +1103,14 @@ class BillDetailsDialog(tk.Toplevel):
                 save_history=False,
             )
 
-            messagebox.showinfo(
+            show_info(
+                self,
                 "Reprint Successful",
                 (
                     f"Invoice {self.bill['bill_no']} "
                     "has been regenerated.\n\n"
                     "A4 and 80mm PDFs are ready."
                 ),
-                parent=self,
             )
 
             # Open A4 after successful reprint
@@ -1151,14 +1122,14 @@ class BillDetailsDialog(tk.Toplevel):
 
         except Exception as e:
 
-            messagebox.showerror(
+            show_error(
+                self,
                 "Reprint Error",
                 (
                     "Unable to regenerate "
                     "the invoice.\n\n"
                     f"{e}"
                 ),
-                parent=self,
             )
 
     # =========================================================
@@ -1170,10 +1141,14 @@ class BillDetailsDialog(tk.Toplevel):
         message,
     ):
 
-        answer = messagebox.askyesno(
+        from gui.ui_components import show_confirmation
+        answer = show_confirmation(
+            self,
             "PDF Not Found",
             message,
-            parent=self,
+            confirm_text="Yes",
+            cancel_text="No",
+            style="primary"
         )
 
         if not answer:
@@ -1206,10 +1181,10 @@ class BillDetailsDialog(tk.Toplevel):
                 save_history=False,
             )
 
-            messagebox.showinfo(
+            show_info(
+                self,
                 "PDF Generated",
                 "A4 and 80mm PDFs regenerated successfully.",
-                parent=self,
             )
 
             if result.get("a4"):
@@ -1220,10 +1195,10 @@ class BillDetailsDialog(tk.Toplevel):
 
         except Exception as e:
 
-            messagebox.showerror(
+            show_error(
+                self,
                 "PDF Error",
                 f"Unable to generate PDF.\n\n{e}",
-                parent=self,
             )
 
     # =========================================================
@@ -1258,10 +1233,10 @@ class BillDetailsDialog(tk.Toplevel):
 
         except Exception as e:
 
-            messagebox.showerror(
+            show_error(
+                self,
                 "Folder Error",
                 f"Unable to open bill folder.\n\n{e}",
-                parent=self,
             )
 
     # =========================================================
@@ -1283,10 +1258,10 @@ class BillDetailsDialog(tk.Toplevel):
         )
         self.update()
 
-        messagebox.showinfo(
+        show_info(
+            self,
             "Copied",
             f"Bill number {bill_no} copied to clipboard.",
-            parent=self,
         )
 
     # =========================================================
@@ -1302,10 +1277,10 @@ class BillDetailsDialog(tk.Toplevel):
             path
         ):
 
-            messagebox.showerror(
+            show_error(
+                self,
                 "File Not Found",
                 f"PDF file was not found:\n\n{path}",
-                parent=self,
             )
 
             return
@@ -1318,10 +1293,10 @@ class BillDetailsDialog(tk.Toplevel):
 
         except Exception as e:
 
-            messagebox.showerror(
+            show_error(
+                self,
                 "Open PDF Error",
                 f"Unable to open PDF.\n\n{e}",
-                parent=self,
             )
 
     # =========================================================

@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from gui.ui_components import create_primary_button, create_success_button, create_danger_button, create_secondary_button, ToolTip, FONT_LABEL
 
 
 class FindBillView(tk.Frame):
@@ -92,31 +93,32 @@ class FindBillView(tk.Frame):
 
         search_entry.focus_set()
 
-        tk.Button(
+        clear_btn = create_secondary_button(
+            search_frame,
+            text="✕",
+            width=3,
+            command=lambda: self.bill_search_var.set(""),
+        )
+        clear_btn.grid(row=0, column=2, padx=(0, 5))
+        ToolTip(clear_btn, "Clear search text")
+
+        search_btn = create_primary_button(
             search_frame,
             text="Search",
-            bg="#2563eb",
-            fg="white",
             width=12,
             command=self.search_bill,
-        ).grid(
-            row=0,
-            column=2,
-            padx=5,
         )
+        search_btn.grid(row=0, column=3, padx=5)
+        ToolTip(search_btn, "Search by bill number, date, or payment mode")
 
-        tk.Button(
+        refresh_btn = create_secondary_button(
             search_frame,
             text="Refresh",
-            bg="#16a34a",
-            fg="white",
             width=12,
             command=self.refresh_table,
-        ).grid(
-            row=0,
-            column=3,
-            padx=5,
         )
+        refresh_btn.grid(row=0, column=4, padx=5)
+        ToolTip(refresh_btn, "Reload the bill list")
 
         # =================================================
         # Bill Table
@@ -215,49 +217,41 @@ class FindBillView(tk.Frame):
             pady=10,
         )
 
-        tk.Button(
+        view_btn = create_primary_button(
             button_frame,
             text="View",
             width=14,
-            bg="#2563eb",
-            fg="white",
             command=self.open_selected_bill,
-        ).pack(
-            side="left",
         )
+        view_btn.pack(side="left")
+        ToolTip(view_btn, "View details of selected bill")
 
-        tk.Button(
+        reprint_btn = create_success_button(
             button_frame,
             text="Reprint",
             width=14,
-            bg="#16a34a",
-            fg="white",
             command=self.reprint_selected_bill,
-        ).pack(
-            side="left",
-            padx=5,
         )
+        reprint_btn.pack(side="left", padx=5)
+        ToolTip(reprint_btn, "Reprint selected bill")
 
-        tk.Button(
+        delete_btn = create_danger_button(
             button_frame,
             text="Delete",
             width=14,
-            bg="#dc2626",
-            fg="white",
             command=self.delete_selected_bill,
-        ).pack(
-            side="left",
-            padx=5,
         )
+        delete_btn.pack(side="left", padx=5)
+        ToolTip(delete_btn, "Delete selected bill")
 
-        tk.Button(
+        back_btn = create_secondary_button(
             button_frame,
             text="Back",
             width=14,
             command=self.callbacks["back"],
-        ).pack(
-            side="right",
         )
+        back_btn.pack(side="right")
+        ToolTip(back_btn, "Go back to previous screen")
 
         self.bill_tree.bind(
             "<Double-1>",
@@ -369,6 +363,16 @@ class FindBillView(tk.Frame):
         self.bill_tree.delete(
             *self.bill_tree.get_children()
         )
+        
+        if not hasattr(self, 'empty_label'):
+            self.empty_label = tk.Label(
+                self.bill_tree, 
+                text="No bills found", 
+                bg="white", 
+                fg="#6b7280", 
+                font=FONT_LABEL
+            )
+        self.empty_label.place(relx=0.5, rely=0.5, anchor="center")
 
     # =====================================================
     # Add Bill
@@ -382,6 +386,9 @@ class FindBillView(tk.Frame):
         items,
         total,
     ):
+
+        if hasattr(self, 'empty_label') and self.empty_label.winfo_ismapped():
+            self.empty_label.place_forget()
 
         self.bill_tree.insert(
             "",

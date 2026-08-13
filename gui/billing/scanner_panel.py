@@ -1,4 +1,5 @@
 import tkinter as tk
+from gui.ui_components import create_primary_button, create_danger_button, FONT_INPUT, PRIMARY, DANGER
 
 
 class ScannerPanel(tk.LabelFrame):
@@ -28,16 +29,31 @@ class ScannerPanel(tk.LabelFrame):
             row1,
             font=("Consolas", 12),
             width=45,
+            fg="gray"
         )
+        self.barcode_entry.insert(0, "Scan or type barcode")
+        
+        def on_focus_in(event):
+            if self.barcode_entry.get() == "Scan or type barcode":
+                self.barcode_entry.delete(0, tk.END)
+                self.barcode_entry.config(fg="black")
+                
+        def on_focus_out(event):
+            if not self.barcode_entry.get():
+                self.barcode_entry.insert(0, "Scan or type barcode")
+                self.barcode_entry.config(fg="gray")
+
+        self.barcode_entry.bind("<FocusIn>", on_focus_in)
+        self.barcode_entry.bind("<FocusOut>", on_focus_out)
+        self.barcode_entry.bind("<Return>", lambda e: self.add_button.invoke())
 
         self.barcode_entry.pack(side="left", padx=(8, 3))
 
-        self.add_button = tk.Button(
+        self.add_button = create_primary_button(
             row1,
-            text="Add",
+            "Add",
             width=10,
-            bg="#1f7ae0",
-            fg="white",
+            height=1
         )
 
         self.add_button.pack(side="left")
@@ -47,14 +63,11 @@ class ScannerPanel(tk.LabelFrame):
         control_row = tk.Frame(self, bg="white")
         control_row.pack(fill="x", padx=10, pady=(0, 5))
 
-        self.scan_button = tk.Button(
+        self.scan_button = create_primary_button(
             control_row,
-            text="▶ Start Scan",
-            width=16,
-            bg="#007bff",
-            fg="white",
-            font=("Segoe UI", 10, "bold"),
+            "▶ Start Scan",
             command=self.toggle_scan,
+            width=16,
         )
 
         self.scan_button.pack(anchor="w", pady=(2, 0))
@@ -68,10 +81,10 @@ class ScannerPanel(tk.LabelFrame):
         self.barcode = tk.StringVar(value="-")
         self.brand = tk.StringVar(value="-")
         self.category = tk.StringVar(value="-")
-        self.price = tk.StringVar(value="₹0.00")
-        self.gst = tk.StringVar(value="0 %")
-        self.stock = tk.StringVar(value="0")
-        self.status = tk.StringVar(value="Ready")
+        self.price = tk.StringVar(value="-")
+        self.gst = tk.StringVar(value="-")
+        self.stock = tk.StringVar(value="-")
+        self.status = tk.StringVar(value="-")
 
         data = [
             ("Barcode", self.barcode),
@@ -102,10 +115,13 @@ class ScannerPanel(tk.LabelFrame):
             ).pack(pady=(0, 2))
 
     def get_barcode(self):
-        return self.barcode_entry.get().strip()
+        val = self.barcode_entry.get().strip()
+        return "" if val == "Scan or type barcode" else val
 
     def clear(self):
         self.barcode_entry.delete(0, tk.END)
+        self.barcode_entry.insert(0, "Scan or type barcode")
+        self.barcode_entry.config(fg="gray")
 
     def focus(self):
         self.barcode_entry.focus()
@@ -133,7 +149,7 @@ class ScannerPanel(tk.LabelFrame):
 
         self.stock.set(str(product.get("stock", 0)))
 
-        self.status.set("Ready")
+        self.status.set("-")
 
     def toggle_scan(self):
 
@@ -141,8 +157,9 @@ class ScannerPanel(tk.LabelFrame):
 
             self.scan_button.config(
                 text="■ Stop Scan",
-                bg="#dc3545",
+                bg=DANGER,
             )
+            self.scan_button._qb_style["bg"] = DANGER
 
             if self._start_scan_callback:
                 self._start_scan_callback()
@@ -151,8 +168,9 @@ class ScannerPanel(tk.LabelFrame):
 
             self.scan_button.config(
                 text="▶ Start Scan",
-                bg="#007bff",
+                bg=PRIMARY,
             )
+            self.scan_button._qb_style["bg"] = PRIMARY
 
             if self._stop_scan_callback:
                 self._stop_scan_callback()

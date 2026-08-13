@@ -1,6 +1,7 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import ttk
 from urllib.parse import quote
+from gui.ui_components import show_error, show_warning, show_confirmation, set_button_state, BG_DISABLED, TEXT_DISABLED
 
 try:
     import qrcode
@@ -28,17 +29,17 @@ class PaymentDialog(tk.Toplevel):
     TEXT = "#172033"
     MUTED = "#667085"
 
-    PRIMARY = "#1769e0"
+    PRIMARY = "#2563eb"
     PRIMARY_DARK = "#0f55b7"
 
-    SUCCESS = "#15803d"
+    SUCCESS = "#16a34a"
     SUCCESS_DARK = "#166534"
     SUCCESS_BG = "#ecfdf3"
 
     DANGER = "#dc2626"
     DANGER_BG = "#fef2f2"
 
-    WARNING = "#b45309"
+    WARNING = "#f59e0b"
     WARNING_BG = "#fffbeb"
 
     BLUE_BG = "#eff6ff"
@@ -1867,7 +1868,11 @@ class PaymentDialog(tk.Toplevel):
 
         try:
 
-            received = float(str(self.received.get()).strip())
+            received_str = str(self.received.get()).strip()
+            if not received_str:
+                return False
+
+            received = float(received_str)
 
         except (
             TypeError,
@@ -1888,7 +1893,9 @@ class PaymentDialog(tk.Toplevel):
             self.complete_button.configure(
                 state="disabled",
                 text="Processing...",
-                bg="#94a3b8",
+                bg=BG_DISABLED,
+                fg=TEXT_DISABLED,
+                cursor="",
             )
 
             if self.cancel_button is not None:
@@ -1923,7 +1930,9 @@ class PaymentDialog(tk.Toplevel):
         self.complete_button.configure(
             state=("normal" if enabled else "disabled"),
             text="Complete Sale",
-            bg=(self.SUCCESS if enabled else "#94a3b8"),
+            bg=(self.SUCCESS if enabled else BG_DISABLED),
+            fg=(self.CARD if enabled else TEXT_DISABLED),
+            cursor=("hand2" if enabled else ""),
         )
 
         if self.cancel_button is not None:
@@ -2015,10 +2024,10 @@ class PaymentDialog(tk.Toplevel):
                 ValueError,
             ):
 
-                messagebox.showerror(
+                show_error(
+                    self,
                     "Invalid Amount",
                     "Please enter a valid received amount.",
-                    parent=self,
                 )
 
                 self._focus_received_entry()
@@ -2027,7 +2036,8 @@ class PaymentDialog(tk.Toplevel):
 
             if received < self.total:
 
-                messagebox.showwarning(
+                show_warning(
+                    self,
                     "Insufficient Amount",
                     (
                         f"Received amount: "
@@ -2035,7 +2045,6 @@ class PaymentDialog(tk.Toplevel):
                         f"Required amount: "
                         f"₹ {self.total:,.2f}"
                     ),
-                    parent=self,
                 )
 
                 self._focus_received_entry()
@@ -2136,10 +2145,10 @@ class PaymentDialog(tk.Toplevel):
 
             self.update_complete_button()
 
-            messagebox.showerror(
+            show_error(
+                self,
                 "Payment Error",
                 ("Unable to complete the sale.\n\n" f"{exc}"),
-                parent=self,
             )
 
             return
@@ -2184,10 +2193,10 @@ class PaymentDialog(tk.Toplevel):
         if self._processing or self._closed:
             return
 
-        confirmed = messagebox.askyesno(
+        confirmed = show_confirmation(
+            self,
             "Cancel Payment",
             ("Are you sure you want to cancel " "this payment?"),
-            parent=self,
         )
 
         if not confirmed:

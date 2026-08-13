@@ -1,7 +1,7 @@
 import tkinter as tk
 from logic.database import get_all_products
 from tkinter import ttk
-from tkinter import messagebox
+from gui.ui_components import create_success_button, create_secondary_button, show_error, FONT_LABEL, FONT_INPUT, FONT_SECTION
 from logic.database import (
     add_product,
     edit_product,
@@ -191,89 +191,82 @@ class AddProductDialog:
             "Description",
         ]
 
-        # ================= LEFT COLUMN =================
+        for row in range(max(len(left_fields), len(right_fields))):
+            if row < len(left_fields):
+                field = left_fields[row]
+                tk.Label(
+                    form, text=field, width=18, anchor="w", font=("Segoe UI", 10)
+                ).grid(row=row, column=0, padx=10, pady=6, sticky="w")
+    
+                if field == "Category":
+                    entry = ttk.Combobox(
+                        form,
+                        width=30,
+                        state="readonly",
+                        values=[
+                            "Snacks",
+                            "Beverages",
+                            "Dairy",
+                            "Bakery",
+                            "Groceries",
+                            "Household",
+                            "Stationery",
+                            "Others",
+                        ],
+                    )
+                    entry.current(0)
+                else:
+                    entry = tk.Entry(form, width=33)
+    
+                entry.grid(row=row, column=1, pady=6)
+                self.entries[field] = entry
 
-        for row, field in enumerate(left_fields):
+            if row < len(right_fields):
+                field = right_fields[row]
+                tk.Label(
+                    form, text=field, width=18, anchor="w", font=("Segoe UI", 10)
+                ).grid(row=row, column=2, padx=(30, 10), pady=6, sticky="w")
+    
+                if field == "GST":
+                    entry = ttk.Combobox(
+                        form,
+                        width=30,
+                        state="readonly",
+                        values=["0", "5", "12", "18", "28"],
+                    )
+                    entry.current(3)
+                elif field == "Unit":
+                    entry = ttk.Combobox(
+                        form,
+                        width=30,
+                        state="readonly",
+                        values=["Piece", "Packet", "Bottle", "Kg", "Gram", "Litre"],
+                    )
+                    entry.current(0)
+                else:
+                    entry = tk.Entry(form, width=33)
+    
+                entry.grid(row=row, column=3, pady=6)
+                self.entries[field] = entry
 
-            tk.Label(
-                form, text=field, width=18, anchor="w", font=("Segoe UI", 10)
-            ).grid(row=row, column=0, padx=10, pady=6, sticky="w")
-
-            if field == "Category":
-
-                entry = ttk.Combobox(
-                    form,
-                    width=30,
-                    state="readonly",
-                    values=[
-                        "Snacks",
-                        "Beverages",
-                        "Dairy",
-                        "Bakery",
-                        "Groceries",
-                        "Household",
-                        "Stationery",
-                        "Others",
-                    ],
-                )
-
-                entry.current(0)
-
-            else:
-
-                entry = tk.Entry(form, width=33)
-
-            entry.grid(row=row, column=1, pady=6)
-
-            self.entries[field] = entry
-
-        # ================= RIGHT COLUMN =================
-
-        for row, field in enumerate(right_fields):
-
-            tk.Label(
-                form, text=field, width=18, anchor="w", font=("Segoe UI", 10)
-            ).grid(row=row, column=2, padx=(30, 10), pady=6, sticky="w")
-
-            if field == "GST":
-
-                entry = ttk.Combobox(
-                    form,
-                    width=30,
-                    state="readonly",
-                    values=["0", "5", "12", "18", "28"],
-                )
-
-                entry.current(3)
-
-            elif field == "Unit":
-
-                entry = ttk.Combobox(
-                    form,
-                    width=30,
-                    state="readonly",
-                    values=["Piece", "Packet", "Bottle", "Kg", "Gram", "Litre"],
-                )
-
-                entry.current(0)
-
-            else:
-
-                entry = tk.Entry(form, width=33)
-
-            entry.grid(row=row, column=3, pady=6)
-
-            self.entries[field] = entry
-
-        tk.Button(
-            self.window,
-            text="Save Product",
-            width=18,
-            bg="#28a745",
-            fg="white",
-            font=("Segoe UI", 10, "bold"),
+        btn_frame = tk.Frame(self.window)
+        btn_frame.pack(pady=20)
+        
+        btn_save = create_success_button(
+            btn_frame,
+            "Save Product",
             command=self.save_product,
-        ).pack(pady=20)
+            width=18
+        )
+        btn_save.pack(side="left", padx=10)
+        
+        btn_cancel = create_secondary_button(
+            btn_frame,
+            "Cancel",
+            command=self.close_dialog,
+            width=12
+        )
+        btn_cancel.pack(side="left", padx=10)
 
     def save_product(self):
 
@@ -283,7 +276,7 @@ class AddProductDialog:
 
         if name == "":
 
-            messagebox.showerror("Error", "Product Name is required.")
+            show_error(self.window, "Error", "Product Name is required.")
 
             return
 
@@ -303,7 +296,8 @@ class AddProductDialog:
 
         except ValueError:
 
-            messagebox.showerror(
+            show_error(
+                self.window,
                 "Invalid Input",
                 "Please enter valid numeric values for Price, GST and Stock.",
             )
@@ -354,8 +348,6 @@ class AddProductDialog:
             if self.refresh_callback:
                 self.refresh_callback()
 
-            messagebox.showinfo("Success", success_message)
-
         else:
 
-            messagebox.showerror("Error", msg)
+            show_error(self.window, "Error", msg)

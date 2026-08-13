@@ -1,8 +1,9 @@
 import os
 import webbrowser
 import tkinter as tk
+from tkinter import ttk
 
-from tkinter import ttk, messagebox
+from gui.ui_components import create_success_button, create_secondary_button, show_error, show_warning, show_info
 
 from logic.database import (
     get_all_products,
@@ -173,17 +174,14 @@ class BarcodePrintDialog(tk.Toplevel):
 
         bottom.pack(fill="x", pady=20)
 
-        tk.Button(
+        create_success_button(
             bottom,
             text="Generate PDF",
             width=18,
-            bg="#16a34a",
-            fg="white",
-            font=("Segoe UI", 10, "bold"),
             command=self.generate_pdf,
         ).pack(side="left", padx=20)
 
-        tk.Button(
+        create_secondary_button(
             bottom,
             text="Cancel",
             width=16,
@@ -288,7 +286,8 @@ class BarcodePrintDialog(tk.Toplevel):
 
             if not self.selected_barcode:
 
-                messagebox.showwarning(
+                show_warning(
+                    self,
                     "No Product",
                     "Please select a product first.",
                 )
@@ -311,7 +310,8 @@ class BarcodePrintDialog(tk.Toplevel):
 
             if not start or not end:
 
-                messagebox.showwarning(
+                show_warning(
+                    self,
                     "Barcode Range",
                     "Enter both barcode values.",
                 )
@@ -328,7 +328,8 @@ class BarcodePrintDialog(tk.Toplevel):
 
         if not products:
 
-            messagebox.showwarning(
+            show_warning(
+                self,
                 "No Products",
                 "Nothing to print.",
             )
@@ -346,7 +347,8 @@ class BarcodePrintDialog(tk.Toplevel):
 
         webbrowser.open(pdf)
 
-        messagebox.showinfo(
+        show_info(
+            self,
             "Success",
             "Barcode PDF generated successfully.",
         )

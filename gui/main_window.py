@@ -1,5 +1,9 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk
+from gui.ui_components import (
+    show_confirmation, show_error, show_info, show_warning,
+    show_choice, ToolTip,
+)
 from logic.cart import cart, add_to_cart, remove_from_cart, update_quantity
 from logic.billing import calculate_totals
 from logic.barcode_scanner import scan_barcode_background, stop_scanner, play_beep, get_scanner_status
@@ -51,30 +55,53 @@ def launch_main_window():
 
     window = tk.Tk()
 
-    def close_application():
+    def _shutdown():
+        """Unconditional shutdown — stop services and destroy window."""
         try:
             customer_display.stop()
         except Exception:
             pass
-
+        try:
+            stop_scanner()
+        except Exception:
+            pass
         try:
             window.destroy()
         except Exception:
             pass
 
-    window.protocol(
-        "WM_DELETE_WINDOW",
-        close_application,
-    )
+    def close_application():
+        """Exit with confirmation. Warns about unsaved cart items."""
+        if cart:
+            result = show_choice(
+                window,
+                "Unsaved Bill",
+                "Current bill contains items.\nWhat would you like to do?",
+                choices=[
+                    ("Cancel", "secondary", "cancel"),
+                    ("Discard & Exit", "danger", "discard"),
+                ],
+                detail=f"{len(cart)} item(s) will be lost.",
+            )
+            if result != "discard":
+                return
+        else:
+            if not show_confirmation(
+                window, "Exit QuickBill",
+                "Are you sure you want to exit QuickBill?",
+                confirm_text="Exit", cancel_text="Cancel",
+                style="danger",
+            ):
+                return
+        _shutdown()
+
+    window.protocol("WM_DELETE_WINDOW", close_application)
 
     window.attributes("-fullscreen", True)
 
     window.title("QuickBill System")
 
-    window.bind(
-        "<Escape>",
-        lambda e: window.attributes("-fullscreen", False),
-    )
+    window.bind("<Escape>", lambda e: window.attributes("-fullscreen", False))
 
     find_bill_view = None
     settings_view = None
@@ -251,11 +278,18 @@ def launch_main_window():
             billing_view.focus_manual_barcode()
 
     def clear_cart_all():
-        if messagebox.askyesno(
-            "Clear All", "Are you sure you want to clear the entire cart?"
+        if not cart:
+            return
+        if show_confirmation(
+            window, "Clear Current Bill?",
+            "All items currently in the bill will be removed.",
+            confirm_text="Clear Bill", cancel_text="Cancel",
+            style="danger",
+            detail=f"{len(cart)} item(s) in cart.",
         ):
             cart.clear()
             refresh_table()
+            status_bar.set_status("Bill cleared", timeout=3000)
 
     def update_item_qty(index, delta):
         current = cart[index]["qty"]
@@ -279,10 +313,10 @@ def launch_main_window():
     def start_scan():
         scanner_ok, scanner_err = get_scanner_status()
         if not scanner_ok:
-            messagebox.showwarning(
+            show_warning(
+                window,
                 "Scanner Unavailable",
                 scanner_err,
-                parent=window,
             )
             return
 
@@ -433,13 +467,11 @@ def launch_main_window():
             payment_in_progress = False
 
         if not cart:
-
-            messagebox.showwarning(
+            show_warning(
+                window,
                 "Empty Bill",
-                "Please add at least one product.",
-                parent=window,
+                "Please add at least one product before generating a bill.",
             )
-
             return
 
         _subtotal, _tax, _discount, total = calculate_totals()
@@ -619,7 +651,7 @@ def launch_main_window():
             # Success Message
             # --------------------------------
 
-            status_bar.set_status(f"Bill {completed_bill} Generated Successfully.", timeout=5000)
+            status_bar.set_status(f"Bill {completed_bill} generated successfully", timeout=5000)
 
             return True
 
@@ -631,10 +663,11 @@ def launch_main_window():
 
             payment_in_progress = False
 
-            messagebox.showerror(
+            show_error(
+                window,
                 "Sale Error",
-                f"Unable to complete the sale.\n\n{e}",
-                parent=window,
+                "Unable to complete the sale.",
+                detail=str(e),
             )
 
             # Keep the payment dialog open so the cashier can retry.
@@ -683,10 +716,7 @@ def launch_main_window():
 
                 return
 
-        messagebox.showerror(
-            "Bill Not Found",
-            f"Invoice {bill_no} was not found.",
-        )
+        show_error(window, "Bill Not Found", f"Invoice {bill_no} was not found.")
 
     def reprint_bill(bill_no):
 
@@ -730,156 +760,128 @@ def launch_main_window():
                 # Show success
                 # --------------------------------
 
-                messagebox.showinfo(
-                    "Reprint Successful",
-                    (
-                        f"Invoice {bill_no} regenerated successfully.\n\n"
-                        "A4 and 80mm PDFs are ready."
-                    ),
-                )
+                status_bar.set_status(f"Invoice {bill_no} reprinted successfully", timeout=4000)
 
                 return
 
             except Exception as e:
 
-                messagebox.showerror(
-                    "Reprint Error",
-                    f"Unable to regenerate invoice.\n\n{e}",
-                )
+                show_error(window, "Reprint Error", "Unable to regenerate invoice.", detail=str(e))
 
                 return
 
-        messagebox.showerror(
-            "Bill Not Found",
-            f"Invoice {bill_no} was not found.",
-        )
+        show_error(window, "Bill Not Found", f"Invoice {bill_no} was not found.")
 
     def delete_bill(bill_no):
-
-        if not messagebox.askyesno(
-            "Delete Bill", f"Are you sure you want to delete\n{bill_no}?"
+        if not show_confirmation(
+            window, "Delete Bill?",
+            f"Are you sure you want to delete bill {bill_no}?",
+            confirm_text="Delete", cancel_text="Cancel",
+            style="danger",
+            detail="This action cannot be undone.",
         ):
             return
 
         try:
-
             with open(BILLS_HISTORY_FILE, "r", encoding="utf-8") as file:
                 bills = json.load(file)
 
             new_bills = [bill for bill in bills if bill["bill_no"] != bill_no]
 
             with open(BILLS_HISTORY_FILE, "w", encoding="utf-8") as file:
-                json.dump(
-                    new_bills,
-                    file,
-                    indent=4,
-                )
+                json.dump(new_bills, file, indent=4)
 
             load_bill_history()
-
-            messagebox.showinfo("Success", "Bill deleted successfully.")
+            status_bar.set_status("Bill deleted", timeout=3000)
 
         except Exception as e:
-
-            messagebox.showerror(
-                "Error",
-                str(e),
-            )
+            show_error(window, "Delete Error", str(e))
 
     def on_barcode_detected(barcode):
-
         product = get_product_by_barcode(barcode)
 
         if product:
+            # Low stock warning
+            stock = int(product.get("stock", 0))
+            if stock <= 0:
+                status_bar.set_status(f"⚠ {product['name']} — Out of stock!", timeout=4000)
+            elif stock <= 5:
+                status_bar.set_status(f"⚠ Low stock: {product['name']} — only {stock} left", timeout=4000)
 
             add_to_cart(product)
-
             refresh_table()
-
             billing_view.display_product(product)
-
             billing_view.update_scanner_status("Product Added")
 
-            status_bar.scanner_connected()
-
-            status_bar.set_status(f"Added : {product['name']}")
+            if scanner_active:
+                status_bar.scanner_connected()
+            status_bar.set_status(f"Added: {product['name']}", timeout=3000)
 
         else:
-
-            billing_view.update_scanner_status("Barcode Not Found")
-
-            status_bar.set_status("Barcode Not Found")
+            billing_view.update_scanner_status("Product Not Found")
+            status_bar.set_status(f"Product not found: {barcode}", timeout=3000)
 
     def hold_current_bill():
-
         nonlocal bill_number
 
-        # -----------------------------------
-        # Resume Existing Hold
-        # -----------------------------------
-
+        # Resume Existing Hold (when cart is empty)
         if not cart:
-
-            HoldBillWindow(
-                window,
-                resume_hold_bill,
-            )
-
+            HoldBillWindow(window, resume_hold_bill)
             return
 
-        # -----------------------------------
         # Hold Current Cart
-        # -----------------------------------
-
         hold_no = hold_bill(cart.copy())
-
-        messagebox.showinfo("Hold Bill", f"Current bill saved.\n\n{hold_no}")
-
         cart.clear()
-
         refresh_table()
+        status_bar.set_status(f"Bill held as {hold_no}", timeout=3000)
 
     def resume_hold_bill(bill):
-
         nonlocal bill_number
 
+        # If cart has items, warn before replacing
+        if cart:
+            result = show_choice(
+                window,
+                "Resume Held Bill",
+                "Current bill contains items.\nWhat would you like to do?",
+                choices=[
+                    ("Cancel", "secondary", "cancel"),
+                    ("Discard & Resume", "danger", "discard"),
+                ],
+                detail=f"{len(cart)} item(s) in current cart.",
+            )
+            if result != "discard":
+                return
+
         cart.clear()
-
         cart.extend(bill["cart"])
-
         refresh_table()
 
         bill_number = generate_bill_number()
-
         billing_view.set_bill_number(bill_number)
-
         status_bar.set_bill_number(bill_number)
 
         try:
-
+            subtotal, tax, discount, total = calculate_totals()
             customer_display.bill_update(
                 bill_no=bill_number,
                 items=cart,
-                subtotal=calculate_totals()[0],
-                tax=calculate_totals()[1],
-                discount=calculate_totals()[2],
-                total=calculate_totals()[3],
+                subtotal=subtotal, tax=tax,
+                discount=discount, total=total,
                 customer=app_state.current_customer,
                 cashier=app_state.operator,
             )
-
         except Exception as exc:
+            print(f"[CustomerDisplay] Hold bill display update failed: {exc}")
 
-            print("[CustomerDisplay] " f"Hold bill display update failed: {exc}")
-
-        messagebox.showinfo("Hold Bill", f"{bill['hold_no']} resumed successfully.")
+        status_bar.set_status(f"{bill['hold_no']} resumed", timeout=3000)
 
     billing_view = BillingView(
         content_container,
         {
             "generate_bill": open_payment_dialog,
             "clear_cart": clear_cart_all,
-            "hold_bill": lambda: None,
+            "hold_bill": hold_current_bill,
             "start_scan": start_scan,
             "stop_scan": stop_scan,
             "barcode": on_barcode_detected,
@@ -915,12 +917,11 @@ def launch_main_window():
         url = url.strip()
 
         if not url:
-
-            messagebox.showwarning(
+            show_warning(
+                window,
                 "Invalid Scanner URL",
                 "Please enter a valid camera stream URL.",
             )
-
             return
 
         webcam_url = url
@@ -941,9 +942,10 @@ def launch_main_window():
 
         except Exception as exc:
 
-            messagebox.showerror(
-                "Settings Error",
-                f"Unable to save scanner settings.\n\n{exc}",
+            show_error(
+                window, "Settings Error",
+                "Unable to save scanner settings.",
+                detail=str(exc),
             )
 
             return
@@ -962,11 +964,7 @@ def launch_main_window():
 
             status_bar.scanner_disconnected()
 
-        messagebox.showinfo(
-            "Scanner Settings",
-            "Scanner settings saved successfully.\n\n"
-            "Press Start Scanner to connect using the new camera.",
-        )
+        status_bar.set_status("Scanner settings saved", timeout=3000)
 
     # =====================================================
     # Settings View
@@ -1041,81 +1039,68 @@ def launch_main_window():
                 f"₹ {bill['total']:.2f}",
             )
 
-    def search_bill(keyword):
 
-        find_bill_view.clear_table()
-
-        bills = search_bill_history(keyword)
-
-        bills.reverse()
-
-        for bill in bills:
-
-            find_bill_view.add_bill(
-                bill["bill_no"],
-                bill["date"],
-                bill.get("payment_mode", "-"),
-                len(bill["items"]),
-                f"₹ {bill['total']:.2f}",
-            )
 
     # =====================================================
     # View Switching Functions
     # =====================================================
 
     def show_billing_view():
-
         if product_view is not None:
             product_view.pack_forget()
-
         if settings_view is not None:
             settings_view.pack_forget()
-
         if find_bill_view is not None:
             find_bill_view.pack_forget()
 
-        # Show status bar only on billing screen, exactly below header
+        # Show status bar only on billing screen
         status_bar.pack(side="top", fill="x", before=content_container)
 
         if billing_view is not None:
-            billing_view.pack(
-                fill="both",
-                expand=True,
-            )
+            billing_view.pack(fill="both", expand=True)
 
         window.title("QuickBill System - Billing")
 
         if billing_view is not None:
-
             if scanner_active:
-
                 billing_view.update_scanner_status("Scanner Active")
-
             else:
-
                 billing_view.update_scanner_status("Ready")
 
+            # Auto-focus barcode field
+            window.after(100, billing_view.focus_manual_barcode)
+
+    def _check_unsaved_bill_before_navigate():
+        """Warn if navigating away from billing with items in cart."""
+        if not cart:
+            return True
+        result = show_choice(
+            window,
+            "Unsaved Bill",
+            "Current bill contains items.\nNavigating away will keep them in the cart.",
+            choices=[
+                ("Cancel", "secondary", "cancel"),
+                ("Continue", "primary", "continue"),
+            ],
+        )
+        return result == "continue"
+
     def show_products_view():
+        if not _check_unsaved_bill_before_navigate():
+            return
 
         status_bar.pack_forget()
 
         if billing_view is not None:
             billing_view.pack_forget()
-
         if settings_view is not None:
             settings_view.pack_forget()
-
         if find_bill_view is not None:
             find_bill_view.pack_forget()
 
         if product_view is not None:
-
             product_view.refresh_table()
-
-            product_view.pack(
-                fill="both",
-                expand=True,
-            )
+            product_view.pack(fill="both", expand=True)
 
         window.title("QuickBill System - Product Master")
 
@@ -1179,19 +1164,22 @@ def launch_main_window():
         },
     )
 
+    def _not_implemented():
+        status_bar.set_status("Feature coming soon", timeout=2000)
+
     toolbar = Toolbar(
         window,
         {
             "billing": show_billing_view,
             "new_bill": clear_cart_all,
-            "save_bill": lambda: None,
-            "print_bill": lambda: None,
+            "save_bill": _not_implemented,
+            "print_bill": _not_implemented,
             "hold_bill": hold_current_bill,
             "find_bill": lambda: show_find_bill_view(),
             "products": show_products_view,
             "settings": show_settings_view,
-            "customers": lambda: None,
-            "reports": lambda: None,
+            "customers": _not_implemented,
+            "reports": _not_implemented,
             "exit": close_application,
         },
     )
@@ -1199,8 +1187,15 @@ def launch_main_window():
     # Pack toolbar at the bottom
     toolbar.pack(side="bottom", fill="x")
 
-    # Pack the expanding content container LAST, so it safely absorbs only the remaining vertical space
+    # Pack the expanding content container LAST
     content_container.pack(side="top", fill=tk.BOTH, expand=True, padx=5, pady=5)
+
+    # =====================================================
+    # Keyboard Shortcuts
+    # =====================================================
+
+    window.bind("<F2>", lambda e: clear_cart_all())         # New Bill
+    window.bind("<F4>", lambda e: open_payment_dialog())    # Generate / Payment
 
     # =====================================================
     # Initialize

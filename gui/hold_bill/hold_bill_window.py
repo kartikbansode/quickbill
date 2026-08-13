@@ -5,6 +5,15 @@ from logic.hold_bill import (
     get_all_hold_bills,
     delete_hold_bill,
 )
+from gui.ui_components import (
+    create_success_button, 
+    create_danger_button, 
+    create_secondary_button, 
+    show_confirmation, 
+    show_warning,
+    ToolTip,
+    FONT_LABEL
+)
 
 
 class HoldBillWindow(tk.Toplevel):
@@ -151,45 +160,45 @@ class HoldBillWindow(tk.Toplevel):
             pady=(0, 12),
         )
 
-        tk.Button(
+        resume_btn = create_success_button(
             button_frame,
             text="▶ Resume Bill",
-            bg="#16a34a",
-            fg="white",
-            font=("Segoe UI", 10, "bold"),
-            relief="flat",
             width=16,
             height=2,
             command=self.resume_bill,
-        ).pack(side="left")
+        )
+        resume_btn.pack(side="left")
+        ToolTip(resume_btn, "Resume the selected bill for checkout")
 
-        tk.Button(
+        delete_btn = create_danger_button(
             button_frame,
             text="🗑 Delete Hold",
-            bg="#dc2626",
-            fg="white",
-            font=("Segoe UI", 10, "bold"),
-            relief="flat",
             width=16,
             height=2,
             command=self.delete_bill,
-        ).pack(side="left", padx=10)
+        )
+        delete_btn.pack(side="left", padx=10)
+        ToolTip(delete_btn, "Delete the selected held bill")
 
-        tk.Button(
+        refresh_btn = create_secondary_button(
             button_frame,
             text="⟳ Refresh",
             width=14,
             height=2,
             command=self.load_data,
-        ).pack(side="right", padx=(10, 0))
+        )
+        refresh_btn.pack(side="right", padx=(10, 0))
+        ToolTip(refresh_btn, "Reload the list of held bills")
 
-        tk.Button(
+        close_btn = create_secondary_button(
             button_frame,
             text="✕ Close",
             width=14,
             height=2,
             command=self.destroy,
-        ).pack(side="right")
+        )
+        close_btn.pack(side="right")
+        ToolTip(close_btn, "Close this window")
 
     def load_data(self):
 
@@ -205,22 +214,36 @@ class HoldBillWindow(tk.Toplevel):
 
         bills.reverse()
 
-        for bill in bills:
+        if not bills:
+            if not hasattr(self, 'empty_label'):
+                self.empty_label = tk.Label(
+                    self.tree, 
+                    text="No held bills", 
+                    bg="white", 
+                    fg="#6b7280", 
+                    font=FONT_LABEL
+                )
+            self.empty_label.place(relx=0.5, rely=0.5, anchor="center")
+        else:
+            if hasattr(self, 'empty_label') and self.empty_label.winfo_ismapped():
+                self.empty_label.place_forget()
 
-            amount = sum(item["total"] for item in bill["cart"])
+            for bill in bills:
 
-            self.tree.insert(
-                "",
-                "end",
-                values=(
-                    bill["hold_no"],
-                    bill["date"],
-                    bill["time"],
-                    sum(item["qty"] for item in bill["cart"]),
-                    f"₹ {amount:.2f}",
-                    bill.get("cashier", "Admin"),
-                ),
-            )
+                amount = sum(item["total"] for item in bill["cart"])
+
+                self.tree.insert(
+                    "",
+                    "end",
+                    values=(
+                        bill["hold_no"],
+                        bill["date"],
+                        bill["time"],
+                        sum(item["qty"] for item in bill["cart"]),
+                        f"₹ {amount:.2f}",
+                        bill.get("cashier", "Admin"),
+                    ),
+                )
 
     def resume_bill(self, event=None):
 
@@ -231,7 +254,7 @@ class HoldBillWindow(tk.Toplevel):
 
         if not selected:
 
-            messagebox.showwarning("Resume", "Please select a bill.")
+            show_warning(self, "Resume", "Please select a bill.")
 
             return
 
@@ -265,7 +288,7 @@ class HoldBillWindow(tk.Toplevel):
 
         hold_no = self.tree.item(selected[0])["values"][0]
 
-        if not messagebox.askyesno("Delete", f"Delete held bill '{hold_no}'?"):
+        if not show_confirmation(self, "Delete", f"Delete held bill '{hold_no}'?"):
             return
 
         delete_hold_bill(hold_no)

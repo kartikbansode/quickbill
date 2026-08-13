@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from gui.ui_components import create_primary_button, create_success_button, create_warning_button, create_danger_button, create_secondary_button, ToolTip, FONT_LABEL, FONT_SECTION
 
 from gui.dialogs.barcode_print_dialog import BarcodePrintDialog
 from gui.dialogs.add_product_dialog import AddProductDialog
@@ -76,69 +77,21 @@ class ProductMaster(tk.Frame):
             pady=5,
         )
 
-        button_style = {
-            "font": ("Segoe UI", 10, "bold"),
-            "height": 2,
-            "relief": "flat",
-            "bd": 0,
-            "cursor": "hand2",
-            "activeforeground": "white",
-        }
+        btn_add = create_success_button(self.toolbar_frame, "Add Product", command=self.add_product, width=14)
+        btn_add.pack(side=tk.LEFT, padx=(0, 8))
+        ToolTip(btn_add, "Add a new product")
 
-        buttons = [
-            {
-                "text": "Add Product",
-                "bg": "#16a34a",
-                "hover": "#15803d",
-                "width": 16,
-                "command": self.add_product,
-            },
-            {
-                "text": "Edit",
-                "bg": "#f59e0b",
-                "hover": "#d97706",
-                "width": 12,
-                "command": self.edit_product,
-            },
-            {
-                "text": "Delete",
-                "bg": "#dc2626",
-                "hover": "#b91c1c",
-                "width": 12,
-                "command": self.delete_product,
-            },
-            {
-                "text": "Print Barcodes",
-                "bg": "#2563eb",
-                "hover": "#1d4ed8",
-                "width": 18,
-                "command": self.print_barcodes,
-            },
-        ]
+        btn_edit = create_warning_button(self.toolbar_frame, "Edit Product", command=self.edit_product, width=14)
+        btn_edit.pack(side=tk.LEFT, padx=(0, 8))
+        ToolTip(btn_edit, "Edit selected product")
 
-        for item in buttons:
+        btn_delete = create_danger_button(self.toolbar_frame, "Delete Product", command=self.delete_product, width=14)
+        btn_delete.pack(side=tk.LEFT, padx=(0, 8))
+        ToolTip(btn_delete, "Delete selected product")
 
-            btn = tk.Button(
-                self.toolbar_frame,
-                text=item["text"],
-                bg=item["bg"],
-                fg="white",
-                width=item["width"],
-                command=item["command"],
-                **button_style,
-            )
-
-            btn.pack(side=tk.LEFT, padx=(0, 8))
-
-            btn.bind(
-                "<Enter>",
-                lambda e, b=btn, c=item["hover"]: b.config(bg=c),
-            )
-
-            btn.bind(
-                "<Leave>",
-                lambda e, b=btn, c=item["bg"]: b.config(bg=c),
-            )
+        btn_print = create_primary_button(self.toolbar_frame, "Print Barcodes", command=self.print_barcodes, width=14)
+        btn_print.pack(side=tk.LEFT, padx=(0, 8))
+        ToolTip(btn_print, "Print barcodes for selected product")
 
         # Spacer
         tk.Frame(
@@ -197,44 +150,7 @@ class ProductMaster(tk.Frame):
     # Search
     # =====================================================
 
-    def create_searchbar(self):
 
-        frame = tk.Frame(self.product_frame, bg="white")
-
-        frame.pack(fill=tk.X, padx=5, pady=(0, 5))
-
-        tk.Label(
-            frame,
-            text="Search :",
-            bg="white",
-            font=("Segoe UI", 10, "bold"),
-        ).pack(side=tk.LEFT)
-
-        self.search_var = tk.StringVar()
-
-        entry = tk.Entry(
-            frame,
-            textvariable=self.search_var,
-            width=35,
-            font=("Segoe UI", 10),
-        )
-
-        entry.pack(side=tk.LEFT, padx=8)
-        entry.focus()
-
-        self.total_label = tk.StringVar()
-
-        tk.Label(
-            frame,
-            textvariable=self.total_label,
-            bg="white",
-            fg="gray",
-        ).pack(side=tk.RIGHT)
-
-        self.search_var.trace_add(
-            "write",
-            lambda *args: self.refresh_table(),
-        )
 
     # =====================================================
     # Product Table
@@ -255,8 +171,8 @@ class ProductMaster(tk.Frame):
 
         # Separate container lets the Treeview shrink and grow
         # with the available window space.
-        table_frame = tk.Frame(self.product_frame, bg="white")
-        table_frame.grid(
+        self.table_frame = tk.Frame(self.product_frame, bg="white")
+        self.table_frame.grid(
             row=1,
             column=0,
             sticky="nsew",
@@ -264,11 +180,27 @@ class ProductMaster(tk.Frame):
             pady=(0, 5),
         )
 
-        table_frame.grid_columnconfigure(0, weight=1)
-        table_frame.grid_rowconfigure(0, weight=1)
+        self.table_frame.grid_columnconfigure(0, weight=1)
+        self.table_frame.grid_rowconfigure(0, weight=1)
+        
+        self.empty_state_frame = tk.Frame(self.product_frame, bg="white")
+        tk.Label(
+            self.empty_state_frame,
+            text="No products found. Add your first product to begin.",
+            bg="white",
+            fg="gray",
+            font=("Segoe UI", 12)
+        ).pack(pady=(50, 20))
+        btn_add_empty = create_success_button(
+            self.empty_state_frame,
+            "Add Product",
+            command=self.add_product,
+            width=16
+        )
+        btn_add_empty.pack()
 
         self.product_tree = ttk.Treeview(
-            table_frame,
+            self.table_frame,
             columns=columns,
             show="headings",
         )
@@ -299,13 +231,13 @@ class ProductMaster(tk.Frame):
             )
 
         scroll_y = ttk.Scrollbar(
-            table_frame,
+            self.table_frame,
             orient="vertical",
             command=self.product_tree.yview,
         )
 
         scroll_x = ttk.Scrollbar(
-            table_frame,
+            self.table_frame,
             orient="horizontal",
             command=self.product_tree.xview,
         )
@@ -445,11 +377,12 @@ class ProductMaster(tk.Frame):
         self.total_label.set(f"Products : {len(products)}")
 
         if not products:
-            if keyword:
-                self.product_tree.insert("", tk.END, values=("", "", f"No products found for '{keyword}'", "", "", "", "", ""), tags=("empty",))
-            else:
-                self.product_tree.insert("", tk.END, values=("", "", "No products available.", "", "", "", "", ""), tags=("empty",))
+            self.table_frame.grid_remove()
+            self.empty_state_frame.grid(row=1, column=0, sticky="nsew")
             return
+            
+        self.empty_state_frame.grid_remove()
+        self.table_frame.grid(row=1, column=0, sticky="nsew", padx=5, pady=(0, 5))
 
         for product in products:
             

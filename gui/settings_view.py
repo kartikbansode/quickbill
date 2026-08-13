@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from gui.ui_components import create_success_button, FONT_LABEL, FONT_SECTION
 
 
 class SettingsView(tk.Frame):
@@ -53,15 +54,9 @@ class SettingsView(tk.Frame):
             sticky="ew",
         )
 
-        save_btn = tk.Button(
+        save_btn = create_success_button(
             scanner_frame,
             text="Save",
-            font=("Segoe UI", 10, "bold"),
-            bg="#16a34a",
-            fg="white",
-            relief="flat",
-            padx=20,
-            cursor="hand2",
             command=self.save_settings,
         )
 
