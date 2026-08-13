@@ -1,355 +1,541 @@
 import tkinter as tk
 from tkinter import ttk
+
 from PIL import Image, ImageTk
-import time
 
 from logic.resource_path import resource_path
 
 
 class SplashScreen:
 
-    def __init__(self):
+    WINDOW_WIDTH = 800
+    WINDOW_HEIGHT = 450
 
-        self.root = tk.Tk()
+    MIN_DISPLAY_TIME = 1800
+
+    BACKGROUND = "#102A43"
+    BORDER = "#16324F"
+    ACCENT = "#2F6FED"
+    TEXT = "#FFFFFF"
+    MUTED = "#AFC0D1"
+
+    def __init__(self, parent):
+
+        self.parent = parent
+
+        # ---------------------------------------------------------
+        # Create Toplevel instead of another Tk root
+        # ---------------------------------------------------------
+
+        self.root = tk.Toplevel(parent)
 
         self.root.withdraw()
 
         self.root.overrideredirect(True)
 
-        self.root.deiconify()
+        self.root.configure(
+            bg=self.BACKGROUND
+        )
 
-        self.root.configure(bg="white")
+        self.root.resizable(
+            False,
+            False
+        )
 
-        self.root.resizable(False, False)
-
-        self.build_ui()
-
-        self.root.update_idletasks()
-
-        content_width = self.card.winfo_reqwidth()
-        content_height = self.card.winfo_reqheight()
-
-        window_width = content_width + 2
-        window_height = content_height + 2
-
-        # Fixed professional splash size
-
-        window_width = 650
-        window_height = 450
+        # ---------------------------------------------------------
+        # Center splash
+        # ---------------------------------------------------------
 
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
 
-        window_width = min(window_width, int(screen_width * 0.9))
-        window_height = min(window_height, int(screen_height * 0.9))
+        x = max(
+            0,
+            (screen_width - self.WINDOW_WIDTH) // 2
+        )
 
-        x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
+        y = max(
+            0,
+            (screen_height - self.WINDOW_HEIGHT) // 2
+        )
 
-        self.root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        self.root.geometry(
+            f"{self.WINDOW_WIDTH}x"
+            f"{self.WINDOW_HEIGHT}+{x}+{y}"
+        )
 
-        self.root.attributes("-alpha", 0.0)
+        # ---------------------------------------------------------
+        # State
+        # ---------------------------------------------------------
+
+        self._progress_value = 0.0
+        self._progress_target = 0.0
+
+        self._progress_job = None
+        self._close_job = None
+        self._fade_job = None
+
+        self._closed = False
+
+        self.start_time = self._current_time()
+
+        # ---------------------------------------------------------
+        # Transparency
+        # ---------------------------------------------------------
+
+        self._supports_alpha = True
+
+        try:
+            self.root.attributes(
+                "-alpha",
+                0.0
+            )
+        except tk.TclError:
+            self._supports_alpha = False
+
+        # ---------------------------------------------------------
+        # Build UI
+        # ---------------------------------------------------------
+
+        self.build_ui()
+
+        # ---------------------------------------------------------
+        # Show splash
+        # ---------------------------------------------------------
+
+        self.root.deiconify()
+
+        self.root.lift()
+
+        self.root.focus_force()
+
+        # ---------------------------------------------------------
+        # Fade in
+        # ---------------------------------------------------------
 
         self.fade_in()
 
-    def fade_in(self):
+        # Make sure the splash is visible immediately.
+        self.root.update_idletasks()
+        self.root.update()
 
-        alpha = 0.0
-
-        while alpha < 1:
-
-            alpha += 0.05
-
-            self.root.attributes("-alpha", alpha)
-
-            self.root.update()
-
-            time.sleep(0.015)
-
-    def fade_out(self):
-
-        alpha = 1
-
-        while alpha > 0:
-
-            alpha -= 0.05
-
-            self.root.attributes("-alpha", alpha)
-
-            self.root.update()
-
-            time.sleep(0.015)
-
-    # -------------------------------------------------
+    # =============================================================
+    # BUILD UI
+    # =============================================================
 
     def build_ui(self):
 
-        # ===========================
-        # Main Card
-        # ===========================
-
-        self.card = tk.Frame(
+        main_frame = tk.Frame(
             self.root,
-            bg="white",
+            bg=self.BACKGROUND,
+            highlightbackground=self.BORDER,
+            highlightthickness=1,
+            bd=0,
         )
 
-        self.card.pack(fill="both", expand=True)
-
-        # Blue Accent
-
-        tk.Frame(
-            self.card,
-            bg="#0057D8",
-            height=6,
-        ).pack(fill="x")
-
-        # ===========================
-        # Header
-        # ===========================
-
-        header = tk.Frame(
-            self.card,
-            bg="white",
+        main_frame.pack(
+            fill="both",
+            expand=True,
         )
 
-        header.pack(
-            fill="x",
-            padx=30,
-            pady=(28, 20),
+        # ---------------------------------------------------------
+        # Center content
+        # ---------------------------------------------------------
+
+        center_frame = tk.Frame(
+            main_frame,
+            bg=self.BACKGROUND,
+            bd=0,
+            highlightthickness=0,
         )
+
+        center_frame.place(
+            relx=0.5,
+            rely=0.45,
+            anchor="center",
+        )
+
+        # ---------------------------------------------------------
+        # Logo
+        # ---------------------------------------------------------
+
+        self.logo = None
 
         try:
 
-            image = Image.open(resource_path("assets/images/logo.png"))
+            image = Image.open(
+                resource_path(
+                    "assets/images/logo.png"
+                )
+            )
 
-            image.thumbnail((58, 58))
+            image.thumbnail(
+                (72, 72),
+                Image.Resampling.LANCZOS
+            )
 
-            self.logo = ImageTk.PhotoImage(image)
+            self.logo = ImageTk.PhotoImage(
+                image
+            )
 
             tk.Label(
-                header,
+                center_frame,
                 image=self.logo,
-                bg="white",
-            ).pack(side="left")
+                bg=self.BACKGROUND,
+                bd=0,
+                highlightthickness=0,
+            ).pack(
+                pady=(0, 14)
+            )
 
-        except:
-
+        except Exception:
             pass
 
-        title_frame = tk.Frame(
-            header,
-            bg="white",
+        # ---------------------------------------------------------
+        # Brand
+        # ---------------------------------------------------------
+
+        tk.Label(
+            center_frame,
+            text="QUICKBILL PRO",
+            bg=self.BACKGROUND,
+            fg=self.TEXT,
+            font=("Segoe UI", 30, "bold"),
+            bd=0,
+            highlightthickness=0,
+        ).pack()
+
+        tk.Label(
+            center_frame,
+            text="Professional Billing & POS",
+            bg=self.BACKGROUND,
+            fg=self.MUTED,
+            font=("Segoe UI", 12),
+            bd=0,
+            highlightthickness=0,
+        ).pack(
+            pady=(5, 34)
         )
 
-        title_frame.pack(
-            side="left",
-            padx=18,
+        # ---------------------------------------------------------
+        # Status
+        # ---------------------------------------------------------
+
+        self.status = tk.StringVar(
+            value="Starting QuickBill..."
         )
 
         tk.Label(
-            title_frame,
-            text="QuickBill",
-            bg="white",
-            fg="#1E293B",
-            font=("Segoe UI", 24, "bold"),
-        ).pack(anchor="w")
-
-        tk.Label(
-            title_frame,
-            text="Professional POS Billing Software",
-            bg="white",
-            fg="#64748B",
-            font=("Segoe UI", 11),
-        ).pack(anchor="w")
-
-        tk.Frame(
-            self.card,
-            bg="#E2E8F0",
-            height=2,
-        ).pack(fill="x", pady=(10, 0))
-
-        # ==========================
-        # Loading Status
-        # ==========================
-
-        body = tk.Frame(
-            self.card,
-            bg="white",
+            center_frame,
+            textvariable=self.status,
+            bg=self.BACKGROUND,
+            fg=self.MUTED,
+            font=("Segoe UI", 10),
+            bd=0,
+            highlightthickness=0,
+        ).pack(
+            pady=(0, 9)
         )
 
-        body.pack(
-            fill="both",
-            expand=True,
-            padx=35,
-            pady=(15, 10),
+        # ---------------------------------------------------------
+        # Progress bar
+        # ---------------------------------------------------------
+
+        style = ttk.Style(
+            self.root
         )
 
-        self.loading_title = tk.StringVar(value="Initializing Modules...")
-
-        tk.Label(
-            body,
-            textvariable=self.loading_title,
-            bg="white",
-            fg="#1E293B",
-            font=("Segoe UI", 12, "bold"),
-        ).pack(anchor="w")
-
-        self.step_labels = []
-
-        steps = [
-            "Loading Product Database",
-            "Loading Billing Database",
-            "Loading Inventory",
-            "Preparing Workspace",
-            "Starting Barcode Scanner",
-        ]
-
-        for step in steps:
-
-            lbl = tk.Label(
-                body,
-                text="○  " + step,
-                bg="white",
-                fg="#64748B",
-                font=("Segoe UI", 10),
-            )
-
-            lbl.pack(
-                anchor="w",
-                pady=2,
-            )
-
-            self.step_labels.append(lbl)
-
-        style = ttk.Style()
-
-        style.theme_use("clam")
+        try:
+            style.theme_use("clam")
+        except tk.TclError:
+            pass
 
         style.configure(
-            "QB.Horizontal.TProgressbar",
-            thickness=8,
-            troughcolor="#E2E8F0",
-            background="#2563EB",
-            borderwidth=0,
+            "QuickBill.Splash.Horizontal.TProgressbar",
+            thickness=4,
+            troughcolor="#16324F",
+            background=self.ACCENT,
+            bordercolor=self.BACKGROUND,
+            lightcolor=self.ACCENT,
+            darkcolor=self.ACCENT,
         )
 
         self.progress = ttk.Progressbar(
-            body,
-            style="QB.Horizontal.TProgressbar",
+            center_frame,
+            style="QuickBill.Splash.Horizontal.TProgressbar",
             mode="determinate",
-            length=560,
+            length=400,
             maximum=100,
         )
 
-        self.progress.pack(
-            pady=(25, 8),
-            fill="x",
-        )
+        self.progress.pack()
 
-        self.status = tk.StringVar(value="Starting...")
-
-        tk.Label(
-            body,
-            textvariable=self.status,
-            bg="white",
-            fg="#64748B",
-            font=("Segoe UI", 10),
-        ).pack(anchor="w")
-
-        # ---------------- Footer ----------------
+        # ---------------------------------------------------------
+        # Footer
+        # ---------------------------------------------------------
 
         footer = tk.Frame(
-            body,
-            bg="white",
+            main_frame,
+            bg=self.BACKGROUND,
+            bd=0,
+            highlightthickness=0,
         )
 
         footer.pack(
+            side="bottom",
             fill="x",
-            pady=(8, 0),
+            padx=20,
+            pady=15,
         )
 
-        tk.Frame(
+        tk.Label(
             footer,
-            bg="#E5E7EB",
-            height=1,
-        ).pack(fill="x", pady=(0, 10))
-
-        bottom = tk.Frame(
-            footer,
-            bg="white",
+            text="Version 1.0.0",
+            bg=self.BACKGROUND,
+            fg=self.MUTED,
+            font=("Segoe UI", 9),
+            bd=0,
+        ).pack(
+            side="left"
         )
 
-        bottom.pack(fill="x")
-
         tk.Label(
-            bottom,
-            text="Professional Edition",
-            bg="white",
-            fg="#64748B",
+            footer,
+            text="© 2026 QuickBill",
+            bg=self.BACKGROUND,
+            fg=self.MUTED,
             font=("Segoe UI", 9),
-        ).pack(side="left")
+            bd=0,
+        ).pack(
+            side="right"
+        )
 
-        tk.Label(
-            bottom,
-            text="Build 2.2.0",
-            bg="white",
-            fg="#64748B",
-            font=("Segoe UI", 9),
-        ).pack(side="right")
+    # =============================================================
+    # UPDATE
+    # =============================================================
 
-    # -------------------------------------------------
+    def update(self, value, message):
 
-    def update_progress(self, value, message):
+        if self._closed:
+            return
 
-        current = self.progress["value"]
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            return
 
-        while current < value:
+        value = max(0.0, min(100.0, value))
 
-            current += 1
+        if value < self._progress_value:
+            value = self._progress_value
 
-            self.progress["value"] = current
+        self._progress_target = value
 
+        self.status.set(str(message))
+
+        import time
+        while self._progress_value < self._progress_target and not self._closed:
+            difference = self._progress_target - self._progress_value
+            step = max(0.35, min(2.5, difference * 0.14))
+            
+            self._progress_value += step
+            
+            if self._progress_value > self._progress_target:
+                self._progress_value = self._progress_target
+                
+            self.progress["value"] = self._progress_value
+            self._process_events()
+            time.sleep(0.015)
+
+    # =============================================================
+    # PROCESS EVENTS
+    # =============================================================
+
+    def _process_events(self):
+
+        try:
+            self.root.update_idletasks()
             self.root.update()
 
-            time.sleep(0.01)
+        except tk.TclError:
+            pass
 
-        self.status.set(message)
+    # =============================================================
+    # FADE IN
+    # =============================================================
 
-        self.root.update()
+    def fade_in(self):
 
-        progress_steps = [
-            20,
-            40,
-            60,
-            80,
-            100,
-        ]
+        if self._closed:
+            return
 
-        for i, step in enumerate(progress_steps):
+        if not self._supports_alpha:
+            return
 
-            if value >= step:
+        try:
 
-                self.step_labels[i].config(
-                    text="✓  " + self.step_labels[i]["text"][3:],
-                    fg="#16A34A",
-                    font=("Segoe UI", 10, "bold"),
+            alpha = float(
+                self.root.attributes("-alpha")
+            )
+
+            if alpha >= 1.0:
+
+                self.root.attributes(
+                    "-alpha",
+                    1.0
                 )
 
-            elif value >= step - 20:
+                self._fade_job = None
 
-                self.step_labels[i].config(
-                    text="●  " + self.step_labels[i]["text"][3:],
-                    fg="#2563EB",
-                    font=("Segoe UI", 10, "bold"),
-                )
+                return
 
-    # -------------------------------------------------
+            alpha += 0.08
+
+            alpha = min(
+                alpha,
+                1.0
+            )
+
+            self.root.attributes(
+                "-alpha",
+                alpha
+            )
+
+            self._fade_job = self.root.after(
+                20,
+                self.fade_in
+            )
+
+        except tk.TclError:
+
+            self._fade_job = None
+
+    # =============================================================
+    # CLOSE
+    # =============================================================
 
     def close(self):
 
-        self.fade_out()
+        if self._closed:
+            return
 
-        self.root.destroy()
+        # Final state
+        self._progress_target = 100
 
-    def update(self, value, message):
-        self.update_progress(value, message)
+        self.status.set(
+            "Launching QuickBill..."
+        )
+
+        self._wait_until_ready_to_close()
+
+    # =============================================================
+    # WAIT FOR FINAL CLOSE
+    # =============================================================
+
+    def _wait_until_ready_to_close(self):
+
+        import time
+        while not self._closed:
+            elapsed = (
+                self._current_time()
+                - self.start_time
+            )
+
+            minimum_time_reached = (
+                elapsed * 1000
+                >= self.MIN_DISPLAY_TIME
+            )
+
+            progress_finished = (
+                self._progress_value >= 99.9
+            )
+
+            if (
+                minimum_time_reached
+                and progress_finished
+            ):
+                self._destroy_splash()
+                return
+
+            self._process_events()
+            time.sleep(0.015)
+
+    # =============================================================
+    # DESTROY SPLASH
+    # =============================================================
+
+    def _destroy_splash(self):
+
+        if self._closed:
+            return
+
+        self._closed = True
+
+        # Cancel animations
+        for job in (
+            self._progress_job,
+            self._close_job,
+            self._fade_job,
+        ):
+
+            if job is not None:
+
+                try:
+                    self.root.after_cancel(job)
+                except tk.TclError:
+                    pass
+
+        self._progress_job = None
+        self._close_job = None
+        self._fade_job = None
+
+        try:
+            self.root.attributes(
+                "-alpha",
+                0.0
+            )
+        except tk.TclError:
+            pass
+
+        try:
+            self.root.withdraw()
+        except tk.TclError:
+            pass
+
+        try:
+            self.root.destroy()
+        except tk.TclError:
+            pass
+
+        # Critical:
+        # make sure the parent root processes the destruction
+        # before the main application is shown.
+        try:
+            self.parent.update_idletasks()
+            self.parent.update()
+        except tk.TclError:
+            pass
+
+    # =============================================================
+    # TIME
+    # =============================================================
+
+    def _current_time(self):
+
+        return (
+            self.root.tk.call(
+                "clock",
+                "milliseconds"
+            ) / 1000.0
+        )
+
+    # =============================================================
+    # COMPATIBILITY
+    # =============================================================
+
+    def update_idletasks(self):
+
+        try:
+            self.root.update_idletasks()
+        except tk.TclError:
+            pass

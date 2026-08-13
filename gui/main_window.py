@@ -51,9 +51,10 @@ except Exception:
 BILLS_HISTORY_FILE = data_path("bills_history.json")
 
 
-def launch_main_window():
+def launch_main_window(window=None):
 
-    window = tk.Tk()
+    if window is None:
+        window = tk.Tk()
 
     def _shutdown():
         """Unconditional shutdown — stop services and destroy window."""
@@ -1202,5 +1203,8 @@ def launch_main_window():
     # =====================================================
 
     show_billing_view()
+
+    # Show the fully rendered window
+    window.deiconify()
 
     window.mainloop()
