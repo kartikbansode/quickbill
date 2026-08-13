@@ -21,28 +21,33 @@ class BillingView(tk.Frame):
 
     def build_ui(self):
 
+        # Use a container with grid layout to manage sections
         billing_container = tk.Frame(self, bg="#e9ecef")
-        billing_container.pack(fill="both", expand=True, padx=8, pady=5)
+        billing_container.grid(row=0, column=0, sticky="nsew", padx=8, pady=5)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
+        # Row 0: Scanner panel (fixed height)
         self.scanner_panel = ScannerPanel(billing_container)
-        self.scanner_panel.pack(fill="x", padx=0, pady=5)
+        self.scanner_panel.grid(row=0, column=0, columnspan=2, sticky="ew", padx=0, pady=5)
         self.scanner_panel.set_scan_callbacks(
             self.callbacks.get("start_scan"),
             self.callbacks.get("stop_scan"),
         )
         self.scanner_panel.add_button.config(command=self._handle_manual_barcode)
 
+        # Row 1: Table frame (expands)
         table_frame = tk.LabelFrame(
             billing_container,
             text="Current Bill",
             bg="white",
             font=("Segoe UI", 10, "bold"),
         )
-
-        table_frame.pack(fill="both", expand=True, pady=(2, 8))
+        table_frame.grid(row=1, column=0, sticky="nsew", pady=(2, 8))
+        billing_container.grid_rowconfigure(1, weight=1)
+        billing_container.grid_columnconfigure(0, weight=1)
 
         self.cart_table = CartTable(table_frame)
-
         self.cart_table.pack(fill="both", expand=True)
 
         self.cart_table.set_actions(
@@ -51,9 +56,9 @@ class BillingView(tk.Frame):
             self.callbacks.get("delete_item"),
         )
 
+        # Row 2: Bottom panel (fixed height) containing quick actions and bill summary
         bottom_panel = tk.Frame(billing_container, bg="#e9ecef")
-
-        bottom_panel.pack(fill="x", pady=(2, 0))
+        bottom_panel.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(2, 0))
 
         left_panel = tk.LabelFrame(
             bottom_panel,
