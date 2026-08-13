@@ -21,7 +21,7 @@
     Releases
   </a>
   &bull;
-  <a href="https://github.com/kartikbansode/quickbill/releases/tag/v3.0.0">
+  <a href="https://github.com/kartikbansode/quickbill/releases/tag/v3.0.0 — First Stable Release">
     v3.0.0
   </a>
   &bull;
@@ -106,6 +106,30 @@ This release consolidates the core billing, product management, invoice, payment
 
 ---
 
+## Screenshots
+
+### Customer Billing Window
+
+<img width="2560" height="1600" alt="image" src="https://github.com/user-attachments/assets/89e1ebb1-3e28-4cad-b367-caf51f0e8de8" />
+
+
+### Product Management
+
+<img width="2560" height="1600" alt="image" src="https://github.com/user-attachments/assets/765eefdd-a319-4ec0-8ae8-ba16f3ede589" />
+
+### Invoice
+
+### 80 mm -
+
+<img width="347" height="826" alt="image" src="https://github.com/user-attachments/assets/5b73904e-bc3e-4373-9fc0-c13501e12a9d" />
+
+### A4 -
+
+<img width="671" height="842" alt="image" src="https://github.com/user-attachments/assets/b87f7430-563c-400b-b93d-4c637720cee1" />
+
+---
+
+
 ## QuickBill Ecosystem
 
 QuickBill Desktop is the **core billing application and authoritative source of billing data**.
@@ -123,9 +147,7 @@ It manages:
 
 The companion applications connect to QuickBill Desktop to provide additional POS functionality.
 
-### Customer Display
-
-:contentReference[oaicite:0]{index=0}
+### <a href="https://github.com/kartikbansode/quickbill-customer-display-app">Customer Display App</a>
 
 Provides a real-time customer-facing display for:
 
@@ -137,9 +159,7 @@ Provides a real-time customer-facing display for:
 - UPI QR display
 - Payment success state
 
-### Barcode Scanner
-
-:contentReference[oaicite:1]{index=1}
+### <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">Barcode Scanner App</a>
 
 Provides companion barcode-scanning functionality for QuickBill Desktop.
 
@@ -224,26 +244,6 @@ Features include:
 - Success screen
 - Automatic reconnection
 - Graceful disconnected state
-
----
-
-## Screenshots
-
-### Main Billing Window
-
-<img width="1919" height="1079" alt="QuickBill Pro Billing Window" src="https://github.com/user-attachments/assets/a7da29cc-d3e1-47d2-a949-7c3a4842206b" />
-
-### Product Management
-
-<img width="1919" height="1079" alt="QuickBill Pro Product Management" src="https://github.com/user-attachments/assets/12a94658-4a30-4b03-986a-eeb3cc6795fb" />
-
-### Invoice — 80 mm
-
-<img width="347" height="826" alt="QuickBill Pro 80mm Invoice" src="https://github.com/user-attachments/assets/5b73904e-bc3e-4373-9fc0-c13501e12a9d" />
-
-### Invoice — A4
-
-<img width="671" height="842" alt="QuickBill Pro A4 Invoice" src="https://github.com/user-attachments/assets/b87f7430-563c-400b-b93d-4c637720cee1" />
 
 ---
 
