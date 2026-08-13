@@ -21,7 +21,7 @@
     Releases
   </a>
   &bull;
-  <a href="https://github.com/kartikbansode/quickbill/releases/tag/v3.0.0 — First Stable Release">
+  <a href="https://github.com/kartikbansode/quickbill/releases/tag/v3.0.0">
     v3.0.0
   </a>
   &bull;
