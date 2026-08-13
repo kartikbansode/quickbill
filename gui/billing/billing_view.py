@@ -66,7 +66,7 @@ class BillingView(tk.Frame):
             bg="white",
             font=("Segoe UI", 10, "bold"),
         )
-        left_panel.pack(side="left", fill="both", expand=True)
+        left_panel.pack(side="left", fill="y", padx=5)
 
         button_width = 13
 
@@ -107,9 +107,8 @@ class BillingView(tk.Frame):
             text="Bill Summary",
             bg="white",
             font=("Segoe UI", 10, "bold"),
-            width=260,
         )
-        right_panel.pack(side="right", fill="y", padx=5)
+        right_panel.pack(side="right", fill="both", expand=True, padx=5)
 
         self.totals_panel = TotalsPanel(
             right_panel,
