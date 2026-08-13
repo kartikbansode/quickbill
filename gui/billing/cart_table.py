@@ -21,12 +21,12 @@ class CartTable(tk.Frame):
         self.tree.heading("Rate", text="Rate")
         self.tree.heading("Amount", text="Amount")
 
-        self.tree.column("S.No", width=60, anchor="center")
-        self.tree.column("Barcode", width=140, anchor="center")
-        self.tree.column("Product", width=340)
-        self.tree.column("Qty", width=70, anchor="center")
-        self.tree.column("Rate", width=90, anchor="center")
-        self.tree.column("Amount", width=110, anchor="center")
+        self.tree.column("S.No", width=60, anchor="center", stretch=False)
+        self.tree.column("Barcode", width=140, anchor="center", stretch=False)
+        self.tree.column("Product", width=340, stretch=True)
+        self.tree.column("Qty", width=70, anchor="center", stretch=False)
+        self.tree.column("Rate", width=90, anchor="center", stretch=False)
+        self.tree.column("Amount", width=110, anchor="center", stretch=False)
 
         action_row = tk.Frame(self, bg="white")
         action_row.pack(side="bottom", fill="x", padx=6, pady=(0, 6))

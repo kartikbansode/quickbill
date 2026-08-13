@@ -197,40 +197,25 @@ class PaymentDialog(tk.Toplevel):
         screen_height = self.winfo_screenheight()
 
         width = min(
-            760,
-            screen_width - 60,
+            850,
+            int(screen_width * 0.9),
         )
 
         height = min(
-            610,
-            screen_height - 80,
-        )
-
-        width = max(
-            700,
-            width,
-        )
-
-        height = max(
-            580,
-            height,
+            750,
+            int(screen_height * 0.9),
         )
 
         self.geometry(f"{width}x{height}")
 
         self.minsize(
-            700,
-            580,
-        )
-
-        self.maxsize(
-            760,
-            610,
+            600,
+            500,
         )
 
         self.resizable(
-            False,
-            False,
+            True,
+            True,
         )
 
         self.configure(bg=self.BG)

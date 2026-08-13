@@ -19,18 +19,14 @@ class BillDetailsDialog(tk.Toplevel):
             f"Invoice Details - {bill.get('bill_no', '-')}"
         )
 
-        self.width = 900
-        self.height = 680
+        screen_w = self.winfo_screenwidth()
+        screen_h = self.winfo_screenheight()
 
-        x = (
-            self.winfo_screenwidth()
-            - self.width
-        ) // 2
+        self.width = min(900, int(screen_w * 0.9))
+        self.height = min(680, int(screen_h * 0.9))
 
-        y = (
-            self.winfo_screenheight()
-            - self.height
-        ) // 2
+        x = (screen_w - self.width) // 2
+        y = (screen_h - self.height) // 2
 
         self.geometry(
             f"{self.width}x{self.height}+{x}+{y}"
@@ -40,6 +36,8 @@ class BillDetailsDialog(tk.Toplevel):
             820,
             600,
         )
+        
+        self.resizable(True, True)
 
         self.configure(
             bg="#e9ecef"

@@ -147,6 +147,7 @@ class FindBillView(tk.Frame):
             show="headings",
             height=16,
         )
+        self.bill_tree.tag_configure("empty", foreground="#6b7280")
 
         widths = {
             "Bill No": 180,
@@ -162,11 +163,14 @@ class FindBillView(tk.Frame):
                 col,
                 text=col,
             )
+            
+            stretch = True if col in ["Bill No", "Date"] else False
 
             self.bill_tree.column(
                 col,
                 width=widths[col],
                 anchor="center",
+                stretch=stretch,
             )
 
         # Total should remain readable

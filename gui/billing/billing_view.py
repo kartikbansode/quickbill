@@ -15,6 +15,7 @@ class BillingView(tk.Frame):
         self.scanner_panel = None
         self.cart_table = None
         self.totals_panel = None
+        self.generate_button = None
 
         self.build_ui()
 
@@ -85,7 +86,7 @@ class BillingView(tk.Frame):
             command=self.callbacks.get("hold_bill"),
         ).grid(row=1, column=1, padx=5, pady=5)
 
-        tk.Button(
+        self.generate_button = tk.Button(
             left_panel,
             text="🧾 Generate",
             width=button_width,
@@ -93,7 +94,9 @@ class BillingView(tk.Frame):
             fg="white",
             font=("Segoe UI", 9, "bold"),
             command=self.callbacks.get("generate_bill"),
-        ).grid(row=1, column=2, padx=5, pady=5)
+            state="disabled",
+        )
+        self.generate_button.grid(row=1, column=2, padx=5, pady=5)
 
         right_panel = tk.LabelFrame(
             bottom_panel,
@@ -126,6 +129,11 @@ class BillingView(tk.Frame):
     def render_cart(self, items):
         self.cart_table.refresh_table(items)
         self.totals_panel.refresh_totals()
+        
+        if items:
+            self.generate_button.config(state="normal", bg="#16a085")
+        else:
+            self.generate_button.config(state="disabled", bg="#95a5a6")
 
     def refresh_totals(self):
         self.totals_panel.refresh_totals()

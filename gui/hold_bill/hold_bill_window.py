@@ -15,11 +15,19 @@ class HoldBillWindow(tk.Toplevel):
 
         self.title("Held Bills")
 
-        self.geometry("980x680")
+        screen_w = self.winfo_screenwidth()
+        screen_h = self.winfo_screenheight()
+        width = min(980, int(screen_w * 0.9))
+        height = min(680, int(screen_h * 0.9))
+        x = (screen_w - width) // 2
+        y = (screen_h - height) // 2
 
-        self.resizable(False, False)
+        self.geometry(f"{width}x{height}+{x}+{y}")
+        self.minsize(600, 400)
+        self.resizable(True, True)
 
         self.resume_callback = resume_callback
+        self._is_resuming = False
 
         self.build_ui()
 
@@ -216,6 +224,9 @@ class HoldBillWindow(tk.Toplevel):
 
     def resume_bill(self, event=None):
 
+        if self._is_resuming:
+            return
+
         selected = self.tree.selection()
 
         if not selected:
@@ -223,6 +234,8 @@ class HoldBillWindow(tk.Toplevel):
             messagebox.showwarning("Resume", "Please select a bill.")
 
             return
+
+        self._is_resuming = True
 
         hold_no = self.tree.item(selected[0])["values"][0]
 
@@ -239,6 +252,8 @@ class HoldBillWindow(tk.Toplevel):
                 self.destroy()
 
                 return
+        
+        self._is_resuming = False
 
     def delete_bill(self, event=None):
 

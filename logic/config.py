@@ -48,8 +48,17 @@ config = load_config()
 
 
 def save_config():
-    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
-        json.dump(config, f, indent=4)
+    temp_file = CONFIG_FILE + ".tmp"
+    try:
+        with open(temp_file, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
+        os.replace(temp_file, CONFIG_FILE)
+    except Exception as e:
+        print(f"[ERROR] Failed to save config: {e}")
+        try:
+            os.remove(temp_file)
+        except OSError:
+            pass
 
 
 def get(section, key):

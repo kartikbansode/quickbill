@@ -1943,8 +1943,10 @@ def _save_bill_history(bill):
             exist_ok=True,
         )
 
+        temp_file = history_file + ".tmp"
+        
         with open(
-            history_file,
+            temp_file,
             "w",
             encoding="utf-8",
         ) as file:
@@ -1955,6 +1957,8 @@ def _save_bill_history(bill):
                 indent=4,
                 ensure_ascii=False,
             )
+            
+        os.replace(temp_file, history_file)
 
     except Exception as e:
 

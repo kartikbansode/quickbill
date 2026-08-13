@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from logic.cart import cart, add_to_cart, remove_from_cart, update_quantity
 from logic.billing import calculate_totals
-from logic.barcode_scanner import scan_barcode_background, stop_scanner, play_beep
+from logic.barcode_scanner import scan_barcode_background, stop_scanner, play_beep, get_scanner_status
 from logic.database import (
     get_product_by_barcode,
     add_product,
@@ -278,6 +278,14 @@ def launch_main_window():
         refresh_table()
 
     def start_scan():
+        scanner_ok, scanner_err = get_scanner_status()
+        if not scanner_ok:
+            messagebox.showwarning(
+                "Scanner Unavailable",
+                scanner_err,
+                parent=window,
+            )
+            return
 
         global scanner_active
 
@@ -478,6 +486,10 @@ def launch_main_window():
             raise
 
     def complete_sale(payment_mode, received_amount):
+        if getattr(window, "is_completing_sale", False):
+            return
+
+        window.is_completing_sale = True
 
         nonlocal bill_number, payment_dialog, payment_in_progress
 
@@ -608,14 +620,7 @@ def launch_main_window():
             # Success Message
             # --------------------------------
 
-            messagebox.showinfo(
-                "Sale Completed",
-                (
-                    f"Invoice {completed_bill} generated successfully.\n\n"
-                    "A4 and 80mm bills have been saved."
-                ),
-                parent=window,
-            )
+            status_bar.set_status(f"Bill {completed_bill} Generated Successfully.", timeout=5000)
 
             return True
 
@@ -635,6 +640,9 @@ def launch_main_window():
 
             # Keep the payment dialog open so the cashier can retry.
             return False
+            
+        finally:
+            window.is_completing_sale = False
 
     def search_bill(keyword):
 
@@ -643,6 +651,13 @@ def launch_main_window():
         bills = search_bill_history(keyword)
 
         bills.reverse()
+
+        if not bills:
+            if keyword:
+                find_bill_view.bill_tree.insert("", tk.END, values=("", f"No bills found for '{keyword}'", "", "", ""), tags=("empty",))
+            else:
+                find_bill_view.bill_tree.insert("", tk.END, values=("", "No bills found.", "", "", ""), tags=("empty",))
+            return
 
         for bill in bills:
 

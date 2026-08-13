@@ -69,8 +69,12 @@ class StatusBar(tk.Frame):
     def set_bill_number(self, bill):
         self.bill_no.set(bill)
 
-    def set_status(self, text):
+    def set_status(self, text, timeout=None):
         self.status.set(text)
+        if hasattr(self, '_status_timer'):
+            self.after_cancel(self._status_timer)
+        if timeout:
+            self._status_timer = self.after(timeout, lambda: self.status.set("Ready"))
 
     def scanner_connected(self):
         self.scanner.set("Connected")

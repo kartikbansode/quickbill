@@ -8,5 +8,5 @@ def calculate_totals(items=None, tax_percent=10, discount_percent=5):
     )
     tax = round(subtotal * (tax_percent / 100), 2)
     discount = round(subtotal * (discount_percent / 100), 2)
-    total = subtotal + tax - discount
-    return subtotal, tax, discount, total
+    total = round(subtotal + tax - discount, 2)
+    return round(subtotal, 2), tax, discount, total

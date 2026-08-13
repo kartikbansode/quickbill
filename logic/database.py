@@ -61,11 +61,17 @@ def load_products():
 
 
 def save_products():
+    temp_file = PRODUCTS_FILE + ".tmp"
     try:
-        with open(PRODUCTS_FILE, "w", encoding="utf-8") as f:
+        with open(temp_file, "w", encoding="utf-8") as f:
             json.dump(product_data, f, indent=4, ensure_ascii=False)
+        os.replace(temp_file, PRODUCTS_FILE)
     except Exception as e:
         print(f"[ERROR] Failed to save products: {e}")
+        try:
+            os.remove(temp_file)
+        except OSError:
+            pass
 
 
 def get_product_by_barcode(barcode):
@@ -212,12 +218,21 @@ def generate_bill_number():
 
         data["counter"] += 1
 
-    with open(BILL_COUNTER_FILE, "w", encoding="utf-8") as f:
-        json.dump(
-            data,
-            f,
-            indent=4,
-            ensure_ascii=False,
-        )
+    temp_file = BILL_COUNTER_FILE + ".tmp"
+    try:
+        with open(temp_file, "w", encoding="utf-8") as f:
+            json.dump(
+                data,
+                f,
+                indent=4,
+                ensure_ascii=False,
+            )
+        os.replace(temp_file, BILL_COUNTER_FILE)
+    except Exception as e:
+        print(f"[ERROR] Failed to save bill counter: {e}")
+        try:
+            os.remove(temp_file)
+        except OSError:
+            pass
 
     return f"QB-{today}-{data['counter']:06d}"

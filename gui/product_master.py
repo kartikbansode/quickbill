@@ -272,6 +272,8 @@ class ProductMaster(tk.Frame):
             columns=columns,
             show="headings",
         )
+        self.product_tree.tag_configure("low_stock", foreground="#dc2626")
+        self.product_tree.tag_configure("empty", foreground="#6b7280")
 
         widths = {
             "Barcode": 100,
@@ -286,13 +288,15 @@ class ProductMaster(tk.Frame):
 
         for col in columns:
             self.product_tree.heading(col, text=col)
+            
+            stretch = True if col == "Product Name" else False
+            
             self.product_tree.column(
                 col,
                 width=widths[col],
-                anchor="center",
+                anchor="center" if col != "Product Name" else "w",
+                stretch=stretch,
             )
-
-        self.product_tree.column("Product Name", anchor="w")
 
         scroll_y = ttk.Scrollbar(
             table_frame,
@@ -440,7 +444,18 @@ class ProductMaster(tk.Frame):
 
         self.total_label.set(f"Products : {len(products)}")
 
+        if not products:
+            if keyword:
+                self.product_tree.insert("", tk.END, values=("", "", f"No products found for '{keyword}'", "", "", "", "", ""), tags=("empty",))
+            else:
+                self.product_tree.insert("", tk.END, values=("", "", "No products available.", "", "", "", "", ""), tags=("empty",))
+            return
+
         for product in products:
+            
+            tags = ()
+            if float(product.get("stock", 0)) <= float(product.get("min_stock", 0)):
+                tags = ("low_stock",)
 
             self.product_tree.insert(
                 "",
@@ -455,6 +470,7 @@ class ProductMaster(tk.Frame):
                     f"₹ {float(product.get('selling_price', 0)):.2f}",
                     f"{product.get('gst', 0)} %",
                 ),
+                tags=tags,
             )
 
         children = self.product_tree.get_children()

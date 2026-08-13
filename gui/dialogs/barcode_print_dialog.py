@@ -20,15 +20,18 @@ class BarcodePrintDialog(tk.Toplevel):
 
         self.title("Print Barcode Labels")
 
-        width = 650
-        height = 600
+        screen_w = self.winfo_screenwidth()
+        screen_h = self.winfo_screenheight()
 
-        x = (self.winfo_screenwidth() - width) // 2
-        y = (self.winfo_screenheight() - height) // 2
+        width = min(650, int(screen_w * 0.9))
+        height = min(600, int(screen_h * 0.9))
+
+        x = (screen_w - width) // 2
+        y = (screen_h - height) // 2
 
         self.geometry(f"{width}x{height}+{x}+{y}")
-
-        self.resizable(False, False)
+        self.minsize(500, 450)
+        self.resizable(True, True)
 
         self.transient(parent)
         self.grab_set()

@@ -24,10 +24,17 @@ def load_held_bills():
 
 
 def save_held_bills(bills):
-
-    with open(HOLD_FILE, "w", encoding="utf-8") as f:
-
-        json.dump(bills, f, indent=4)
+    temp_file = HOLD_FILE + ".tmp"
+    try:
+        with open(temp_file, "w", encoding="utf-8") as f:
+            json.dump(bills, f, indent=4)
+        os.replace(temp_file, HOLD_FILE)
+    except Exception as e:
+        print(f"[ERROR] Failed to save held bills: {e}")
+        try:
+            os.remove(temp_file)
+        except OSError:
+            pass
 
 
 def hold_bill(cart):

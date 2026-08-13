@@ -40,6 +40,9 @@ class SplashScreen:
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
 
+        window_width = min(window_width, int(screen_width * 0.9))
+        window_height = min(window_height, int(screen_height * 0.9))
+
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
 

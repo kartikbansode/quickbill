@@ -31,15 +31,19 @@ class AddProductDialog:
 
             self.window.title("Add Product")
 
-        width = 800
-        height = 700
+        screen_w = self.window.winfo_screenwidth()
+        screen_h = self.window.winfo_screenheight()
 
-        x = (self.window.winfo_screenwidth() - width) // 2
-        y = (self.window.winfo_screenheight() - height) // 2
+        width = min(800, int(screen_w * 0.9))
+        height = min(700, int(screen_h * 0.9))
+
+        x = (screen_w - width) // 2
+        y = (screen_h - height) // 2
 
         self.window.geometry(f"{width}x{height}+{x}+{y}")
 
-        self.window.resizable(False, False)
+        self.window.minsize(600, 500)
+        self.window.resizable(True, True)
 
         self.window.protocol(
             "WM_DELETE_WINDOW",
@@ -48,16 +52,15 @@ class AddProductDialog:
 
         self.entries = {}
 
+        # Allow Esc to close
+        self.window.bind("<Escape>", lambda e: self.close_dialog())
+
         self.build_ui()
 
         if product:
-
             self.load_product()
-
             self.entries["Product Name"].focus_set()
-
         else:
-
             self.generate_barcode()
 
             self.entries["Product Name"].focus_set()

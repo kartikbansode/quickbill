@@ -11,13 +11,13 @@ def add_to_cart(product):
 
     for item in cart:
 
-        if item["barcode"] == barcode:
+        if str(item["barcode"]) == str(barcode):
 
             item["qty"] += 1
             rate = _get_item_rate(item)
             item["price"] = rate
             item["selling_price"] = rate
-            item["total"] = item["qty"] * rate
+            item["total"] = round(item["qty"] * rate, 2)
             return
 
     rate = _get_item_rate(product)
@@ -69,10 +69,12 @@ def remove_from_cart(index):
 def update_quantity(index, qty):
 
     if 0 <= index < len(cart):
+        
+        qty = max(1, qty)
 
         cart[index]["qty"] = qty
 
         rate = _get_item_rate(cart[index])
         cart[index]["price"] = rate
         cart[index]["selling_price"] = rate
-        cart[index]["total"] = qty * rate
+        cart[index]["total"] = round(qty * rate, 2)

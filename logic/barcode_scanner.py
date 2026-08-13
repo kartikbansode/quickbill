@@ -1,5 +1,52 @@
+import os
+import sys
+import importlib.util
 import cv2
-from pyzbar import pyzbar
+
+# ------------------------------------------------------------
+# Ensure Windows can locate the native DLLs required by pyzbar.
+# ------------------------------------------------------------
+# Determine the directory that contains libiconv.dll and libzbar-64.dll.
+# When running from a frozen executable (PyInstaller), the DLLs are
+# extracted to the temporary _MEIPASS folder. Otherwise we locate the
+# installed package directory via importlib.
+try:
+    if getattr(sys, "frozen", False):
+        # PyInstaller bundle – DLLs are in the _MEIPASS directory under
+        # the pyzbar package name.
+        pyzbar_dir = os.path.join(sys._MEIPASS, "pyzbar")
+    else:
+        spec = importlib.util.find_spec("pyzbar")
+        if spec and spec.origin:
+            pyzbar_dir = os.path.abspath(os.path.join(os.path.dirname(spec.origin)))
+        else:
+            raise ImportError("Unable to locate the pyzbar package")
+    # Add the directory to the DLL search path (Python 3.8+ on Windows).
+    os.add_dll_directory(pyzbar_dir)
+except Exception as e:
+    # If anything goes wrong we still continue; the scanner will be marked
+    # unavailable later when we attempt the import.
+    print(f"[SCANNER] Failed to adjust DLL search path: {e}")
+
+# Now attempt to import pyzbar safely.
+try:
+    from pyzbar import pyzbar
+    SCANNER_AVAILABLE = True
+    SCANNER_ERROR = None
+except Exception as e:
+    pyzbar = None
+    SCANNER_AVAILABLE = False
+    SCANNER_ERROR = (
+        "Barcode decoding library could not be initialized.\n\n"
+        f"Error: {e}\n\n"
+        "Check that the native dependencies (MSVCR120.dll) are present "
+        "and that the DLL directory has been added to the search path."
+    )
+
+def get_scanner_status():
+    """Return a tuple (available: bool, error_message: str|None)."""
+    return SCANNER_AVAILABLE, SCANNER_ERROR
+
 import threading
 import time
 from logic.config import get
@@ -247,6 +294,10 @@ def start_barcode_scanner(
     global visible_codes
     global last_seen_time
 
+    if not SCANNER_AVAILABLE:
+        print(f"[SCANNER] {SCANNER_ERROR}")
+        return
+
     cap = cv2.VideoCapture(
         stream_url,
         cv2.CAP_FFMPEG,
@@ -310,6 +361,9 @@ def start_barcode_scanner(
             )
 
             cap.release()
+            
+            if stop_scanning:
+                break
 
             time.sleep(1)
 
@@ -430,11 +484,10 @@ def start_barcode_scanner(
                 pass
 
             try:
-
-                on_detected_callback(
-                    barcode_data
-                )
-
+                if not stop_scanning:
+                    on_detected_callback(
+                        barcode_data
+                    )
             except Exception as e:
 
                 print(
@@ -527,6 +580,10 @@ def scan_barcode_background(
     global last_seen_time
     global scanner_thread
 
+    if not SCANNER_AVAILABLE:
+        print(f"[SCANNER] {SCANNER_ERROR}")
+        return
+
     if (
         scanner_thread is not None
         and scanner_thread.is_alive()
@@ -563,7 +620,6 @@ def stop_scanner():
     stop_scanning = True
 
     if scanner_thread and scanner_thread.is_alive():
-
-        scanner_thread.join(timeout=1)
+        scanner_thread.join(timeout=0.5)
 
     scanner_thread = None
