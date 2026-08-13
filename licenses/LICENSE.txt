@@ -1,44 +1,116 @@
-QuickBill Billing System
-
+QuickBill
 Version 3.0.0
 
-Copyright © 2026 Essenc Technologies. All Rights Reserved.
+Copyright © 2026 Kartik Bansode. All Rights Reserved.
 
-Proprietary Software License
+PROPRIETARY SOFTWARE LICENSE
 
-This software, including its source code, executable files, user interface, documentation, graphics, and other associated materials, is proprietary software owned by Essenc Technologies ("Owner").
+This software, including its source code, executable files, user interface,
+documentation, graphics, assets, and other associated materials
+(collectively, the "Software"), is proprietary software owned by
+Kartik Bansode ("Owner").
 
-The software is licensed to you, not sold.
+The Software is licensed to you, not sold.
 
-Subject to the terms of this license, you are granted a limited, non-exclusive, non-transferable license to install and use the software for your own business or personal purposes.
+Subject to the terms of this license, you are granted a limited,
+non-exclusive, non-transferable, revocable license to install and use
+the Software for personal, educational, evaluation, or internal business
+purposes.
 
-You may not, except where expressly permitted by applicable law:
+You may not, except where expressly permitted by applicable law or with
+prior written permission from the Owner:
 
-* Copy, reproduce, or redistribute the software.
-* Modify, adapt, or create derivative works of the software.
-* Reverse engineer, decompile, disassemble, or attempt to derive the source code of the software.
-* Sell, sublicense, lease, rent, or commercially redistribute the software.
-* Repackage or distribute modified or unmodified copies of the software.
-* Remove or alter copyright, trademark, attribution, or other proprietary notices.
+* Copy, reproduce, or redistribute the Software or substantial portions
+  of its source code.
 
-All rights not expressly granted under this license are reserved by the Owner.
+* Modify, adapt, translate, or create derivative works based on the
+  Software.
 
-Disclaimer of Warranty
+* Reverse engineer, decompile, disassemble, or otherwise attempt to
+  derive the source code or underlying structure of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
+* Sell, sublicense, lease, rent, or commercially redistribute the
+  Software or modified versions of the Software.
 
-THE OWNER DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE, UNINTERRUPTED, OR SUITABLE FOR EVERY PARTICULAR PURPOSE.
+* Repackage, mirror, upload, publish, or distribute modified or
+  unmodified copies of the Software outside the official project
+  repository or releases.
 
-Limitation of Liability
+* Remove, alter, or obscure copyright notices, attribution, trademarks,
+  license notices, or other proprietary notices contained in the
+  Software.
 
-TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE OWNER SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR LOSS-OF-PROFIT DAMAGES ARISING OUT OF OR RELATED TO THE USE OF, OR INABILITY TO USE, THE SOFTWARE.
+* Use the Software, its branding, or its source code to create or
+  distribute a competing product without prior written permission
+  from the Owner.
 
-Acceptance
+* Represent the Software or any modified version of the Software as
+  an official product of another person or organization.
 
-By installing or using QuickBill, you acknowledge that you have read, understood, and agreed to the terms of this license.
+All rights not expressly granted under this license are reserved by
+the Owner.
 
-Copyright
+SOURCE CODE AND OFFICIAL PROJECT
 
-Copyright © 2026 Essenc Technologies. All Rights Reserved.
+The official QuickBill source code and project information are
+available at:
 
-QuickBill is a proprietary software product of Essenc Technologies.
+https://github.com/kartikbansode/quickbill
+
+Only releases and files published through the official repository
+should be considered official distributions of QuickBill.
+
+DISCLAIMER OF WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES
+OF ANY KIND, WHETHER EXPRESS OR IMPLIED, TO THE MAXIMUM EXTENT PERMITTED
+BY APPLICABLE LAW.
+
+THE OWNER DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE,
+UNINTERRUPTED, SECURE, OR SUITABLE FOR EVERY PARTICULAR PURPOSE.
+
+THE OWNER MAKES NO GUARANTEE REGARDING THE ACCURACY, RELIABILITY, OR
+AVAILABILITY OF BILLING, INVENTORY, PAYMENT, REPORTING, OR OTHER
+APPLICATION FUNCTIONS.
+
+THE USER IS RESPONSIBLE FOR VERIFYING ALL BILLING, TAX, INVENTORY,
+PAYMENT, AND BUSINESS INFORMATION GENERATED OR STORED BY THE SOFTWARE.
+
+LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE OWNER SHALL NOT
+BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL,
+EXEMPLARY, OR LOSS-OF-PROFIT DAMAGES, OR FOR ANY LOSS OF DATA, REVENUE,
+BUSINESS, OR BUSINESS OPPORTUNITY ARISING OUT OF OR RELATED TO THE USE
+OF, OR INABILITY TO USE, THE SOFTWARE.
+
+PAYMENT AND THIRD-PARTY SERVICES
+
+QuickBill may integrate with or generate information for third-party
+services, including payment applications, UPI services, barcode scanners,
+customer display systems, printers, operating systems, and other external
+software or hardware.
+
+The Owner does not control and is not responsible for the availability,
+operation, security, policies, or terms of third-party services.
+
+Users are responsible for complying with all applicable terms and
+requirements of third-party services they choose to use with QuickBill.
+
+ACCEPTANCE
+
+By installing, accessing, copying, or using QuickBill, you acknowledge
+that you have read, understood, and agreed to the terms of this license.
+
+If you do not agree to these terms, you must not install, access, copy,
+modify, or use the Software.
+
+COPYRIGHT
+
+Copyright © 2026 Kartik Bansode. All Rights Reserved.
+
+QuickBill is a proprietary software project developed and maintained
+by Kartik Bansode.
+
+Official Repository:
+https://github.com/kartikbansode/quickbill

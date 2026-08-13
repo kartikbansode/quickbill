@@ -1,11 +1,13 @@
 QUICKBILL PROPRIETARY LICENSE
+
 Copyright © 2026 Kartik Bansode. All Rights Reserved.
 
 This software and its source code are proprietary intellectual property
-of the copyright holder.
+of Kartik Bansode ("Copyright Holder").
 
 The source code is publicly available for viewing, educational,
-portfolio, and evaluation purposes only.
+portfolio, academic, professional, recruitment, demonstration,
+and evaluation purposes only.
 
 PERMITTED USE
 
@@ -14,22 +16,29 @@ You may:
 - View and inspect the source code.
 - Study the source code for educational purposes.
 - Evaluate the project for academic, professional, recruitment,
-  portfolio, or demonstration purposes.
+  portfolio, demonstration, or research purposes.
+- Run the software for personal, educational, evaluation, or
+  demonstration purposes.
 
 RESTRICTED USE
 
-Without prior written permission from the copyright holder, you may NOT:
+Without prior written permission from the Copyright Holder, you may NOT:
 
 - Copy or reproduce the source code or substantial portions of it.
-- Modify, adapt, or create derivative works from the source code.
-- Redistribute or republish the source code or any substantial portion
-  of the project.
+- Modify, adapt, translate, or create derivative works from the
+  source code.
+- Redistribute, republish, mirror, or publicly distribute the
+  source code or substantial portions of the project.
 - Use the source code or software for commercial purposes.
 - Sell, sublicense, rent, lease, or otherwise transfer the software.
 - Incorporate the source code or substantial portions of it into
   another software project.
 - Publish modified or substantially copied versions of the project.
-- Remove, alter, or obscure copyright or proprietary notices.
+- Remove, alter, or obscure copyright, attribution, or proprietary
+  notices.
+- Use the QuickBill name, branding, logos, or other project assets
+  to represent a modified or third-party version as the official
+  QuickBill project.
 
 NO LICENSE GRANT
 
@@ -40,19 +49,40 @@ or other intellectual property rights.
 
 THIRD-PARTY COMPONENTS
 
-This license applies only to the original work contained in this
-repository. Third-party libraries, frameworks, dependencies, assets,
-and other components remain subject to their respective licenses.
+This license applies only to the original work created by
+Kartik Bansode and contained in this repository.
+
+Third-party libraries, frameworks, dependencies, assets, fonts,
+icons, and other components remain subject to their respective
+licenses and terms.
 
 PERMISSION
 
-Any use not expressly permitted by this license requires prior written
-permission from the copyright holder.
+Any use not expressly permitted by this license requires prior
+written permission from the Copyright Holder.
+
+For permission requests, please contact the Copyright Holder through
+the official GitHub repository:
+
+https://github.com/kartikbansode/quickbill
 
 DISCLAIMER
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
 
+THE COPYRIGHT HOLDER SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR OTHER DAMAGES ARISING FROM
+THE USE OF, OR INABILITY TO USE, THE SOFTWARE.
+
+COPYRIGHT
+
 Copyright © 2026 Kartik Bansode.
 All Rights Reserved.
+
+QuickBill is a proprietary software project developed and
+maintained by Kartik Bansode.
+
+Official Repository:
+
+https://github.com/kartikbansode/quickbill
