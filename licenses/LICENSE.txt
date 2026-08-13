@@ -1,6 +1,6 @@
 QuickBill Billing System
 
-Version 2.2.0
+Version 3.0.0
 
 Copyright © 2026 Essenc Technologies. All Rights Reserved.
 

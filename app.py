@@ -12,7 +12,7 @@ from logic.database import (
 from logic.customer_display_server import customer_display
 
 
-APP_NAME = "QuickBill Pro"
+APP_NAME = "QuickBill v3.0.0"
 
 
 def main():

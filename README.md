@@ -1,221 +1,101 @@
-<p align="center">
-  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
-    <img width="80" height="80" alt="logo" src="https://github.com/user-attachments/assets/cc80dfee-89d8-4fc7-905d-7dfbaa3b480b" />
-  </a>
-</p>
+<div align="center">
+  <img src="assets/images/logo.png" alt="QuickBill Pro Logo" width="120" />
+  <h1>QuickBill Pro v3.0.0</h1>
+  <p><strong>Professional Point of Sale (POS) & Billing Desktop Application</strong></p>
 
-<h1 align="center">
-  QuickBill
-</h1>
+  [![Version](https://img.shields.io/badge/Version-3.0.0-blue)](https://github.com/kartikbansode/quickbill)
+  [![Platform](https://img.shields.io/badge/Platform-Windows-green)](#)
+  [![Python](https://img.shields.io/badge/Python-3.11+-blue)](#)
+</div>
 
-<p align="center">
-  <strong>Professional Desktop Billing & Inventory Management System</strong>
-</p>
-
-<p align="center">
-  Fast billing · Barcode scanning · Inventory management · Payments · Invoices
-</p>
-
-<p align="center">
-  <a href="https://github.com/kartikbansode/quickbill/releases">
-    Releases
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill/releases/download/v2.2.0/QuickBill_Setup_v2.2.0.exe">
-    Download v2.2.0
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
-    Customer Display App
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">
-    Barcode Scanner App
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill">
-    Repository
-  </a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/kartikbansode/quickbill/releases">
-    <img
-      src="https://img.shields.io/badge/Version-2.2.0-blue"
-      alt="Version 2.2.0"
-    />
-  </a>
-
-  <a href="https://www.python.org/downloads/">
-    <img
-      src="https://img.shields.io/badge/Python-3.11%2B-yellow"
-      alt="Python 3.11+"
-    />
-  </a>
-
-  <a href="https://www.microsoft.com/en-us/windows">
-    <img
-      src="https://img.shields.io/badge/Platform-Windows-blue"
-      alt="Windows"
-    />
-  </a>
-
-  <a href="https://github.com/kartikbansode/quickbill/blob/main/LICENSE">
-    <img
-      src="https://img.shields.io/badge/LICENCE-green"
-      alt="License"
-    />
-  </a>
-</p>
-
-<p align="center">
-  QuickBill is the core desktop billing application of the QuickBill ecosystem,
-  built for retail shops and small businesses. It combines fast point-of-sale
-  billing, barcode scanning, product and inventory management, payment
-  processing, professional invoice generation, bill history, and local
-  business data management in a single desktop application.
-</p>
-
-
-
-<p align="center">
-  <strong>Part of the QuickBill Ecosystem</strong>
-  <br>
-  QuickBill Desktop is the core billing system and authoritative source
-  for products, inventory, bills, payments and transactions.
-</p>
-
-<p align="center">
-  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
-    Customer Display
-  </a>
-  &nbsp;·&nbsp;
-  Real-time customer-facing billing, payment, QR and transaction display
-  <br>
-  <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">
-    Barcode Scanner
-  </a>
-  &nbsp;·&nbsp;
-  Companion Android barcode scanning application for QuickBill Desktop
-</p>
-
-
-## What's Changed in v2.2.0
-
-- Refined and more professional payment dialog
-- Fixed payment workflow bugs and improved transaction locking
-- Added dynamic UPI QR support for faster payment collection
-- Improved customer display synchronization with desktop billing
-- Added automatic reconnect and more stable display connection handling
-- Better handling for cash, UPI, card, and credit payment modes
-- Improved success screen behavior after completed transactions
-- General UI and stability improvements
-- Updated versioning, installer metadata, and release packaging
+## Overview
+QuickBill Pro is a comprehensive, high-end retail billing and Point of Sale (POS) application designed specifically for modern supermarkets, hardware stores, medical shops, and general retail. Featuring a beautiful and highly responsive dark-themed Tkinter interface, QuickBill Pro empowers cashiers with seamless keyboard navigation, instant barcode scanning, one-click PDF generation, and real-time synchronization with a wireless Customer Display.
 
 ---
 
-## Features
-
-- Product management: add, edit, delete, search
-- Barcode scanner support with USB / IP camera
-- Fast billing workflow
-- Professional PDF invoice generation
-- Barcode label PDF generation
-- Hold and resume bills
-- Bill history, search, and reprint
-- Automatic bill number generation
-- Inventory and stock management
-- Settings for app and billing configuration
-- Portable JSON-based local database
-- Windows installer and uninstaller
+## 🚀 Core Features
+*   **Lightning Fast Billing:** Keyboard-first workflow designed for high-throughput retail environments (`F2` for New Bill, `F4` for Checkout).
+*   **Integrated Barcode Scanner:** Real-time webcam barcode parsing using OpenCV & Pyzbar with audible beep feedback.
+*   **Dual View Customer Display:** Automatically broadcasts the live cart and checkout totals to any Android device on the network via WebSockets.
+*   **Automated PDF Receipts:** Instantly generates professional A4 PDF invoices upon checkout using ReportLab.
+*   **UPI / Payment Integration:** Built-in modal for unified payment processing and exact change calculation.
+*   **Intelligent Cart Management:** In-line editing (`+`, `-`, `Trash`) with instantaneous subtotal, tax, and discount recalcs.
 
 ---
 
-## Screenshots
-
-### Customer Billing Window
-
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/a7da29cc-d3e1-47d2-a949-7c3a4842206b" />
-
-### Product Management
-
-<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/12a94658-4a30-4b03-986a-eeb3cc6795fb" />
-
-### Invoice
-
-### 80 mm -
-
-<img width="347" height="826" alt="image" src="https://github.com/user-attachments/assets/5b73904e-bc3e-4373-9fc0-c13501e12a9d" />
-
-### A4 -
-
-<img width="671" height="842" alt="image" src="https://github.com/user-attachments/assets/b87f7430-563c-400b-b93d-4c637720cee1" />
+## 🛠 Technology Stack
+*   **Language:** Python 3.11+
+*   **GUI Framework:** Native `Tkinter` (Custom TTK Clam Theme)
+*   **Vision & Scanning:** `OpenCV` (`cv2`), `pyzbar`
+*   **Document Generation:** `reportlab`
+*   **Networking:** `asyncio`, `websockets` (Customer Display Server)
+*   **Database:** High-speed in-memory JSON (`products.json`, `bills_history.json`)
 
 ---
 
-## Requirements
+## 📦 Installation & Setup
 
-- Python 3.11+
-- Windows 10 / Windows 11
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/kartikbansode/quickbill.git
+   cd quickbill
+   ```
+
+2. **Create a virtual environment (Recommended):**
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+3. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Launch QuickBill Pro:**
+   ```bash
+   python -u app.py
+   ```
 
 ---
 
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/kartikbansode/quickbill.git
+## ⚙️ Configuration
+The configuration is stored in `config.json`. You can modify it manually or through the application's Settings menu.
+```json
+{
+    "scanner": {
+        "type": "mobile_camera",
+        "camera_url": "", 
+        "duplicate_delay": 1,
+        "beep": true
+    }
+}
 ```
-
-Go to the project directory:
-
-```bash
-cd quickbill
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the application:
-
-```bash
-python app.py
-```
+*Note: If you use a mobile IP webcam, set the `camera_url` (e.g. `http://192.168.1.50:8080/video`). If left blank, it will attempt to use your default connected USB webcam.*
 
 ---
 
-## Building the Executable
-
-```bash
-pyinstaller QuickBill.spec
-```
-
-The executable will be generated inside the `dist` folder.
+## 📱 Customer Display Setup
+QuickBill Pro hosts a local WebSocket server on `TCP 8765` and broadcasts its presence via `UDP 8766`.
+1. Ensure the desktop running QuickBill and the Android tablet/phone are on the **same Wi-Fi network**.
+2. Launch the QuickBill application. The server starts automatically in the background.
+3. Open the companion Customer Display App on your tablet; it will auto-discover the desktop and sync instantly.
 
 ---
 
-## License
+## 📝 Limitations & Roadmap
+**v3.0.0 Scope Limitations:**
+*   **Database:** Currently utilizes JSON stubs. Planned migration to SQLite/PostgreSQL for multi-terminal sync.
+*   **Authentication:** Single user mode only. No cashier login or role-based access control yet.
+*   **Inventory:** Tracks products but does not track dynamic stock counts/deductions.
 
-This project is proprietary software.
-
-Copyright © 2026 Kartik Bansode. All Rights Reserved.
-
-The source code is publicly available for viewing, educational, portfolio, and evaluation purposes only.
-
-No permission is granted to copy, reproduce, modify, redistribute, republish, commercially use, sublicense, sell, or create derivative works from this software or its source code without prior written permission from the copyright holder.
-
-For complete terms and restrictions, see the [LICENSE](https://github.com/kartikbansode/quickbill/blob/main/LICENSE) file.
+**Future Roadmap (v4.0.0+):**
+*   [ ] Cloud-sync & Multi-terminal support.
+*   [ ] Inventory tracking with low-stock alerts.
+*   [ ] Detailed analytics and daily shift reports.
+*   [ ] Hardware ESC/POS Thermal Printer support.
 
 ---
 
-## Contact
-
-**LinkedIn**  
-https://www.linkedin.com/in/kartikbansode
-
-**GitHub**  
-https://github.com/kartikbansode
+## 📜 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

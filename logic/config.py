@@ -28,7 +28,7 @@ DEFAULT_CONFIG = {
 
     "scanner": {
         "type": "mobile_camera",
-        "camera_url": "http://192.168.0.133:8080/video",
+        "camera_url": "",
         "duplicate_delay": 1,
         "beep": True
     }

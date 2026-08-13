@@ -1,5 +1,5 @@
 #define MyAppName "QuickBill"
-#define MyAppVersion "2.2.0"
+#define MyAppVersion "3.0.0"
 #define MyAppPublisher "Essenc Technologies"
 #define MyAppExeName "QuickBill.exe"
 
@@ -18,7 +18,7 @@ DefaultDirName={autopf}\QuickBill
 DefaultGroupName=QuickBill
 
 OutputDir=..\release
-OutputBaseFilename=QuickBill_Setup_v2.2.0
+OutputBaseFilename=QuickBill_Setup_v3.0.0
 
 SetupIconFile=..\assets\images\logo.ico
 
@@ -45,11 +45,11 @@ DisableDirPage=no
 
 UninstallDisplayIcon={app}\QuickBill.exe
 
-VersionInfoVersion=2.2.0.0
+VersionInfoVersion=3.0.0.0
 VersionInfoCompany=Essenc Technologies
 VersionInfoDescription=Professional Barcode Billing Software
 VersionInfoProductName=QuickBill
-VersionInfoProductVersion=2.2.0
+VersionInfoProductVersion=3.0.0
 VersionInfoCopyright=Copyright © 2026 Essenc Technologies. All Rights Reserved.
 
 SetupLogging=yes

@@ -16,12 +16,12 @@ VSVersionInfo(
         [
           StringStruct('CompanyName', 'Essenc Technologies'),
           StringStruct('FileDescription', 'Professional Barcode Billing Software'),
-          StringStruct('FileVersion', '2.2.0'),
+          StringStruct('FileVersion', '3.0.0'),
           StringStruct('InternalName', 'QuickBill'),
           StringStruct('LegalCopyright', 'Copyright © 2026 Essenc Technologies. All Rights Reserved.'),
           StringStruct('OriginalFilename', 'QuickBill.exe'),
           StringStruct('ProductName', 'QuickBill'),
-          StringStruct('ProductVersion', '2.2.0')
+          StringStruct('ProductVersion', '3.0.0')
         ]
       )
     ]),

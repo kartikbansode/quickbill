@@ -42,10 +42,9 @@ from logic.config import get, set
 
 scanner_active = False
 
-try:
-    webcam_url = get("scanner", "camera_url")
-except Exception:
-    webcam_url = "http://192.168.0.203:8080/video"
+webcam_url = get("scanner", "camera_url")
+if webcam_url is None:
+    webcam_url = ""
 
 
 BILLS_HISTORY_FILE = data_path("bills_history.json")
@@ -1165,22 +1164,15 @@ def launch_main_window(window=None):
         },
     )
 
-    def _not_implemented():
-        status_bar.set_status("Feature coming soon", timeout=2000)
-
     toolbar = Toolbar(
         window,
         {
             "billing": show_billing_view,
             "new_bill": clear_cart_all,
-            "save_bill": _not_implemented,
-            "print_bill": _not_implemented,
             "hold_bill": hold_current_bill,
             "find_bill": lambda: show_find_bill_view(),
             "products": show_products_view,
             "settings": show_settings_view,
-            "customers": _not_implemented,
-            "reports": _not_implemented,
             "exit": close_application,
         },
     )
