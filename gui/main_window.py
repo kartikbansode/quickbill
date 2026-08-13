@@ -129,14 +129,16 @@ def launch_main_window():
 
     # --- Menu Bar ---
     header = Header(window)
-    header.pack(fill="x")
+    header.pack(side="top", fill="x")
 
     status_bar = StatusBar(window)
-    status_bar.pack(fill="x")
+    status_bar.pack(side="bottom", fill="x")
 
     # --- Content Container ---
     content_container = tk.Frame(window, bg="#e9ecef")
-    content_container.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+    # Will pack this at the bottom of the file after everything else is created,
+    # or just let it expand in the middle.
+    content_container.pack(side="top", fill=tk.BOTH, expand=True, padx=5, pady=5)
 
     def broadcast_current_bill():
         """
@@ -1188,7 +1190,8 @@ def launch_main_window():
         },
     )
 
-    toolbar.pack(fill="x")
+    # Pack toolbar at the bottom (but above status bar since status bar was packed side="bottom" first)
+    toolbar.pack(side="bottom", fill="x")
 
     # =====================================================
     # Initialize

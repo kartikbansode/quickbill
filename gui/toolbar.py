@@ -6,8 +6,6 @@ class Toolbar(tk.Frame):
     def __init__(self, parent, callbacks):
         super().__init__(parent, bg="#e5e7eb", height=55)
 
-        self.pack(fill="x")
-
         buttons = [
 
             ("Billing", callbacks.get("billing")),

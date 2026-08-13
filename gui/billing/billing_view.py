@@ -56,43 +56,64 @@ class BillingView(tk.Frame):
             self.callbacks.get("delete_item"),
         )
 
-        # Row 2: Bottom panel (fixed height) containing quick actions and bill summary
-        bottom_panel = tk.Frame(billing_container, bg="#e9ecef")
-        bottom_panel.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(2, 0))
+        # Row 2: Totals panel
+        totals_container = tk.Frame(billing_container, bg="#e9ecef")
+        totals_container.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(2, 2))
+        
+        right_panel = tk.LabelFrame(
+            totals_container,
+            text="Bill Summary",
+            bg="white",
+            font=("Segoe UI", 10, "bold"),
+            width=260,
+        )
+        right_panel.pack(side="right", fill="y", padx=5)
+
+        self.totals_panel = TotalsPanel(
+            right_panel,
+            self.callbacks.get("calculate_totals", lambda: (0, 0, 0, 0)),
+        )
+        self.totals_panel.pack(fill="both", expand=True, padx=0, pady=0)
+
+        # Row 3: Bottom Action Toolbar
+        action_container = tk.Frame(billing_container, bg="#e9ecef")
+        action_container.grid(row=3, column=0, columnspan=2, sticky="ew", pady=(0, 2))
 
         left_panel = tk.LabelFrame(
-            bottom_panel,
+            action_container,
             text="Quick Actions",
             bg="white",
             font=("Segoe UI", 10, "bold"),
         )
+        left_panel.pack(fill="x", expand=True)
 
-        left_panel.pack(side="left", fill="both", expand=True)
+        btn_frame = tk.Frame(left_panel, bg="white")
+        btn_frame.pack(side="left", fill="x", padx=5, pady=5)
 
         button_width = 13
 
         tk.Button(
-            left_panel,
+            btn_frame,
             text="🆕 New Bill",
             width=button_width,
             bg="#3498db",
             fg="white",
             font=("Segoe UI", 9, "bold"),
             command=self.callbacks.get("clear_cart"),
-        ).grid(row=1, column=0, padx=5, pady=5)
+        ).pack(side="left", padx=5)
 
         tk.Button(
-            left_panel,
+            btn_frame,
             text="📋 Hold",
             width=button_width,
             bg="#8e44ad",
             fg="white",
             font=("Segoe UI", 9, "bold"),
             command=self.callbacks.get("hold_bill"),
-        ).grid(row=1, column=1, padx=5, pady=5)
+        ).pack(side="left", padx=5)
 
         self.generate_button = tk.Button(
-            left_panel,
+            btn_frame,
             text="🧾 Generate",
             width=button_width,
             bg="#16a085",
@@ -101,23 +122,7 @@ class BillingView(tk.Frame):
             command=self.callbacks.get("generate_bill"),
             state="disabled",
         )
-        self.generate_button.grid(row=1, column=2, padx=5, pady=5)
-
-        right_panel = tk.LabelFrame(
-            bottom_panel,
-            text="Bill Summary",
-            bg="white",
-            font=("Segoe UI", 10, "bold"),
-            width=260,
-        )
-
-        right_panel.pack(side="right", fill="y", padx=5)
-
-        self.totals_panel = TotalsPanel(
-            right_panel,
-            self.callbacks.get("calculate_totals", lambda: (0, 0, 0, 0)),
-        )
-        self.totals_panel.pack(fill="both", expand=True, padx=0, pady=0)
+        self.generate_button.pack(side="left", padx=5)
 
     def _handle_manual_barcode(self):
         barcode = self.get_manual_barcode()
