@@ -100,7 +100,7 @@ class PaymentDialog(tk.Toplevel):
         # -----------------------------------------------------
 
         self.upi_paid_var = tk.BooleanVar(value=False)
-        self.upi_id = "8793432136-5@ybl"
+        self.upi_id = "PUT-YOUR-UPI-ID-HERE"
         self.merchant_name = "QuickBill"
 
         self.upi_payload = ""

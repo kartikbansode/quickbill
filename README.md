@@ -309,6 +309,67 @@ The executable will be generated inside the `dist` folder.
 
 ---
 
+## UPI Payment Configuration
+
+QuickBill Pro supports dynamic UPI QR payments.
+
+Before using UPI payments, configure your UPI ID in the following two files.
+
+### 1. Configure UPI ID
+
+Open:
+
+`logic/upi_payment.py`
+
+Find:
+
+`DEFAULT_UPI_ID = "PUT-YOUR-UPI-ID-HERE"`
+
+Replace it with your own UPI ID.
+
+Example:
+
+`DEFAULT_UPI_ID = "yourupi@bank"`
+
+### 2. Configure Payment Dialog
+
+Open:
+
+`gui/payment/payment_dialog.py`
+
+Find:
+
+`self.upi_id = "PUT-YOUR-UPI-ID-HERE"`
+
+Replace it with the same UPI ID.
+
+Example:
+
+`self.upi_id = "yourupi@bank"`
+
+Make sure the UPI ID is identical in both files.
+
+### 3. Dynamic UPI QR
+
+When UPI payment is selected, QuickBill generates a dynamic payment QR containing:
+
+- UPI ID
+- Merchant name
+- Current bill amount
+- Bill number
+- Currency (INR)
+
+The QR code is generated automatically for each bill and displayed through the customer display system.
+
+### Important
+
+- Use a valid UPI ID belonging to the business or merchant.
+- Use the same UPI ID in both configuration locations.
+- Do not add your UPI PIN, password, bank credentials, or other sensitive information to the source code.
+- Test the generated QR code with a small transaction before using QuickBill for real billing.
+
+---
+
 ## License
 
 This project is proprietary software.

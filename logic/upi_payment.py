@@ -5,7 +5,7 @@ import qrcode
 from PIL import ImageTk
 
 
-DEFAULT_UPI_ID = "8793432136-5@ybl"
+DEFAULT_UPI_ID = "PUT-YOUR-UPI-ID-HERE"
 DEFAULT_MERCHANT_NAME = "QuickBill"
 
 
