@@ -1,71 +1,155 @@
 #define MyAppName "QuickBill"
 #define MyAppVersion "3.0.0"
-#define MyAppPublisher "Essenc Technologies"
+#define MyAppPublisher "Kartik Bansode"
 #define MyAppExeName "QuickBill.exe"
+#define MyAppId "E8F66E52-8F77-4C6F-90A6-61E4B6F57A01"
 
 [Setup]
-AppId={{E8F66E52-8F77-4C6F-90A6-61E4B6F57A01}
+
+; ============================================================
+; Application Identity
+; ============================================================
+
+AppId={{#MyAppId}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 
 AppPublisher={#MyAppPublisher}
-AppPublisherURL=
-AppSupportURL=
-AppUpdatesURL=
+AppPublisherURL=https://github.com/kartikbansode/quickbill
+AppSupportURL=https://github.com/kartikbansode/quickbill/issues
+AppUpdatesURL=https://github.com/kartikbansode/quickbill/releases
+
+; ============================================================
+; Installation
+; ============================================================
 
 DefaultDirName={autopf}\QuickBill
-DefaultGroupName=QuickBill
+DefaultGroupName={#MyAppName}
+
+DisableProgramGroupPage=yes
+DisableDirPage=no
+
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
+
+; ============================================================
+; Installer Output
+; ============================================================
 
 OutputDir=..\release
-OutputBaseFilename=QuickBill_Setup_v3.0.0
+OutputBaseFilename=QuickBill_Setup_v{#MyAppVersion}
+
+; ============================================================
+; Application Icon
+; ============================================================
 
 SetupIconFile=..\assets\images\logo.ico
 
+; ============================================================
+; Installer Wizard
+; ============================================================
+
+WizardStyle=modern
 WizardImageFile=wizard.bmp
 WizardSmallImageFile=wizard_small.bmp
 
 LicenseFile=..\licenses\LICENSE.txt
 
-WizardStyle=modern
+; ============================================================
+; Compression
+; ============================================================
 
 Compression=lzma2/max
 SolidCompression=yes
 CompressionThreads=auto
 LZMAUseSeparateProcess=yes
 
+; ============================================================
+; Windows Architecture
+; ============================================================
+
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 
-PrivilegesRequired=admin
-PrivilegesRequiredOverridesAllowed=dialog
+; ============================================================
+; Uninstaller
+; ============================================================
 
-DisableProgramGroupPage=yes
-DisableDirPage=no
+Uninstallable=yes
+UninstallDisplayName={#MyAppName}
+UninstallDisplayIcon={app}\{#MyAppExeName}
 
-UninstallDisplayIcon={app}\QuickBill.exe
+; ============================================================
+; Windows File Version Information
+; ============================================================
 
-VersionInfoVersion=3.0.0.0
-VersionInfoCompany=Essenc Technologies
-VersionInfoDescription=Professional Barcode Billing Software
-VersionInfoProductName=QuickBill
-VersionInfoProductVersion=3.0.0
-VersionInfoCopyright=Copyright © 2026 Essenc Technologies. All Rights Reserved.
+VersionInfoVersion={#MyAppVersion}.0
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoDescription=Professional Desktop Billing and POS Management System
+VersionInfoProductName={#MyAppName}
+VersionInfoProductVersion={#MyAppVersion}
+VersionInfoCopyright=Copyright © 2026 Kartik Bansode. All Rights Reserved.
+
+; ============================================================
+; Installer Behavior
+; ============================================================
 
 SetupLogging=yes
+CloseApplications=yes
+RestartApplications=no
+
+AllowNoIcons=yes
+ShowLanguageDialog=no
+
+; ============================================================
+; Languages
+; ============================================================
 
 [Languages]
+
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+; ============================================================
+; Optional Tasks
+; ============================================================
+
 [Tasks]
-Name: desktopicon; Description: "Create a Desktop Shortcut"; GroupDescription: "Additional Tasks:"; Flags: unchecked
+
+Name: "desktopicon"; \
+    Description: "Create a desktop shortcut"; \
+    GroupDescription: "Additional shortcuts:"; \
+    Flags: unchecked
+
+; ============================================================
+; Application Files
+; ============================================================
 
 [Files]
-Source: "..\dist\QuickBill.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+Source: "..\dist\QuickBill.exe"; \
+    DestDir: "{app}"; \
+    Flags: ignoreversion
+
+; ============================================================
+; Shortcuts
+; ============================================================
 
 [Icons]
-Name: "{group}\QuickBill"; Filename: "{app}\QuickBill.exe"
-Name: "{autodesktop}\QuickBill"; Filename: "{app}\QuickBill.exe"; Tasks: desktopicon
+
+Name: "{group}\{#MyAppName}"; \
+    Filename: "{app}\{#MyAppExeName}"
+
+Name: "{autodesktop}\{#MyAppName}"; \
+    Filename: "{app}\{#MyAppExeName}"; \
+    Tasks: desktopicon
+
+; ============================================================
+; First Launch
+; ============================================================
 
 [Run]
-Filename: "{app}\QuickBill.exe"; Description: "Launch QuickBill"; Flags: nowait postinstall skipifsilent
+
+Filename: "{app}\{#MyAppExeName}"; \
+    Description: "Launch {#MyAppName}"; \
+    Flags: nowait postinstall skipifsilent

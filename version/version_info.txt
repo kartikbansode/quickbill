@@ -1,7 +1,7 @@
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(2,2,0,0),
-    prodvers=(2,2,0,0),
+    filevers=(3,0,0,0),
+    prodvers=(3,0,0,0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -14,13 +14,19 @@ VSVersionInfo(
       StringTable(
         '040904B0',
         [
-          StringStruct('CompanyName', 'Essenc Technologies'),
-          StringStruct('FileDescription', 'Professional Barcode Billing Software'),
+          StringStruct('CompanyName', 'Kartik Bansode'),
+          StringStruct(
+            'FileDescription',
+            'Professional Desktop Billing and POS Management System'
+          ),
           StringStruct('FileVersion', '3.0.0'),
           StringStruct('InternalName', 'QuickBill'),
-          StringStruct('LegalCopyright', 'Copyright © 2026 Essenc Technologies. All Rights Reserved.'),
+          StringStruct(
+            'LegalCopyright',
+            'Copyright © 2026 Kartik Bansode. All Rights Reserved.'
+          ),
           StringStruct('OriginalFilename', 'QuickBill.exe'),
-          StringStruct('ProductName', 'QuickBill'),
+          StringStruct('ProductName', 'QuickBill Pro'),
           StringStruct('ProductVersion', '3.0.0')
         ]
       )
