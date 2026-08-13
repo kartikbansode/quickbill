@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center">
-  QuickBill Pro
+  QuickBill
 </h1>
 
 <p align="center">
@@ -69,7 +69,7 @@
 </p>
 
 <p align="center">
-  QuickBill Pro is a professional desktop billing and point-of-sale system
+  QuickBill is a professional desktop billing and point-of-sale system
   designed for retail shops and small businesses. It provides a complete
   billing workflow with barcode scanning, product management, inventory
   handling, payments, customer-facing display synchronization, invoice
@@ -80,7 +80,7 @@
 
 ## v3.0.0 — First Stable Release
 
-QuickBill Pro v3.0.0 marks the **first stable release** of the QuickBill desktop application.
+QuickBill v3.0.0 marks the **first stable release** of the QuickBill desktop application.
 
 This release consolidates the core billing, product management, invoice, payment, customer display, and POS functionality into a stable desktop application with a consistent professional interface and production-focused architecture.
 
