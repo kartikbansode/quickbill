@@ -1,8 +1,7 @@
-#define MyAppName "QuickBill"
+#define MyAppName "QuickBill Pro"
 #define MyAppVersion "3.0.0"
 #define MyAppPublisher "Kartik Bansode"
 #define MyAppExeName "QuickBill.exe"
-#define MyAppId "E8F66E52-8F77-4C6F-90A6-61E4B6F57A01"
 
 [Setup]
 
@@ -10,7 +9,7 @@
 ; Application Identity
 ; ============================================================
 
-AppId={{#MyAppId}
+AppId={{E8F66E52-8F77-4C6F-90A6-61E4B6F57A01}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
@@ -27,28 +26,24 @@ AppUpdatesURL=https://github.com/kartikbansode/quickbill/releases
 DefaultDirName={autopf}\QuickBill
 DefaultGroupName={#MyAppName}
 
-DisableProgramGroupPage=yes
-DisableDirPage=no
-
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 
+DisableProgramGroupPage=yes
+DisableDirPage=no
+
 ; ============================================================
-; Installer Output
+; Output
 ; ============================================================
 
 OutputDir=..\release
 OutputBaseFilename=QuickBill_Setup_v{#MyAppVersion}
 
 ; ============================================================
-; Application Icon
+; Branding
 ; ============================================================
 
 SetupIconFile=..\assets\images\logo.ico
-
-; ============================================================
-; Installer Wizard
-; ============================================================
 
 WizardStyle=modern
 WizardImageFile=wizard.bmp
@@ -84,7 +79,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 ; Windows File Version Information
 ; ============================================================
 
-VersionInfoVersion={#MyAppVersion}.0
+VersionInfoVersion=3.0.0.0
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoDescription=Professional Desktop Billing and POS Management System
 VersionInfoProductName={#MyAppName}
@@ -102,17 +97,11 @@ RestartApplications=no
 AllowNoIcons=yes
 ShowLanguageDialog=no
 
-; ============================================================
-; Languages
-; ============================================================
 
 [Languages]
 
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-; ============================================================
-; Optional Tasks
-; ============================================================
 
 [Tasks]
 
@@ -121,9 +110,6 @@ Name: "desktopicon"; \
     GroupDescription: "Additional shortcuts:"; \
     Flags: unchecked
 
-; ============================================================
-; Application Files
-; ============================================================
 
 [Files]
 
@@ -131,9 +117,6 @@ Source: "..\dist\QuickBill.exe"; \
     DestDir: "{app}"; \
     Flags: ignoreversion
 
-; ============================================================
-; Shortcuts
-; ============================================================
 
 [Icons]
 
@@ -144,9 +127,6 @@ Name: "{autodesktop}\{#MyAppName}"; \
     Filename: "{app}\{#MyAppExeName}"; \
     Tasks: desktopicon
 
-; ============================================================
-; First Launch
-; ============================================================
 
 [Run]
 
