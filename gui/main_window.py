@@ -132,13 +132,10 @@ def launch_main_window():
     header.pack(side="top", fill="x")
 
     status_bar = StatusBar(window)
-    status_bar.pack(side="bottom", fill="x")
+    # Status bar will only be packed when billing view is shown
 
     # --- Content Container ---
     content_container = tk.Frame(window, bg="#e9ecef")
-    # Will pack this at the bottom of the file after everything else is created,
-    # or just let it expand in the middle.
-    content_container.pack(side="top", fill=tk.BOTH, expand=True, padx=5, pady=5)
 
     def broadcast_current_bill():
         """
@@ -1077,6 +1074,9 @@ def launch_main_window():
         if find_bill_view is not None:
             find_bill_view.pack_forget()
 
+        # Show status bar only on billing screen, exactly below header
+        status_bar.pack(side="top", fill="x", before=content_container)
+
         if billing_view is not None:
             billing_view.pack(
                 fill="both",
@@ -1096,6 +1096,8 @@ def launch_main_window():
                 billing_view.update_scanner_status("Ready")
 
     def show_products_view():
+
+        status_bar.pack_forget()
 
         if billing_view is not None:
             billing_view.pack_forget()
@@ -1119,6 +1121,8 @@ def launch_main_window():
 
     def show_settings_view():
 
+        status_bar.pack_forget()
+
         if billing_view is not None:
             billing_view.pack_forget()
 
@@ -1138,6 +1142,8 @@ def launch_main_window():
         window.title("QuickBill System - Settings")
 
     def show_find_bill_view():
+
+        status_bar.pack_forget()
 
         if billing_view is not None:
             billing_view.pack_forget()
@@ -1190,8 +1196,11 @@ def launch_main_window():
         },
     )
 
-    # Pack toolbar at the bottom (but above status bar since status bar was packed side="bottom" first)
+    # Pack toolbar at the bottom
     toolbar.pack(side="bottom", fill="x")
+
+    # Pack the expanding content container LAST, so it safely absorbs only the remaining vertical space
+    content_container.pack(side="top", fill=tk.BOTH, expand=True, padx=5, pady=5)
 
     # =====================================================
     # Initialize
