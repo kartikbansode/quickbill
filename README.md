@@ -239,7 +239,7 @@ Repository: https://github.com/kartikbansode/quickbill-barcode-scanner-app
   width="1919"
   height="1079"
   alt="QuickBill Billing Window"
-  src=""https://github.com/user-attachments/assets/49f08c80-0c49-478f-ad5b-ea19785088c5"
+  src="https://github.com/user-attachments/assets/49f08c80-0c49-478f-ad5b-ea19785088c5"
 />
 
 
@@ -249,7 +249,7 @@ Repository: https://github.com/kartikbansode/quickbill-barcode-scanner-app
   width="1919"
   height="1079"
   alt="QuickBill Product Management"
-  src="https://github.com/user-attachments/assets/12a94658-4a30-4b03-986a-eeb3cc6795fb"
+  src="https://github.com/user-attachments/assets/3d07fad4-2d02-4c26-8ca3-7f2da153eb17"
 />
 
 ### Invoice — 80 mm
