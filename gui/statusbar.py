@@ -15,7 +15,7 @@ class StatusBar(tk.Frame):
         self.operator = tk.StringVar(value="Admin")
         self.bill_no = tk.StringVar(value="QB-000001")
         self.datetime = tk.StringVar()
-        self.version = tk.StringVar(value="QuickBill Pro v3.0.0")
+        self.version = tk.StringVar(value="QuickBill v3.1.0")
         
         self.status_color = tk.StringVar(value="white")
         self.scanner_color = tk.StringVar(value=SUCCESS)

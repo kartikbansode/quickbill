@@ -4,9 +4,9 @@ from PyInstaller.utils.hooks import collect_submodules, collect_data_files
 
 
 # ============================================================
-# QuickBill Pro
+# QuickBill
 # Production Build Configuration
-# Version: 3.0.0
+# Version: 3.1.0
 # Publisher: Kartik Bansode
 # ============================================================
 

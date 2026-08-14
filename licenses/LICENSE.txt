@@ -1,5 +1,5 @@
 QuickBill
-Version 3.0.0
+Version 3.1.0
 
 Copyright © 2026 Kartik Bansode. All Rights Reserved.
 

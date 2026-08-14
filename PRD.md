@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD)
 **Product:** QuickBill Pro
-**Version:** 3.0.0 (First Stable Release)
+**Version:** 3.1.0 (First Stable Release)
 **Status:** IMPLEMENTED
 
 ## 1. Product Overview

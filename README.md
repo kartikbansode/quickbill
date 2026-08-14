@@ -25,8 +25,8 @@
     Releases
   </a>
   &bull;
-  <a href="https://github.com/kartikbansode/quickbill/releases/tag/v3.0.0">
-    v3.0.0
+  <a href="https://github.com/kartikbansode/quickbill/releases/tag/v3.1.0">
+    v3.1.0
   </a>
   &bull;
   <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
@@ -45,8 +45,8 @@
 <p align="center">
   <a href="https://github.com/kartikbansode/quickbill/releases">
     <img
-      src="https://img.shields.io/badge/Version-3.0.0-blue"
-      alt="Version 3.0.0"
+      src="https://img.shields.io/badge/Version-3.1.0-blue"
+      alt="Version 3.1.0"
     />
   </a>
 
@@ -79,6 +79,31 @@
   handling, payments, customer-facing display synchronization, invoice
   generation, and billing history.
 </p>
+
+---
+
+## What's Changed in v3.1.0
+
+QuickBill v3.1.0 introduces powerful new configuration systems allowing you to personalize the billing experience and seamlessly integrate your business identity into the software. 
+
+### Features
+
+- Added Business & Billing Information settings
+- Added persistent UPI ID configuration through Settings
+- Added Cashier Name configuration
+- Added Company / Business Name configuration
+- Added Address, Phone, Email, and GSTIN configuration
+- Added dynamic currency, tax, and discount settings
+- Persistent settings stored locally on the user's PC
+- Business information automatically integrated into invoices
+- Cashier information integrated into invoices
+- Improved 80mm receipt and A4 invoice layouts with dynamic business fields
+- Optional business fields automatically hidden when empty
+- Improved configuration architecture
+- Improved production readiness and stability
+
+### Download Installer
+<a href="https://github.com/kartikbansode/quickbill/releases/download/v3.1.0/QuickBill_Setup_v3.1.0.exe">Download QuickBill_Setup_v3.1.0.exe</a>
 
 ---
 

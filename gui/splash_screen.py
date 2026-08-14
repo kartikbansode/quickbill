@@ -281,7 +281,7 @@ class SplashScreen:
 
         tk.Label(
             footer,
-            text="Version 3.0.0",
+            text="Version 3.1.0",
             bg=self.BACKGROUND,
             fg=self.MUTED,
             font=("Segoe UI", 9),

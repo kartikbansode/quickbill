@@ -1,5 +1,5 @@
-#define MyAppName "QuickBill Pro"
-#define MyAppVersion "3.0.0"
+#define MyAppName "QuickBill"
+#define MyAppVersion "3.1.0"
 #define MyAppPublisher "Kartik Bansode"
 #define MyAppExeName "QuickBill.exe"
 
@@ -79,7 +79,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 ; Windows File Version Information
 ; ============================================================
 
-VersionInfoVersion=3.0.0.0
+VersionInfoVersion=3.1.0.0
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoDescription=Professional Desktop Billing and POS Management System
 VersionInfoProductName={#MyAppName}
