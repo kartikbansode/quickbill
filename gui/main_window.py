@@ -46,6 +46,8 @@ webcam_url = get("scanner", "camera_url")
 if webcam_url is None:
     webcam_url = ""
 
+upi_id = get("payment", "upi_id", "")
+
 
 BILLS_HISTORY_FILE = data_path("bills_history.json")
 
@@ -966,6 +968,17 @@ def launch_main_window(window=None):
 
         status_bar.set_status("Scanner settings saved", timeout=3000)
 
+    def save_upi_id(new_upi_id):
+        try:
+            set("payment", "upi_id", new_upi_id)
+            status_bar.set_status("UPI ID saved", timeout=3000)
+        except Exception as exc:
+            show_error(
+                window, "Settings Error",
+                "Unable to save UPI ID.",
+                detail=str(exc),
+            )
+
     # =====================================================
     # Settings View
     # =====================================================
@@ -973,7 +986,9 @@ def launch_main_window(window=None):
     settings_view = SettingsView(
         content_container,
         webcam_url=webcam_url,
+        upi_id=upi_id,
         save_callback=save_webcam_url,
+        save_payment_callback=save_upi_id,
     )
 
     # =====================================================

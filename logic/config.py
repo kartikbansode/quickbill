@@ -31,6 +31,10 @@ DEFAULT_CONFIG = {
         "camera_url": "",
         "duplicate_delay": 1,
         "beep": True
+    },
+
+    "payment": {
+        "upi_id": ""
     }
 }
 
@@ -61,10 +65,12 @@ def save_config():
             pass
 
 
-def get(section, key):
-    return config[section][key]
+def get(section, key, default=None):
+    return config.get(section, {}).get(key, default)
 
 
 def set(section, key, value):
+    if section not in config:
+        config[section] = {}
     config[section][key] = value
     save_config()

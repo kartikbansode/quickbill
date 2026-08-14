@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from urllib.parse import quote
 from gui.ui_components import show_error, show_warning, show_confirmation, set_button_state, BG_DISABLED, TEXT_DISABLED
+from logic.config import get as get_config
 
 try:
     import qrcode
@@ -44,7 +45,6 @@ class PaymentDialog(tk.Toplevel):
 
     BLUE_BG = "#eff6ff"
 
-    UPI_ID = "8793432136-4@ybl"
     MERCHANT_NAME = "QuickBill"
 
     PAYMENT_MODES = (
@@ -100,7 +100,7 @@ class PaymentDialog(tk.Toplevel):
         # -----------------------------------------------------
 
         self.upi_paid_var = tk.BooleanVar(value=False)
-        self.upi_id = "PUT-YOUR-UPI-ID-HERE"
+        self.upi_id = get_config("payment", "upi_id", "")
         self.merchant_name = "QuickBill"
 
         self.upi_payload = ""
@@ -1317,6 +1317,23 @@ class PaymentDialog(tk.Toplevel):
     # =========================================================
 
     def build_upi_payment(self):
+
+        if not self.upi_id:
+            tk.Label(
+                self.payment_area,
+                text="UPI ID is not configured.\nPlease configure your UPI ID in Settings.",
+                bg=self.CARD,
+                fg=self.DANGER,
+                font=("Segoe UI", 12, "bold"),
+                justify="center",
+            ).pack(expand=True)
+            self.status.set("Configuration Error")
+            self.status_detail.set("UPI ID missing. Cannot process UPI payment.")
+            
+            # Disable complete button for this mode
+            if self.complete_button:
+                self.complete_button.configure(state="disabled")
+            return
 
         self.status.set("Awaiting UPI payment")
 

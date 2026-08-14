@@ -4,10 +4,7 @@ from urllib.parse import quote
 import qrcode
 from PIL import ImageTk
 
-
-DEFAULT_UPI_ID = "PUT-YOUR-UPI-ID-HERE"
 DEFAULT_MERCHANT_NAME = "QuickBill"
-
 
 def build_upi_payload(
     upi_id,
