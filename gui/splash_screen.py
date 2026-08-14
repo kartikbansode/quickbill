@@ -165,12 +165,12 @@ class SplashScreen:
 
             image = Image.open(
                 resource_path(
-                    "assets/images/logo.png"
+                    "assets/images/full-logo.png"
                 )
             )
 
             image.thumbnail(
-                (72, 72),
+                (360, 120),
                 Image.Resampling.LANCZOS
             )
 
@@ -195,15 +195,6 @@ class SplashScreen:
         # Brand
         # ---------------------------------------------------------
 
-        tk.Label(
-            center_frame,
-            text="QUICKBILL PRO",
-            bg=self.BACKGROUND,
-            fg=self.TEXT,
-            font=("Segoe UI", 30, "bold"),
-            bd=0,
-            highlightthickness=0,
-        ).pack()
 
         tk.Label(
             center_frame,

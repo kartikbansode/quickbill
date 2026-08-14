@@ -1,6 +1,10 @@
 import tkinter as tk
 import datetime
 
+from PIL import Image, ImageTk
+
+from logic.resource_path import resource_path
+
 
 class Header(tk.Frame):
 
@@ -84,64 +88,59 @@ class Header(tk.Frame):
             sticky="w",
         )
 
-        # Small brand accent
-        accent = tk.Frame(
-            brand,
-            bg=self.COLORS["accent"],
-            width=5,
-            height=42,
-        )
+        # --------------------------------------------------------
+        # QUICKBILL FULL LOGO
+        # --------------------------------------------------------
 
-        accent.pack(
-            side="left",
-            padx=(0, 12),
-        )
+        try:
+            logo_image = Image.open(
+                resource_path(
+                    "assets/images/full-logo.png"
+                )
+            )
 
-        accent.pack_propagate(False)
+            logo_image.thumbnail(
+                (220, 55),
+                Image.Resampling.LANCZOS
+            )
 
-        brand_text = tk.Frame(
-            brand,
-            bg=bg,
-            bd=0,
-            highlightthickness=0,
-        )
+            self.logo_photo = ImageTk.PhotoImage(
+                logo_image
+            )
 
-        brand_text.pack(
-            side="left",
-        )
+            self.logo_label = tk.Label(
+                brand,
+                image=self.logo_photo,
+                bg=bg,
+                bd=0,
+                highlightthickness=0,
+                padx=0,
+                pady=0,
+            )
 
-        self.title_label = tk.Label(
-            brand_text,
-            text="QuickBill Pro",
-            font=("Segoe UI", 20, "bold"),
-            fg=self.COLORS["text"],
-            bg=bg,
-            anchor="w",
-            bd=0,
-            padx=0,
-            pady=0,
-        )
+            self.logo_label.pack(
+                side="left",
+                anchor="center",
+            )
 
-        self.title_label.pack(
-            anchor="w",
-        )
+        except Exception:
+            # Keep the header usable if the logo cannot be loaded.
+            self.logo_label = tk.Label(
+                brand,
+                text="QuickBill",
+                font=("Segoe UI", 20, "bold"),
+                fg=self.COLORS["text"],
+                bg=bg,
+                anchor="w",
+                bd=0,
+                padx=0,
+                pady=0,
+            )
 
-        self.subtitle_label = tk.Label(
-            brand_text,
-            text="Professional Billing & POS",
-            font=("Segoe UI", 8),
-            fg=self.COLORS["muted"],
-            bg=bg,
-            anchor="w",
-            bd=0,
-            padx=0,
-            pady=0,
-        )
-
-        self.subtitle_label.pack(
-            anchor="w",
-            pady=(1, 0),
-        )
+            self.logo_label.pack(
+                side="left",
+                anchor="center",
+            )
 
         # ========================================================
         # RIGHT — OPERATOR + CLOCK
