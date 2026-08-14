@@ -2,6 +2,7 @@
 import json
 import os
 from logic.file_paths import data_path
+from logic.config import get_invoice_prefix
 
 # Initial product data (used if products.json doesn't exist)
 initial_product_data = {
@@ -235,4 +236,5 @@ def generate_bill_number():
         except OSError:
             pass
 
-    return f"QB-{today}-{data['counter']:06d}"
+    prefix = get_invoice_prefix()
+    return f"{prefix}-{today}-{data['counter']:06d}"

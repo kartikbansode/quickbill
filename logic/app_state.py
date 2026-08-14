@@ -1,4 +1,5 @@
 from logic.cart import cart
+from logic.config import get as get_config
 
 
 class AppState:
@@ -26,7 +27,7 @@ class AppState:
 
         self.scanner_mode = "mobile_camera"
 
-        self.operator = "Admin"
+        self.operator = get_config("company", "cashier_name", "Admin")
 
         self.hold_bills = []
 

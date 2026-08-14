@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from gui.ui_components import ToolTip
+from logic.config import get_currency
 
 class CartTable(tk.Frame):
 
@@ -123,7 +124,7 @@ class CartTable(tk.Frame):
                 "", "end", iid=last_item_id,
                 values=(
                     index + 1, item["barcode"], item["name"], item["qty"],
-                    f"₹ {rate:.2f}", f"₹ {item['total']:.2f}", ""
+                    f"{get_currency()} {rate:.2f}", f"{get_currency()} {item['total']:.2f}", ""
                 ),
                 tags=(tag,)
             )

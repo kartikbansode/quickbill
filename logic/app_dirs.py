@@ -5,7 +5,7 @@ APP_NAME = "QuickBill"
 
 
 def get_app_data_dir():
-    """
+    r"""
     Returns:
     C:\Users\<User>\AppData\Local\QuickBill
     """

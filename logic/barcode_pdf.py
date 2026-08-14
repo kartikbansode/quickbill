@@ -91,6 +91,7 @@ from reportlab.graphics.barcode.code128 import Code128
 from reportlab.pdfgen import canvas
 
 import os
+from logic.config import get_currency
 
 
 class BarcodeLabel:
@@ -234,7 +235,7 @@ class BarcodeLabel:
             self.canvas.drawCentredString(
                 center_x,
                 current_y,
-                f"MRP ₹ {price:.2f}",
+                f"MRP {get_currency()} {price:.2f}",
             )
 
 

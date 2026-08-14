@@ -1,4 +1,5 @@
 import tkinter as tk
+from logic.config import get_currency
 
 
 class TotalsPanel(tk.Frame):
@@ -12,10 +13,10 @@ class TotalsPanel(tk.Frame):
 
         self._calculate_totals_callback = calculate_totals_callback
         self.bill_no_var = tk.StringVar(value="QB-000001")
-        self.subtotal_var = tk.StringVar(value="₹ 0.00")
-        self.tax_var = tk.StringVar(value="₹ 0.00")
-        self.discount_var = tk.StringVar(value="₹ 0.00")
-        self.total_var = tk.StringVar(value="₹ 0.00")
+        self.subtotal_var = tk.StringVar(value=f"{get_currency()} 0.00")
+        self.tax_var = tk.StringVar(value=f"{get_currency()} 0.00")
+        self.discount_var = tk.StringVar(value=f"{get_currency()} 0.00")
+        self.total_var = tk.StringVar(value=f"{get_currency()} 0.00")
 
         self._build_rows()
 
@@ -78,13 +79,13 @@ class TotalsPanel(tk.Frame):
     def refresh_totals(self):
         subtotal, tax, discount, total = self._calculate_totals_callback()
 
-        self.subtotal_var.set(f"₹ {subtotal:.2f}")
-        self.tax_var.set(f"₹ {tax:.2f}")
-        self.discount_var.set(f"₹ {discount:.2f}")
-        self.total_var.set(f"₹ {total:.2f}")
+        self.subtotal_var.set(f"{get_currency()} {subtotal:.2f}")
+        self.tax_var.set(f"{get_currency()} {tax:.2f}")
+        self.discount_var.set(f"{get_currency()} {discount:.2f}")
+        self.total_var.set(f"{get_currency()} {total:.2f}")
 
     def set_totals(self, subtotal, tax, discount, total):
-        self.subtotal_var.set(f"₹ {subtotal:.2f}")
-        self.tax_var.set(f"₹ {tax:.2f}")
-        self.discount_var.set(f"₹ {discount:.2f}")
-        self.total_var.set(f"₹ {total:.2f}")
+        self.subtotal_var.set(f"{get_currency()} {subtotal:.2f}")
+        self.tax_var.set(f"{get_currency()} {tax:.2f}")
+        self.discount_var.set(f"{get_currency()} {discount:.2f}")
+        self.total_var.set(f"{get_currency()} {total:.2f}")

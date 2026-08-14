@@ -4,6 +4,7 @@ from gui.ui_components import create_primary_button, create_success_button, crea
 
 from gui.dialogs.barcode_print_dialog import BarcodePrintDialog
 from gui.dialogs.add_product_dialog import AddProductDialog
+from logic.config import get_currency
 from logic.database import (
     get_all_products,
     search_products,
@@ -400,7 +401,7 @@ class ProductMaster(tk.Frame):
                     product.get("brand", ""),
                     product.get("category", ""),
                     product.get("stock", 0),
-                    f"₹ {float(product.get('selling_price', 0)):.2f}",
+                    f"{get_currency()} {float(product.get('selling_price', 0)):.2f}",
                     f"{product.get('gst', 0)} %",
                 ),
                 tags=tags,

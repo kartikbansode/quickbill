@@ -1,5 +1,6 @@
 import tkinter as tk
 from gui.ui_components import create_primary_button, create_danger_button, FONT_INPUT, PRIMARY, DANGER
+from logic.config import get_currency
 
 
 class ScannerPanel(tk.LabelFrame):
@@ -143,7 +144,7 @@ class ScannerPanel(tk.LabelFrame):
 
         self.category.set(product.get("category", "-"))
 
-        self.price.set(f"₹ {product.get('selling_price', 0):.2f}")
+        self.price.set(f"{get_currency()} {product.get('selling_price', 0):.2f}")
 
         self.gst.set(f"{product.get('gst',0)} %")
 

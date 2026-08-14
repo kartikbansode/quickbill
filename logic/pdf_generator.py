@@ -21,7 +21,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from logic.billing import calculate_totals
-from logic.config import get
+from logic.config import get, get_currency
 from logic.file_paths import data_path
 from logic.resource_path import resource_path
 
@@ -102,7 +102,7 @@ def _safe_int(value, default=0):
 
 def _currency(value):
 
-    currency = "₹"
+    currency = get_currency()
 
     try:
         currency = (
@@ -110,7 +110,7 @@ def _currency(value):
                 "billing",
                 "currency",
             )
-            or "₹"
+            or get_currency()
         )
 
     except Exception:
@@ -448,6 +448,13 @@ def _prepare_bill_data(
         "received_amount": received_amount,
         "balance": balance,
         "cashier": cashier,
+        "company": {
+            "name": _company_value("name", "QuickBill Pro"),
+            "address": _company_value("address", ""),
+            "phone": _company_value("phone", ""),
+            "email": _company_value("email", ""),
+            "gst": _company_value("gst", ""),
+        },
         "status": "PAID",
         "items": items,
         "subtotal": subtotal,
@@ -487,35 +494,13 @@ def _generate_a4_pdf(
 
     elements = []
 
-    company_name = _company_value(
-        "name",
-        "QuickBill",
-    )
+    company_data = bill.get("company", {})
 
-    owner = _company_value(
-        "owner",
-        "",
-    )
-
-    address = _company_value(
-        "address",
-        "",
-    )
-
-    phone = _company_value(
-        "phone",
-        "",
-    )
-
-    email = _company_value(
-        "email",
-        "",
-    )
-
-    gst_no = _company_value(
-        "gst",
-        "",
-    )
+    company_name = company_data.get("name") or _company_value("name", "QuickBill Pro")
+    address = company_data.get("address") or _company_value("address", "")
+    phone = company_data.get("phone") or _company_value("phone", "")
+    email = company_data.get("email") or _company_value("email", "")
+    gst_no = company_data.get("gst") or _company_value("gst", "")
 
     # --------------------------------------------------------
     # Header
@@ -527,15 +512,6 @@ def _generate_a4_pdf(
             styles["a4_company"],
         )
     )
-
-    if owner:
-
-        elements.append(
-            Paragraph(
-                owner,
-                styles["a4_small"],
-            )
-        )
 
     contact_parts = []
 
@@ -1209,25 +1185,13 @@ def _generate_80mm_pdf(
 
     elements = []
 
-    company_name = _company_value(
-        "name",
-        "QuickBill",
-    )
-
-    address = _company_value(
-        "address",
-        "",
-    )
-
-    phone = _company_value(
-        "phone",
-        "",
-    )
-
-    gst_no = _company_value(
-        "gst",
-        "",
-    )
+    company_data = bill.get("company", {})
+    
+    company_name = company_data.get("name") or _company_value("name", "QuickBill Pro")
+    address = company_data.get("address") or _company_value("address", "")
+    phone = company_data.get("phone") or _company_value("phone", "")
+    email = company_data.get("email") or _company_value("email", "")
+    gst_no = company_data.get("gst") or _company_value("gst", "")
 
     # --------------------------------------------------------
     # Header
@@ -1254,6 +1218,15 @@ def _generate_80mm_pdf(
         elements.append(
             Paragraph(
                 f"Phone: {phone}",
+                styles["thermal_center"],
+            )
+        )
+
+    if email:
+        
+        elements.append(
+            Paragraph(
+                f"Email: {email}",
                 styles["thermal_center"],
             )
         )

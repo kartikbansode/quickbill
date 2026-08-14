@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from urllib.parse import quote
 from gui.ui_components import show_error, show_warning, show_confirmation, set_button_state, BG_DISABLED, TEXT_DISABLED
-from logic.config import get as get_config
+from logic.config import get as get_config, get_currency
 
 try:
     import qrcode
@@ -87,7 +87,7 @@ class PaymentDialog(tk.Toplevel):
 
         self.received = tk.StringVar(value=f"{self.total:.2f}")
 
-        self.balance = tk.StringVar(value="₹ 0.00")
+        self.balance = tk.StringVar(value=f"{get_currency()} 0.00")
 
         self.status = tk.StringVar(value="Ready")
 
@@ -435,7 +435,7 @@ class PaymentDialog(tk.Toplevel):
 
         tk.Label(
             left_amount,
-            text=f"₹ {self.total:,.2f}",
+            text=f"{get_currency()} {self.total:,.2f}",
             bg=self.CARD,
             fg=self.SUCCESS,
             font=(
@@ -1416,7 +1416,7 @@ class PaymentDialog(tk.Toplevel):
 
         tk.Label(
             amount_box,
-            text=f"₹ {self.total:,.2f}",
+            text=f"{get_currency()} {self.total:,.2f}",
             bg=self.BLUE_BG,
             fg=self.PRIMARY,
             font=(
@@ -1639,7 +1639,7 @@ class PaymentDialog(tk.Toplevel):
 
         tk.Label(
             right,
-            text=f"₹ {self.total:,.2f}",
+            text=f"{get_currency()} {self.total:,.2f}",
             bg="#f8fafc",
             fg=self.SUCCESS,
             font=(
@@ -1687,7 +1687,7 @@ class PaymentDialog(tk.Toplevel):
 
         tk.Label(
             container,
-            text=f"₹ {self.total:,.2f}",
+            text=f"{get_currency()} {self.total:,.2f}",
             bg="#f5f3ff",
             fg="#5b21b6",
             font=(
@@ -1759,7 +1759,7 @@ class PaymentDialog(tk.Toplevel):
 
         tk.Label(
             container,
-            text=f"₹ {self.total:,.2f}",
+            text=f"{get_currency()} {self.total:,.2f}",
             bg=self.WARNING_BG,
             fg="#92400e",
             font=(
@@ -1823,7 +1823,7 @@ class PaymentDialog(tk.Toplevel):
 
         change = received - self.total
 
-        self.balance.set(f"₹ {change:,.2f}")
+        self.balance.set(f"{get_currency()} {change:,.2f}")
 
         if self.balance_label is None:
             self.update_complete_button()
@@ -1838,7 +1838,7 @@ class PaymentDialog(tk.Toplevel):
 
             self.status.set("Ready")
 
-            self.status_detail.set(f"Change to return: ₹ {change:,.2f}")
+            self.status_detail.set(f"Change to return: {get_currency()} {change:,.2f}")
 
             if hasattr(self, "status_indicator"):
                 self.status_indicator.configure(fg=self.SUCCESS)
@@ -1854,7 +1854,7 @@ class PaymentDialog(tk.Toplevel):
 
             self.status.set("Insufficient amount")
 
-            self.status_detail.set(f"₹ {short:,.2f} more required.")
+            self.status_detail.set(f"{get_currency()} {short:,.2f} more required.")
 
             if hasattr(self, "status_indicator"):
                 self.status_indicator.configure(fg=self.DANGER)
@@ -2058,9 +2058,9 @@ class PaymentDialog(tk.Toplevel):
                     "Insufficient Amount",
                     (
                         f"Received amount: "
-                        f"₹ {received:,.2f}\n\n"
+                        f"{get_currency()} {received:,.2f}\n\n"
                         f"Required amount: "
-                        f"₹ {self.total:,.2f}"
+                        f"{get_currency()} {self.total:,.2f}"
                     ),
                 )
 

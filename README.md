@@ -342,6 +342,27 @@ The QR code is generated automatically for each bill and displayed through the c
 
 ---
 
+## Business Information
+
+QuickBill Pro allows merchants to configure business and billing information directly from:
+
+Settings → Business & Billing Information
+
+The following information can be configured:
+
+- Cashier Name
+- Company / Business Name
+- Address
+- Phone
+- Email
+- GSTIN
+
+The information is stored locally on the user's computer and automatically reused when QuickBill is reopened.
+
+This information is automatically used on supported QuickBill invoices and receipts.
+
+---
+
 ## License
 
 This project is proprietary software.

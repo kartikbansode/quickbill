@@ -38,7 +38,7 @@ from logic.customer_display_server import customer_display
 from logic.pdf_generator import generate_pdf_bill
 from logic.resource_path import resource_path
 from logic.app_state import app_state
-from logic.config import get, set
+from logic.config import get, set, config, get_currency
 
 scanner_active = False
 
@@ -47,6 +47,8 @@ if webcam_url is None:
     webcam_url = ""
 
 upi_id = get("payment", "upi_id", "")
+company_info = config.get("company", {})
+billing_info = config.get("billing", {})
 
 
 BILLS_HISTORY_FILE = data_path("bills_history.json")
@@ -158,6 +160,7 @@ def launch_main_window(window=None):
 
     # --- Menu Bar ---
     header = Header(window)
+    header.set_operator(app_state.operator)
     header.pack(side="top", fill="x")
 
     status_bar = StatusBar(window)
@@ -545,6 +548,7 @@ def launch_main_window(window=None):
                 completed_bill,
                 payment_mode,
                 received_amount,
+                cashier=app_state.operator,
             )
 
             # --------------------------------
@@ -700,7 +704,7 @@ def launch_main_window(window=None):
                 bill["date"],
                 bill.get("payment_mode", "-"),
                 len(bill["items"]),
-                f"₹ {bill['total']:.2f}",
+                f"{get_currency()} {bill['total']:.2f}",
             )
 
     def open_bill_details(bill_no):
@@ -979,6 +983,35 @@ def launch_main_window(window=None):
                 detail=str(exc),
             )
 
+    def save_business_settings(new_company_info):
+        try:
+            for key, value in new_company_info.items():
+                set("company", key, value)
+            app_state.operator = new_company_info.get("cashier_name", "Admin")
+            header.set_operator(app_state.operator)
+            status_bar.set_status("Business information saved", timeout=3000)
+        except Exception as exc:
+            show_error(
+                window, "Settings Error",
+                "Unable to save business information.",
+                detail=str(exc),
+            )
+
+    def save_billing_settings(new_billing_info):
+        try:
+            for key, value in new_billing_info.items():
+                set("billing", key, value)
+            if billing_view is not None:
+                billing_view.refresh_totals()
+                billing_view.render_cart(cart)
+            status_bar.set_status("Billing preferences saved", timeout=3000)
+        except Exception as exc:
+            show_error(
+                window, "Settings Error",
+                "Unable to save billing preferences.",
+                detail=str(exc),
+            )
+
     # =====================================================
     # Settings View
     # =====================================================
@@ -987,8 +1020,12 @@ def launch_main_window(window=None):
         content_container,
         webcam_url=webcam_url,
         upi_id=upi_id,
+        company_info=company_info,
+        billing_info=billing_info,
         save_callback=save_webcam_url,
         save_payment_callback=save_upi_id,
+        save_business_callback=save_business_settings,
+        save_billing_callback=save_billing_settings,
     )
 
     # =====================================================
@@ -1051,7 +1088,7 @@ def launch_main_window(window=None):
                 bill["date"],
                 bill.get("payment_mode", "-"),
                 len(bill["items"]),
-                f"₹ {bill['total']:.2f}",
+                f"{get_currency()} {bill['total']:.2f}",
             )
 
 

@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 from logic.file_paths import data_path
+from logic.config import get_currency
 from gui.ui_components import (
     create_primary_button, 
     create_success_button, 
@@ -1321,7 +1322,7 @@ class BillDetailsDialog(tk.Toplevel):
 
             amount = 0.0
 
-        return f"₹ {amount:,.2f}"
+        return f"{get_currency()} {amount:,.2f}"
 
     # =========================================================
     # Safe Float

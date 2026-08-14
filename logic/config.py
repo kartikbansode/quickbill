@@ -9,8 +9,8 @@ CONFIG_FILE = data_path("config.json")
 
 DEFAULT_CONFIG = {
     "company": {
-        "name": "QuickBill Systems",
-        "owner": "Admin",
+        "cashier_name": "Admin",
+        "name": "QuickBill Pro",
         "address": "",
         "phone": "",
         "email": "",
@@ -74,3 +74,29 @@ def set(section, key, value):
         config[section] = {}
     config[section][key] = value
     save_config()
+
+
+def get_currency():
+    return config.get("billing", {}).get("currency", "₹")
+
+
+def get_invoice_prefix():
+    return config.get("billing", {}).get("invoice_prefix", "INV")
+
+
+def get_tax_percent():
+    try:
+        return float(config.get("billing", {}).get("tax_percent", 10))
+    except (ValueError, TypeError):
+        return 10.0
+
+
+def get_discount_percent():
+    try:
+        return float(config.get("billing", {}).get("discount_percent", 5))
+    except (ValueError, TypeError):
+        return 5.0
+
+
+def get_round_off():
+    return bool(config.get("billing", {}).get("round_off", True))

@@ -5,6 +5,7 @@ from logic.hold_bill import (
     get_all_hold_bills,
     delete_hold_bill,
 )
+from logic.config import get_currency
 from gui.ui_components import (
     create_success_button, 
     create_danger_button, 
@@ -240,7 +241,7 @@ class HoldBillWindow(tk.Toplevel):
                         bill["date"],
                         bill["time"],
                         sum(item["qty"] for item in bill["cart"]),
-                        f"₹ {amount:.2f}",
+                        f"{get_currency()} {amount:.2f}",
                         bill.get("cashier", "Admin"),
                     ),
                 )
