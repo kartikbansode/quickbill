@@ -1,17 +1,13 @@
 <p align="center">
   <a href="https://quickbill.kartikbansode.dev/">
     <img
-      width="80"
-      height="80"
+      width="1600"
+      height="256"
       alt="QuickBill Logo"
-      src="https://github.com/user-attachments/assets/cc80dfee-89d8-4fc7-905d-7dfbaa3b480b"
+      src="https://github.com/user-attachments/assets/c36eee1b-0ac6-46a4-ac4d-c81bf8776039"
     />
   </a>
 </p>
-
-<h1 align="center">
-  QuickBill
-</h1>
 
 <p align="center">
   <strong>Professional Desktop Billing & POS Management System</strong>
@@ -243,8 +239,9 @@ Repository: https://github.com/kartikbansode/quickbill-barcode-scanner-app
   width="1919"
   height="1079"
   alt="QuickBill Billing Window"
-  src="https://github.com/user-attachments/assets/a7da29cc-d3e1-47d2-a949-7c3a4842206b"
+  src=""https://github.com/user-attachments/assets/49f08c80-0c49-478f-ad5b-ea19785088c5"
 />
+
 
 ### Product Management
 
@@ -547,7 +544,17 @@ QuickBill: [https://quickbill.kartikbansode.dev/](https://quickbill.kartikbansod
 
 ---
 
-<p align="center">
+<p align="left">
+ 
+  <a href="https://quickbill.kartikbansode.dev/">
+    <img
+      width="80"
+      height="80"
+      alt="QuickBill Logo"
+      src="https://github.com/user-attachments/assets/e0255e02-3862-4b25-8610-e74c41a3f0c7"
+    />
+  </a>
+
   <strong>QuickBill 3.1.0</strong>
   <br>
   Professional Desktop Billing & POS Management System
