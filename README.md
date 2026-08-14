@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-<a href="https://quickbill.kartikbansode.dev/">Visit Website</a>
+<a href="https://quickbill.kartikbansode.dev">Visit Website</a>
 </p>
 
 <p align="center">
