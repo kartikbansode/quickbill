@@ -15,8 +15,8 @@ AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
 
 AppPublisher={#MyAppPublisher}
-AppPublisherURL=https://github.com/kartikbansode/quickbill
-AppSupportURL=https://github.com/kartikbansode/quickbill/issues
+AppPublisherURL=https://quickbill.kartikbansode.dev/
+AppSupportURL=https://quickbill.kartikbansode.dev/
 AppUpdatesURL=https://github.com/kartikbansode/quickbill/releases
 
 ; ============================================================
@@ -97,11 +97,9 @@ RestartApplications=no
 AllowNoIcons=yes
 ShowLanguageDialog=no
 
-
 [Languages]
 
 Name: "english"; MessagesFile: "compiler:Default.isl"
-
 
 [Tasks]
 
@@ -110,13 +108,11 @@ Name: "desktopicon"; \
     GroupDescription: "Additional shortcuts:"; \
     Flags: unchecked
 
-
 [Files]
 
 Source: "..\dist\QuickBill.exe"; \
     DestDir: "{app}"; \
     Flags: ignoreversion
-
 
 [Icons]
 
@@ -126,7 +122,6 @@ Name: "{group}\{#MyAppName}"; \
 Name: "{autodesktop}\{#MyAppName}"; \
     Filename: "{app}\{#MyAppExeName}"; \
     Tasks: desktopicon
-
 
 [Run]
 

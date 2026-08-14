@@ -1,13 +1,23 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from PyInstaller.utils.hooks import collect_submodules, collect_data_files
+"""
+QuickBill
+Production Build Configuration
+Version 3.1.0
+Copyright © 2026 Kartik Bansode. All Rights Reserved.
+"""
+
+import os
+import sys
+
+from PyInstaller.utils.hooks import (
+    collect_data_files,
+    collect_submodules,
+)
 
 
 # ============================================================
-# QuickBill
-# Production Build Configuration
-# Version: 3.1.0
-# Publisher: Kartik Bansode
+# Application
 # ============================================================
 
 APP_NAME = "QuickBill"
@@ -17,60 +27,88 @@ VERSION_FILE = "version/version_info.txt"
 
 
 # ============================================================
-# Dependencies
+# Project Root
 # ============================================================
 
-# pyzbar requires the native ZBar libraries.
-# Keep these paths relative to the Python environment instead
-# of hardcoding the developer's absolute Windows path.
+PROJECT_ROOT = os.path.abspath(".")
 
-import os
-import sys
 
+# ============================================================
+# Python Site-Packages
+# ============================================================
 
 PYTHON_SITE_PACKAGES = os.path.join(
     sys.prefix,
     "Lib",
-    "site-packages"
+    "site-packages",
 )
-
-PYZBAR_DIR = os.path.join(
-    PYTHON_SITE_PACKAGES,
-    "pyzbar"
-)
-
-
-PYZBAR_BINARIES = [
-    (
-        os.path.join(PYZBAR_DIR, "libiconv.dll"),
-        "pyzbar"
-    ),
-    (
-        os.path.join(PYZBAR_DIR, "libzbar-64.dll"),
-        "pyzbar"
-    ),
-]
 
 
 # ============================================================
-# Data Files
+# PyZBar Native Dependencies
+# ============================================================
+
+PYZBAR_DIR = os.path.join(
+    PYTHON_SITE_PACKAGES,
+    "pyzbar",
+)
+
+
+PYZBAR_BINARIES = []
+
+for dll_name in (
+    "libiconv.dll",
+    "libzbar-64.dll",
+):
+    dll_path = os.path.join(
+        PYZBAR_DIR,
+        dll_name,
+    )
+
+    if os.path.exists(dll_path):
+        PYZBAR_BINARIES.append(
+            (
+                dll_path,
+                "pyzbar",
+            )
+        )
+
+
+# ============================================================
+# Application Data
 # ============================================================
 
 DATA_FILES = [
     (
+        os.path.join(
+            PROJECT_ROOT,
+            "assets",
+        ),
         "assets",
-        "assets"
     ),
-] + collect_data_files("reportlab")
+]
+
+DATA_FILES += collect_data_files(
+    "reportlab"
+)
 
 
 # ============================================================
 # Hidden Imports
 # ============================================================
 
-HIDDEN_IMPORTS = (
-    collect_submodules("reportlab")
-    + collect_submodules("pyzbar")
+HIDDEN_IMPORTS = []
+
+HIDDEN_IMPORTS += collect_submodules(
+    "reportlab"
+)
+
+HIDDEN_IMPORTS += collect_submodules(
+    "pyzbar"
+)
+
+HIDDEN_IMPORTS += collect_submodules(
+    "websockets"
 )
 
 
@@ -79,10 +117,10 @@ HIDDEN_IMPORTS = (
 # ============================================================
 
 a = Analysis(
-    [ENTRY_POINT],
+    [os.path.join(PROJECT_ROOT, ENTRY_POINT)],
 
     pathex=[
-        os.path.abspath(".")
+        PROJECT_ROOT,
     ],
 
     binaries=PYZBAR_BINARIES,
@@ -92,7 +130,9 @@ a = Analysis(
     hiddenimports=HIDDEN_IMPORTS,
 
     hookspath=[],
+
     hooksconfig={},
+
     runtime_hooks=[],
 
     excludes=[
@@ -119,7 +159,7 @@ pyz = PYZ(
 
 
 # ============================================================
-# QuickBill Pro Executable
+# QuickBill Executable
 # ============================================================
 
 exe = EXE(
@@ -141,9 +181,6 @@ exe = EXE(
 
     strip=False,
 
-    # UPX compression can reduce executable size.
-    # If antivirus/security software reports false positives,
-    # disable this by changing it to False.
     upx=True,
 
     upx_exclude=[],
@@ -152,11 +189,16 @@ exe = EXE(
 
     disable_windowed_traceback=False,
 
-    icon=ICON_FILE,
+    icon=os.path.join(
+        PROJECT_ROOT,
+        ICON_FILE,
+    ),
 
-    version=VERSION_FILE,
+    version=os.path.join(
+        PROJECT_ROOT,
+        VERSION_FILE,
+    ),
 
-    # Production application settings
     uac_admin=False,
 
     argv_emulation=False,

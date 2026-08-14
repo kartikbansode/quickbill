@@ -57,6 +57,10 @@ available at:
 
 https://github.com/kartikbansode/quickbill
 
+Official website:
+
+https://quickbill.kartikbansode.dev/
+
 Only releases and files published through the official repository
 should be considered official distributions of QuickBill.
 
@@ -88,7 +92,7 @@ PAYMENT AND THIRD-PARTY SERVICES
 
 QuickBill may integrate with or generate information for third-party
 services, including payment applications, UPI services, barcode scanners,
-customer display systems, printers, operating systems, and other external
+customer display systems, printers, operating systems, or other external
 software or hardware.
 
 The Owner does not control and is not responsible for the availability,
@@ -113,4 +117,9 @@ QuickBill is a proprietary software project developed and maintained
 by Kartik Bansode.
 
 Official Repository:
+
 https://github.com/kartikbansode/quickbill
+
+Official Website:
+
+https://quickbill.kartikbansode.dev/

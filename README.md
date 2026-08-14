@@ -1,6 +1,11 @@
 <p align="center">
-  <a href="https://github.com/kartikbansode/quickbill">
-    <img width="80" height="80" alt="QuickBill logo" src="https://github.com/user-attachments/assets/cc80dfee-89d8-4fc7-905d-7dfbaa3b480b" />
+  <a href="https://quickbill.kartikbansode.dev/">
+    <img
+      width="80"
+      height="80"
+      alt="QuickBill Logo"
+      src="https://github.com/user-attachments/assets/cc80dfee-89d8-4fc7-905d-7dfbaa3b480b"
+    />
   </a>
 </p>
 
@@ -13,202 +18,107 @@
 </p>
 
 <p align="center">
-<a href="https://quickbill.kartikbansode.dev">Visit Website</a>
+  Fast billing · Barcode scanning · Inventory · Payments · Invoices
 </p>
 
 <p align="center">
-  Fast billing · Barcode scanning · Product management · Payments · Invoices
+  <a href="https://github.com/kartikbansode/quickbill/releases">Releases</a>
+  &bull;
+  <a href="https://github.com/kartikbansode/quickbill/releases/latest">Latest Release</a>
+  &bull;
+  <a href="https://quickbill.kartikbansode.dev/">Website</a>
+  &bull;
+  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">Customer Display</a>
+  &bull;
+  <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">Barcode Scanner</a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/kartikbansode/quickbill/releases">
-    Releases
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill/releases/tag/v3.1.0">
-    v3.1.0
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill-customer-display-app">
-    Customer Display
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">
-    Barcode Scanner
-  </a>
-  &bull;
-  <a href="https://github.com/kartikbansode/quickbill">
-    Repository
-  </a>
+  <img src="https://img.shields.io/badge/Version-3.1.0 (Stable)-blue" alt="Version 3.1.0 (Stable)" />
+  <img src="https://img.shields.io/badge/Python-3.11%2B-yellow" alt="Python 3.11+" />
+  <img src="https://img.shields.io/badge/Platform-Windows-blue" alt="Windows" />
+  <img src="https://img.shields.io/badge/License-Proprietary-red" alt="Proprietary License" />
 </p>
 
 <p align="center">
-  <a href="https://github.com/kartikbansode/quickbill/releases">
-    <img
-      src="https://img.shields.io/badge/Version-3.1.0-blue"
-      alt="Version 3.1.0"
-    />
-  </a>
-
-  <a href="https://www.python.org/downloads/">
-    <img
-      src="https://img.shields.io/badge/Python-3.11%2B-yellow"
-      alt="Python 3.11+"
-    />
-  </a>
-
-  <a href="https://www.microsoft.com/en-us/windows">
-    <img
-      src="https://img.shields.io/badge/Platform-Windows-blue"
-      alt="Windows"
-    />
-  </a>
-
-  <a href="https://github.com/kartikbansode/quickbill/blob/main/LICENSE">
-    <img
-      src="https://img.shields.io/badge/License-Proprietary-green"
-      alt="Proprietary License"
-    />
-  </a>
-</p>
-
-<p align="center">
-  QuickBill is a professional desktop billing and point-of-sale system
-  designed for retail shops and small businesses. It provides a complete
-  billing workflow with barcode scanning, product management, inventory
-  handling, payments, customer-facing display synchronization, invoice
-  generation, and billing history.
+  QuickBill is a Windows desktop billing and POS application designed for
+  retail shops and small businesses. It provides a complete local billing
+  workflow including product management, barcode scanning, inventory,
+  payments, invoice generation, bill history, business configuration,
+  and customer-facing display integration.
 </p>
 
 ---
 
-## What's Changed in v3.1.0
+## Overview
 
-QuickBill v3.1.0 introduces powerful new configuration systems allowing you to personalize the billing experience and seamlessly integrate your business identity into the software. 
+QuickBill is designed to provide a fast, practical, and professional point-of-sale experience without requiring a cloud account or online business management platform.
 
-### Features
+The desktop application acts as the primary billing system and source of truth for products, inventory, bills, payments, and transaction data.
 
-- Added Business & Billing Information settings
-- Added persistent UPI ID configuration through Settings
-- Added Cashier Name configuration
-- Added Company / Business Name configuration
-- Added Address, Phone, Email, and GSTIN configuration
-- Added dynamic currency, tax, and discount settings
-- Persistent settings stored locally on the user's PC
-- Business information automatically integrated into invoices
-- Cashier information integrated into invoices
-- Improved 80mm receipt and A4 invoice layouts with dynamic business fields
-- Optional business fields automatically hidden when empty
-- Improved configuration architecture
-- Improved production readiness and stability
-
-### Download Installer
-<a href="https://github.com/kartikbansode/quickbill/releases/download/v3.1.0/QuickBill_Setup_v3.1.0.exe">Download QuickBill_Setup_v3.1.0.exe</a>
+QuickBill can also integrate with companion applications such as the Customer Display and Barcode Scanner applications.
 
 ---
 
-## v3.0.0 — First Stable Release
+## What's New in v3.1.0
 
-QuickBill v3.0.0 marks the **first stable release** of the QuickBill desktop application.
+Version 3.1.0 focuses on application configuration, business identity, billing personalization, production stability, and overall usability.
 
-This release consolidates the core billing, product management, invoice, payment, customer display, and POS functionality into a stable desktop application with a consistent professional interface and production-focused architecture.
+### Business & Billing Configuration
 
-### Release Highlights
+- Added configurable UPI ID through application Settings.
+- UPI ID is stored locally and persists between application restarts.
+- Added configurable cashier name.
+- Added configurable company/business name.
+- Added configurable business owner name.
+- Added business address configuration.
+- Added business phone configuration.
+- Added business email configuration.
+- Added GST configuration.
+- Configured business information is automatically used in generated invoices.
+- Business information is reflected appropriately across 80 mm and A4 invoice formats.
+- Default QuickBill information is used when optional business settings are left empty.
 
-- Stable QuickBill Pro desktop billing application
-- Professional POS-oriented billing interface
-- Improved application startup and splash screen workflow
-- Consistent application-wide UI components and styling
-- Barcode scanning and manual item entry
-- Product and inventory management
-- Professional invoice generation
-- Bill history and reprinting
-- Hold and resume billing workflow
-- Multiple payment modes
-- Dynamic UPI QR payment support
-- Real-time customer display integration
-- Improved customer display synchronization and reconnect handling
-- Improved error handling and application stability
-- Responsive desktop UI for different screen sizes
-- Updated release documentation and project structure
-- Versioned as the first stable `v3.0.0` release
+### Billing & Invoice Improvements
 
----
+- Improved invoice personalization.
+- Improved payment workflow.
+- Improved UPI payment configuration.
+- Improved invoice information layout.
+- Improved 80 mm receipt formatting.
+- Improved A4 invoice formatting.
+- Improved billing workflow consistency.
 
-## Screenshots
+### Application & Stability
 
-### Customer Billing Window
-
-<img width="2560" height="1600" alt="image" src="https://github.com/user-attachments/assets/89e1ebb1-3e28-4cad-b367-caf51f0e8de8" />
-
-
-### Product Management
-
-<img width="2560" height="1600" alt="image" src="https://github.com/user-attachments/assets/765eefdd-a319-4ec0-8ae8-ba16f3ede589" />
-
-### Invoice
-
-### 80 mm -
-
-<img width="347" height="826" alt="image" src="https://github.com/user-attachments/assets/5b73904e-bc3e-4373-9fc0-c13501e12a9d" />
-
-### A4 -
-
-<img width="671" height="842" alt="image" src="https://github.com/user-attachments/assets/b87f7430-563c-400b-b93d-4c637720cee1" />
+- Improved application startup and initialization.
+- Improved splash screen startup experience.
+- Improved customer display initialization.
+- Improved WebSocket-based customer display integration.
+- Improved application configuration persistence.
+- Improved production build configuration.
+- Updated executable metadata to v3.1.0.
+- Updated installer metadata to v3.1.0.
+- Updated project licensing and copyright information.
 
 ---
 
+## Features
 
-## QuickBill Ecosystem
+### Point of Sale
 
-QuickBill Desktop is the **core billing application and authoritative source of billing data**.
-
-It manages:
-
-- Products
-- Inventory
-- Cart state
-- Bills
-- Transactions
-- Payment state
-- Customer information
-- Invoice generation
-
-The companion applications connect to QuickBill Desktop to provide additional POS functionality.
-
-### <a href="https://github.com/kartikbansode/quickbill-customer-display-app">Customer Display App</a>
-
-Provides a real-time customer-facing display for:
-
-- Current bill items
-- Quantities
-- Prices
-- Bill totals
-- Payment information
-- UPI QR display
-- Payment success state
-
-### <a href="https://github.com/kartikbansode/quickbill-barcode-scanner-app">Barcode Scanner App</a>
-
-Provides companion barcode-scanning functionality for QuickBill Desktop.
-
----
-
-## Core Features
-
-### Billing & POS
-
-- Fast point-of-sale billing workflow
-- Manual item entry
-- Barcode-based item entry
-- Automatic quantity handling
-- Item-level quantity controls
-- Item deletion
-- Automatic subtotal and total calculation
-- Tax and discount handling
-- Automatic bill numbering
-- Customer information capture
-- Bill confirmation workflow
+- Fast billing workflow
+- Barcode-based product lookup
+- Manual barcode entry
+- Add products directly to the current bill
+- Increase and decrease item quantities
+- Remove individual items
+- Automatic subtotal calculation
+- Automatic tax calculation
+- Discount support
+- Bill total calculation
+- Bill number generation
+- New bill workflow
 - Hold and resume bills
 
 ### Product Management
@@ -219,76 +129,149 @@ Provides companion barcode-scanning functionality for QuickBill Desktop.
 - Search products
 - Barcode-based product identification
 - Product pricing
+- Product quantity management
 - Inventory and stock management
 
 ### Barcode Scanning
 
 - USB barcode scanner support
-- IP/webcam-based scanning support
-- Continuous scanning
-- Duplicate barcode handling
+- Camera/IP barcode scanning support
+- Continuous barcode scanning
 - Automatic product lookup
-- Manual barcode entry
+- Duplicate barcode scanning with quantity updates
+- Scanner status feedback
 
 ### Payments
 
-Supported payment workflows include:
-
-- Cash
-- UPI
-- Card
-- Credit
-
-Features include:
-
+- Cash payments
+- UPI payments
+- Card payments
+- Credit payments
+- Configurable UPI ID
 - Dynamic UPI QR generation
-- Bill amount linked to payment QR
 - Payment confirmation workflow
-- Customer display payment state
-- Transaction completion handling
+- Payment transaction handling
 
 ### Invoice Generation
 
-- Professional PDF invoices
-- A4 invoice format
+- Professional invoice generation
 - 80 mm receipt format
-- Printable billing documents
-- Bill reprinting
-- Automatic bill numbering
+- A4 invoice format
+- Configurable business information
+- Customer information
+- Cashier information
+- GST information
+- Bill number
+- Date and time
+- Product details
+- Quantity and pricing
+- Tax and discount information
+- Payment information
 
-### Billing History
+### Bill History
 
 - View previous bills
-- Search billing records
-- Review transaction information
+- Search billing history
+- Review completed transactions
 - Reprint invoices
+- Automatic bill numbering
 
 ### Customer Display
 
-- Real-time bill synchronization
-- Customer-facing item display
-- Live totals
-- Payment QR display
-- Payment status
-- Success screen
-- Automatic reconnection
-- Graceful disconnected state
+QuickBill can communicate with the companion Customer Display application to provide a real-time customer-facing billing experience.
+
+The desktop application remains the authoritative billing system.
+
+The Customer Display application receives billing and payment information from QuickBill and displays it to the customer.
+
+### Application Settings
+
+QuickBill provides configuration options for:
+
+- UPI ID
+- Cashier name
+- Company/business name
+- Owner name
+- Business address
+- Phone number
+- Email address
+- GST number
+- Billing configuration
+
+Settings are stored locally on the user's computer and persist between application sessions.
 
 ---
 
-## Technology Stack
+## QuickBill Ecosystem
 
-| Component | Technology |
-|---|---|
-| Desktop Application | Python |
-| GUI | Tkinter |
-| Runtime | Python 3.11+ |
-| Invoice Generation | PDF generation |
-| Product/Billing Data | Local application storage |
-| Barcode Scanning | USB / Camera / Companion Scanner |
-| Customer Display | Network communication |
-| Platform | Windows 10 / Windows 11 |
-| Packaging | PyInstaller |
+QuickBill is part of a small ecosystem of applications designed to work together.
+
+### QuickBill Desktop
+
+The primary billing application and authoritative source for:
+
+- Products
+- Inventory
+- Bills
+- Payments
+- Transactions
+- Business configuration
+
+Repository: https://github.com/kartikbansode/quickbill
+
+Website: https://quickbill.kartikbansode.dev/
+
+### Customer Display
+
+A companion Android application providing a real-time customer-facing display for billing and payment information.
+
+Repository: https://github.com/kartikbansode/quickbill-customer-display-app
+
+### Barcode Scanner
+
+A companion Android application that can be used as a barcode scanner for QuickBill Desktop.
+
+Repository: https://github.com/kartikbansode/quickbill-barcode-scanner-app
+
+---
+
+## Screenshots
+
+### Billing Window
+
+<img
+  width="1919"
+  height="1079"
+  alt="QuickBill Billing Window"
+  src="https://github.com/user-attachments/assets/a7da29cc-d3e1-47d2-a949-7c3a4842206b"
+/>
+
+### Product Management
+
+<img
+  width="1919"
+  height="1079"
+  alt="QuickBill Product Management"
+  src="https://github.com/user-attachments/assets/12a94658-4a30-4b03-986a-eeb3cc6795fb"
+/>
+
+### Invoice — 80 mm
+
+<img
+  width="347"
+  height="826"
+  alt="QuickBill 80mm Invoice"
+  src="https://github.com/user-attachments/assets/5b73904e-bc3e-4373-9fc0-c13501e12a9d"
+/>
+
+### Invoice — A4
+
+<img
+  width="671"
+  height="842"
+  alt="QuickBill A4 Invoice"
+  src="https://github.com/user-attachments/assets/b87f7430-563c-400b-b93d-4c637720cee1"
+/>
 
 ---
 
@@ -296,11 +279,23 @@ Features include:
 
 - Windows 10 or Windows 11
 - Python 3.11 or newer
-- Required Python packages listed in `requirements.txt`
+- Webcam or compatible barcode scanner for barcode scanning features
 
 ---
 
 ## Installation
+
+### Option 1 — Windows Installer
+
+Download the latest QuickBill installer from the GitHub Releases page:
+
+https://github.com/kartikbansode/quickbill/releases
+
+Run the installer and follow the installation wizard.
+
+After installation, launch QuickBill from the Start Menu or desktop shortcut.
+
+### Option 2 — Run From Source
 
 Clone the repository:
 
@@ -308,7 +303,7 @@ Clone the repository:
 git clone https://github.com/kartikbansode/quickbill.git
 ```
 
-Go to the project directory:
+Enter the project directory:
 
 ```bash
 cd quickbill
@@ -320,7 +315,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Run the application:
+Run QuickBill:
 
 ```bash
 python app.py
@@ -328,84 +323,234 @@ python app.py
 
 ---
 
-## Building the Executable
+## Initial Configuration
 
-```bash
-pyinstaller QuickBill.spec
-```
+After launching QuickBill for the first time, open the application Settings.
 
-The executable will be generated inside the `dist` folder.
-
----
-
-## UPI Payment Configuration
-
-QuickBill Pro supports dynamic UPI QR payments.
-UPI payments can be configured directly from:
-
-Settings → Payment Settings → UPI ID
-
-Enter the merchant UPI ID and save it. The setting is stored locally on the computer and automatically reused for future QuickBill sessions.
-
-### Dynamic UPI QR
-
-When UPI payment is selected, QuickBill generates a dynamic payment QR containing:
+Configure the following information if required:
 
 - UPI ID
-- Merchant name
-- Current bill amount
-- Bill number
-- Currency (INR)
-
-The QR code is generated automatically for each bill and displayed through the customer display system.
-
-### Important
-
-- Use a valid UPI ID belonging to the business or merchant.
-- Do not add your UPI PIN, password, bank credentials, or other sensitive information to the settings.
-- Test the generated QR code with a small transaction before using QuickBill for real billing.
-
----
-
-## Business Information
-
-QuickBill Pro allows merchants to configure business and billing information directly from:
-
-Settings → Business & Billing Information
-
-The following information can be configured:
-
-- Cashier Name
-- Company / Business Name
+- Cashier name
+- Company/business name
+- Owner name
 - Address
 - Phone
 - Email
-- GSTIN
+- GST number
 
-The information is stored locally on the user's computer and automatically reused when QuickBill is reopened.
+These settings are stored locally on the computer and are automatically used by QuickBill during future sessions.
 
-This information is automatically used on supported QuickBill invoices and receipts.
+If a business field is left empty, QuickBill uses its default application information where applicable.
+
+---
+
+## UPI Configuration
+
+UPI payments can be configured directly from the QuickBill Settings section.
+
+Enter the UPI ID that should be used for payment QR generation.
+
+Example:
+
+```text
+yourname@upi
+```
+
+The configured UPI ID is stored locally on the user's computer.
+
+There is no need to modify the source code after installation.
+
+---
+
+## Building the Executable
+
+Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Build QuickBill using the production PyInstaller specification:
+
+```bash
+pyinstaller --clean QuickBill.spec
+```
+
+The executable will be generated inside:
+
+```text
+dist/
+```
+
+The resulting application is:
+
+```text
+dist/QuickBill.exe
+```
+
+---
+
+## Building the Windows Installer
+
+The QuickBill installer is created using Inno Setup.
+
+The installer configuration is located at:
+
+```text
+installer/QuickBill.iss
+```
+
+The production installer output is:
+
+```text
+release/QuickBill_Setup_v3.1.0.exe
+```
+
+---
+
+## Project Structure
+
+```text
+quickbill/
+│
+├── app.py
+├── requirements.txt
+├── QuickBill.spec
+│
+├── assets/
+│   └── images/
+│
+├── gui/
+│   ├── billing/
+│   ├── settings/
+│   └── ...
+│
+├── logic/
+│   ├── database/
+│   ├── customer_display_server/
+│   └── ...
+│
+├── installer/
+│   ├── QuickBill.iss
+│   ├── wizard.bmp
+│   └── wizard_small.bmp
+│
+├── version/
+│   └── version_info.txt
+│
+├── licenses/
+│   └── LICENSE.txt
+│
+└── README.md
+```
+
+---
+
+## Data & Privacy
+
+QuickBill is primarily a local desktop application.
+
+Application data and configuration are stored locally on the user's computer unless an explicitly configured external integration is used.
+
+QuickBill does not require a mandatory online account for its core billing functionality.
+
+Users are responsible for maintaining appropriate backups of their business and billing data.
+
+---
+
+## Third-Party Components
+
+QuickBill uses third-party libraries and technologies to provide functionality such as:
+
+- Python
+- Tkinter
+- OpenCV
+- PyZBar
+- ReportLab
+- QRCode
+- Pygame
+- PyInstaller
+- WebSockets
+- Pillow
+- Python Barcode
+- VLC
+
+Each third-party component remains subject to its respective license.
+
+QuickBill does not claim ownership of third-party software, libraries, frameworks, or components.
+
+---
+
+## Version
+
+Current release:
+
+```text
+QuickBill 3.1.0
+```
+
+Release type:
+
+```text
+Stable Release
+```
 
 ---
 
 ## License
 
-This project is proprietary software.
+QuickBill is proprietary software.
 
 Copyright © 2026 Kartik Bansode. All Rights Reserved.
 
-The source code is publicly available for viewing, educational, portfolio, and evaluation purposes only.
+The source code is publicly available for viewing, educational, portfolio, evaluation, academic, and professional purposes subject to the terms of the proprietary license.
 
-No permission is granted to copy, reproduce, modify, redistribute, republish, commercially use, sublicense, sell, or create derivative works from this software or its source code without prior written permission from the copyright holder.
+No permission is granted to copy, reproduce, modify, redistribute, commercially use, sublicense, sell, or create derivative works from this software or its source code without prior written permission from the copyright holder.
 
-For complete terms and restrictions, see the [LICENSE](https://github.com/kartikbansode/quickbill/blob/main/LICENSE) file.
+See the complete license:
+
+[https://github.com/kartikbansode/quickbill/blob/main/LICENSE](https://github.com/kartikbansode/quickbill/blob/main/LICENSE)
 
 ---
 
-## Contact
+## Official Links
 
-**LinkedIn**  
-https://www.linkedin.com/in/kartikbansode
+**QuickBill Website**
 
-**GitHub**  
-https://github.com/kartikbansode
+[https://quickbill.kartikbansode.dev/](https://quickbill.kartikbansode.dev/)
+
+**GitHub Repository**
+
+[https://github.com/kartikbansode/quickbill](https://github.com/kartikbansode/quickbill)
+
+**Releases**
+
+[https://github.com/kartikbansode/quickbill/releases](https://github.com/kartikbansode/quickbill/releases)
+
+**Customer Display**
+
+[https://github.com/kartikbansode/quickbill-customer-display-app](https://github.com/kartikbansode/quickbill-customer-display-app)
+
+**Barcode Scanner**
+
+[https://github.com/kartikbansode/quickbill-barcode-scanner-app](https://github.com/kartikbansode/quickbill-barcode-scanner-app)
+
+---
+
+## Developer
+
+**Kartik Bansode**
+
+GitHub: [https://github.com/kartikbansode](https://github.com/kartikbansode)
+
+QuickBill: [https://quickbill.kartikbansode.dev/](https://quickbill.kartikbansode.dev/)
+
+---
+
+<p align="center">
+  <strong>QuickBill 3.1.0</strong>
+  <br>
+  Professional Desktop Billing & POS Management System
+  <br><br>
+  © 2026 Kartik Bansode. All Rights Reserved.
+</p>

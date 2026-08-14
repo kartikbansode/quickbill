@@ -1,6 +1,6 @@
 # QuickBill v3.1.0
 **Project Identity:** Professional Desktop Point of Sale (POS) & Billing Application
-**Version:** 3.1.0 (First Stable Release)
+**Version:** 3.1.0 (Stable Release)
 **Status:** Stable Production Ready
 
 ## 1. Project Purpose

@@ -14,25 +14,46 @@ VSVersionInfo(
       StringTable(
         '040904B0',
         [
-          StringStruct('CompanyName', 'Kartik Bansode'),
+          StringStruct(
+            'CompanyName',
+            'Kartik Bansode'
+          ),
           StringStruct(
             'FileDescription',
             'Professional Desktop Billing and POS Management System'
           ),
-          StringStruct('FileVersion', '3.1.0.0'),
-          StringStruct('InternalName', 'QuickBill'),
+          StringStruct(
+            'FileVersion',
+            '3.1.0.0'
+          ),
+          StringStruct(
+            'InternalName',
+            'QuickBill'
+          ),
           StringStruct(
             'LegalCopyright',
             'Copyright © 2026 Kartik Bansode. All Rights Reserved.'
           ),
-          StringStruct('OriginalFilename', 'QuickBill.exe'),
-          StringStruct('ProductName', 'QuickBill'),
-          StringStruct('ProductVersion', '3.1.0')
+          StringStruct(
+            'OriginalFilename',
+            'QuickBill.exe'
+          ),
+          StringStruct(
+            'ProductName',
+            'QuickBill'
+          ),
+          StringStruct(
+            'ProductVersion',
+            '3.1.0'
+          )
         ]
       )
     ]),
     VarFileInfo([
-      VarStruct('Translation', [1033,1200])
+      VarStruct(
+        'Translation',
+        [1033,1200]
+      )
     ])
   ]
 )
